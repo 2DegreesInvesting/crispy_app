@@ -87,7 +87,8 @@ server <- function(id, crispy_data_r) {
               $(cell).css('color', cellData < 0 ? 'red' : 'green');
             }"
                 ))
-              )
+              ),
+              dom = 't'
             )
           )
         },

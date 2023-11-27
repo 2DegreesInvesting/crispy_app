@@ -10,4 +10,4 @@ rsconnect
 scripts/raw_data
 private_repos/
 workspace/
-app/data/backend_crispy_data.parquet
+app/data
