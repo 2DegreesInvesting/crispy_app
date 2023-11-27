@@ -63,7 +63,6 @@ server <- function(id) {
     })
     trajectories_data_r <- eventReactive(run_id_r(), ignoreInit = TRUE, {
       if (length(run_id_r()) > 0) {
-        browser()
         backend_trajectories_data |>
           dplyr::filter(.data$run_id == run_id_r())
       }
