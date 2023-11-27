@@ -1241,13 +1241,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.17.3",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "4543b8cd233ae25c6aba8548be9e747e"
+      "Hash": "41b847654f567341725473431dd0d5ab"
     },
     "rex": {
       "Package": "rex",
@@ -1508,12 +1508,6 @@
       "Version": "1.10.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "RemoteType": "standard",
-      "RemotePkgRef": "styler",
-      "RemoteRef": "styler",
-      "RemoteRepos": "https://cran.rstudio.com/",
-      "RemotePkgPlatform": "x86_64-apple-darwin20",
-      "RemoteSha": "1.10.1",
       "Requirements": [
         "R",
         "R.cache",

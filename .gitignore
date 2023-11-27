@@ -4,6 +4,8 @@
 .Ruserdata
 .DS_Store
 .vscode
+rsconnect/
+
 
 # project specific 
 scripts/raw_data
