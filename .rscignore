@@ -5,3 +5,5 @@
 .rhino
 .rscignore
 tests
+workspace
+scripts

@@ -40,6 +40,7 @@ draw_scenario_time_plot <- function(
     y_var,
     facet_var,
     facets_colors) {
+
   scenario_time_plot <- ggplot(data_scenario_time_plot, aes(x = !!rlang::sym(x_var), y = !!rlang::sym(y_var), color = !!rlang::sym(facet_var))) +
     geom_line() +
     geom_point() +

@@ -1,5 +1,5 @@
 box::use(
-  shiny[moduleServer, NS, observe, div, tags, reactiveVal, reactiveValues, eventReactive, p, tagList, observeEvent],
+  shiny[moduleServer, NS, observe, div, tags, reactiveVal, reactiveValues, eventReactive, p, tagList, observeEvent, img],
   shiny.semantic[slider_input, dropdown_input, segment, update_dropdown_input]
 )
 
@@ -22,11 +22,26 @@ box::use(
 
 ui <- function(id) {
   ns <- NS(id)
-  segment(
-    class = "ui grid",
-    div(
-      class = "ui row",
+  div(
       # First segment in the left half
+      div(
+        class = "eight wide column",
+        segment(
+          p("Baseline Scenario"),
+          dropdown_input(ns("baseline_scenario"),
+            choices = available_baseline_scenario
+          ),
+          p("Target Scenario"),
+          dropdown_input(ns("shock_scenario"),
+            choices = available_shock_scenario
+          ),
+          p("Scenario Geography"),
+          dropdown_input(ns("scenario_geography"),
+            choices = available_scenario_geography
+          )
+        )
+      ),
+      # Second segment in the right half
       div(
         class = "eight wide column",
         segment(
@@ -56,26 +71,9 @@ ui <- function(id) {
           )
         )
       ),
-      # Second segment in the right half
-      div(
-        class = "eight wide column",
-        segment(
-          p("Baseline Scenario"),
-          dropdown_input(ns("baseline_scenario"),
-            choices = available_baseline_scenario
-          ),
-          p("Target Scenario"),
-          dropdown_input(ns("shock_scenario"),
-            choices = available_shock_scenario
-          ),
-          p("Scenario Geography"),
-          dropdown_input(ns("scenario_geography"),
-            choices = available_scenario_geography
-          )
-        )
-      )
+      img(src = "static/logo_1in1000.png", height = "20%", width = "auto", style="display: block; margin-left: auto; margin-right: auto; margin-top: 10px;  margin-bottom: 10px;")
     )
-  )
+  
 }
 
 

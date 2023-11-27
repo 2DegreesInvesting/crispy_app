@@ -38,7 +38,7 @@ multi_crispy_data <- stress.test.plot.report::main_load_multi_crispy_data(
   max_crispy_granularity = max_crispy_granularity
 ) |>
   dplyr::mutate(
-    run_id = sub("^crispy_output_(.*)\\.csv", "\\1", .data$run_id)
+    run_id = sub("^crispy_output_(.*)", "\\1", .data$run_id)
   )
 
 multi_crispy_data |> 

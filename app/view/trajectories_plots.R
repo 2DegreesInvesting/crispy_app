@@ -50,7 +50,7 @@ server <- function(id, trajectories_data_r) {
       )
       output$shock_scenario_plot <- renderPlot({
         scenario_time_plot +
-          ggplot2::labs(title = "Production trajectories for the Baseline scenario")
+          ggplot2::labs(title = "Production trajectories for the Shock scenario")
       })
     })
   })
