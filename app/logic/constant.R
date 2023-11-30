@@ -50,8 +50,8 @@ use_ald_sector <- c(
 )
 
 available_discount_rate <- c(
-  # 0.015,
-  0.044,
+  # 0.02,
+  0.04,
   # 0.07,
   0.1
 )
@@ -63,7 +63,8 @@ available_risk_free_rate <- c(
 available_growth_rate <- c(
   0.01,
   # 0.02,
-  0.042
+  0.095
+
 )
 available_shock_year <- c(
   2025,

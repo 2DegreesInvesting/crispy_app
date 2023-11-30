@@ -76,8 +76,26 @@ r2dii.climate.stress.test::run_trisk(
   input_path = trisk_input_path,
   output_path = trisk_output_path,
   baseline_scenario = "NGFS2021_MESSAGE_NDC",
-  shock_scenario = "NGFS2021_MESSAGE_B2DS"
+  shock_scenario = "NGFS2021_MESSAGE_B2DS",
+  shock_year=2030
 )
+
+r2dii.climate.stress.test::run_trisk(
+  input_path = trisk_input_path,
+  output_path = trisk_output_path,
+  baseline_scenario = "NGFS2021_MESSAGE_NDC",
+  shock_scenario = "NGFS2021_MESSAGE_B2DS",
+  shock_year=2033
+)
+
+r2dii.climate.stress.test::run_trisk(
+  input_path = trisk_input_path,
+  output_path = trisk_output_path,
+  baseline_scenario = "NGFS2021_MESSAGE_NDC",
+  shock_scenario = "NGFS2021_MESSAGE_B2DS",
+  shock_year=2035
+)
+
 
 r2dii.climate.stress.test::run_trisk(
   input_path = trisk_input_path,
