@@ -1,6 +1,8 @@
 box::use(
-  shiny[moduleServer, NS, observe, div, tags, reactiveVal, reactiveValues, eventReactive, p, tagList, observeEvent, img],
-  shiny.semantic[slider_input, dropdown_input, segment, update_dropdown_input]
+  shiny[moduleServer, NS, observe, div, tags, reactiveVal, reactiveValues, eventReactive, p, tagList, observeEvent, img,
+  HTML],
+  shiny.semantic[slider_input, dropdown_input, segment, update_dropdown_input, actionButton],
+  shinyjs[useShinyjs ]
 )
 
 box::use(
@@ -26,6 +28,16 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
   div(
+      useShinyjs(),  # Initialize shinyjs
+        # Custom Semantic UI Modal
+  tags$div(
+    id = "mymodal",
+    class = "ui modal",
+    tags$div(class = "header", "Processing"),
+    tags$div(class = "content", 
+      tags$p("Please wait...")
+    )
+  ),
     # First segment in the left half
     div(
       class = "eight wide column",
@@ -91,6 +103,8 @@ ui <- function(id) {
 ####### Server
 
 
+
+
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
     update_dropdowns(input, session,
@@ -102,19 +116,8 @@ server <- function(id) {
 
     run_id_r <- reactiveVal(NULL)
 
-    observeEvent(
-      c(
-        input$discount_rate,
-        input$risk_free_rate,
-        input$growth_rate,
-        input$shock_year,
-        input$baseline_scenario,
-        input$shock_scenario,
-        input$scenario_geography
-      ),
-      ignoreInit = TRUE,
-      {
-          trisk_run_params <- list(
+trisk_run_params_r <- shiny::reactive({
+          reactiveValues(
             discount_rate = as.numeric(input$discount_rate),
             risk_free_rate = as.numeric(input$risk_free_rate),
             growth_rate = as.numeric(input$growth_rate),
@@ -122,13 +125,19 @@ server <- function(id) {
             baseline_scenario = REV_RENAMING_SCENARIOS[input$baseline_scenario],
             shock_scenario = REV_RENAMING_SCENARIOS[input$shock_scenario],
             scenario_geography = input$scenario_geography
-          )
-        tryCatch({
+          )}
+)
+
+    observeEvent(trisk_run_params_r(), {   
+      
+      trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
+        
         if (!any(sapply(trisk_run_params, function(x){is.na(x) | (nchar(x) == 0)}))){
           
           run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
           if (is.null(run_id)){
-            {
+            shinyjs::runjs("$('#mymodal').modal({closable: false}).modal('show');")
+            tryCatch({
             st_results_wrangled_and_checked <- run_trisk_with_params(
               trisk_run_params, 
               trisk_input_path
@@ -138,25 +147,30 @@ server <- function(id) {
               backend_trisk_run_folder,
               max_crispy_granularity
               )
-            run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)}
+            },
+error = function(e) {
+    # Do nothing on error
+    NULL
+}) 
+            run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
             
           }
           
           run_id_r(run_id)
         }
-        },
-error = function(e) {
-    # Do nothing on error
-    NULL
-})
-
+  
+    # Close the modal dialog and re-enable UI
+    shinyjs::runjs("$('#mymodal').modal('hide');")
+    
       }
+    
     )
 
 
     return(run_id_r)
   })
 }
+
 
 
 
@@ -167,7 +181,7 @@ update_dropdowns <- function(input, session,
 possible_combinations) {
   # Observe changes in possible_combinations and update baseline_scenario dropdown
   observe({
-
+    
     # Filter the data based on selected baseline scenario
     new_choices <- unique(possible_combinations$baseline_scenario)
     new_choices <- new_choices[new_choices %in% available_baseline_scenario]
@@ -206,5 +220,6 @@ possible_combinations) {
 
     # Update scenario_geography dropdown with unique values from the filtered data
     update_dropdown_input(session, "scenario_geography", choices = new_choices)
+    
   })
 }

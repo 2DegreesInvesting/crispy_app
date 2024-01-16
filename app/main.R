@@ -51,12 +51,16 @@ server <- function(id) {
   moduleServer(id, function(input, output, session) {
     run_id_r <- params_picker$server("params_picker")
 
-    crispy_data_r <- eventReactive(run_id_r(), ignoreInit = TRUE, {
-      load_backend_crispy_data(backend_trisk_run_folder) |> dplyr::filter(.data$run_id == run_id_r())
+    crispy_data_r <- shiny::reactive({
+      if (!is.null(run_id_r())){
+        load_backend_crispy_data(backend_trisk_run_folder) |> dplyr::filter(.data$run_id == run_id_r())
+        }
     })
     
-    trajectories_data_r <- eventReactive(run_id_r(), ignoreInit = TRUE, {
+    trajectories_data_r <- shiny::reactive( {
+      if (!is.null(run_id_r())){
       load_backend_trajectories_data(backend_trisk_run_folder) |> dplyr::filter(run_id == run_id_r())
+      }
     })
 
     analysis_data_r <- portfolio_creator$server("portfolio_creator", crispy_data_r)
