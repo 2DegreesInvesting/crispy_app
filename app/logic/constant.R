@@ -6,9 +6,10 @@
 # TODO move to .RProfile env var
 
 # INPUT DATA
-trisk_input_path <- fs::path("app", "data", "st_inputs", ext = "parquet")
-trisk_output_path <- fs::path("app", "data", "st_outputs", ext = "parquet")
-backend_trisk_run_data_path <- fs::path("app", "data", "backend_trisk_run_data", ext = "parquet")
+# trisk_input_path <- fs::path("app", "data", "st_inputs")
+trisk_input_path <- "tests/testthat/ST_INPUTS_DEV"
+trisk_output_path <- fs::path("app", "data", "st_outputs")
+backend_trisk_run_folder <- fs::path("app", "data", "backend_db")
 
 # ANALYSIS DATA CREATION
 trisk_start_year <- 2022
@@ -84,24 +85,24 @@ available_market_passthrough <- c(0, 0.5, 1)
 available_baseline_scenario <- c(
   "IPR2021_baseline",
   "Oxford2021_base",
-  # "NGFS2021_MESSAGE_CP",
-  # "NGFS2021_GCAM_CP",
-  # "NGFS2021_REMIND_CP",
-  "WEO2021_STEPS",
-  "NGFS2021_GCAM_NDC",
-  "NGFS2021_REMIND_NDC",
-  "NGFS2021_MESSAGE_NDC"
+  # "NGFS2022_MESSAGE_CP",
+  # "NGFS2022_GCAM_CP",
+  # "NGFS2022_REMIND_CP",
+  "WEO2021_STEPS"
+  # "NGFS2022_GCAM_NDC",
+  # "NGFS2022_REMIND_NDC",
+  # "NGFS2022_MESSAGE_NDC"
 )
 available_shock_scenario <- c(
   # "IPR2021_RPS",
-  "NGFS2021_REMIND_NZ2050", "NGFS2021_MESSAGE_NZ2050", "NGFS2021_GCAM_NZ2050",
+  # "NGFS2022_REMIND_NZ2050", "NGFS2022_MESSAGE_NZ2050", "NGFS2022_GCAM_NZ2050",
   "WEO2021_NZE_2050",
-  # "NGFS2021_REMIND_DT", "NGFS2021_MESSAGE_DT", "NGFS2021_GCAM_DT",
-  # "NGFS2021_REMIND_DN0", "NGFS2021_MESSAGE_DN0", "NGFS2021_GCAM_DN0",
-  "NGFS2021_REMIND_B2DS",
+  # "NGFS2022_REMIND_DT", "NGFS2022_MESSAGE_DT", "NGFS2022_GCAM_DT",
+  # "NGFS2022_REMIND_DN0", "NGFS2022_MESSAGE_DN0", "NGFS2022_GCAM_DN0",
+  # "NGFS2022_REMIND_B2DS",
   "Oxford2021_fast",
-  "NGFS2021_MESSAGE_B2DS",
-  "NGFS2021_GCAM_B2DS",
+  # "NGFS2022_MESSAGE_B2DS",
+  # "NGFS2022_GCAM_B2DS",
   "IPR2021_FPS",
   "WEO2021_SDS"
 )

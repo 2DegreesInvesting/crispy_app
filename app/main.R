@@ -9,10 +9,10 @@ box::use(
   app / view / equity_change_plots,
   app / view / trajectories_plots,
   app / logic / data_load[
-    load_backend_crispy_data,
     load_backend_trajectories_data,
-    load_backend_trisk_run_data
-  ]
+    load_backend_crispy_data
+  ],
+  app/logic/constant[backend_trisk_run_folder]
 )
 
 #######
@@ -49,22 +49,14 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    run_id_r <- params_picker$server("params_picker", backend_trisk_run_data)
-
-    backend_crispy_data <- load_backend_crispy_data()
-    backend_trajectories_data <- load_backend_trajectories_data()
+    run_id_r <- params_picker$server("params_picker")
 
     crispy_data_r <- eventReactive(run_id_r(), ignoreInit = TRUE, {
-      if (length(run_id_r()) > 0) {
-        backend_crispy_data |>
-          dplyr::filter(.data$run_id == run_id_r())
-      }
+      load_backend_crispy_data(backend_trisk_run_folder) |> dplyr::filter(.data$run_id == run_id_r())
     })
+    
     trajectories_data_r <- eventReactive(run_id_r(), ignoreInit = TRUE, {
-      if (length(run_id_r()) > 0) {
-        backend_trajectories_data |>
-          dplyr::filter(.data$run_id == run_id_r())
-      }
+      load_backend_trajectories_data(backend_trisk_run_folder) |> dplyr::filter(run_id == run_id_r())
     })
 
     analysis_data_r <- portfolio_creator$server("portfolio_creator", crispy_data_r)
