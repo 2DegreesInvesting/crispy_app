@@ -6,8 +6,8 @@
 # TODO move to .RProfile env var
 
 # INPUT DATA
-backend_crispy_data_path <- fs::path("app", "data", "backend_crispy_data", ext = "parquet")
-backend_trajectories_data_path <- fs::path("app", "data", "backend_trajectories_data", ext = "parquet")
+trisk_input_path <- fs::path("app", "data", "st_inputs", ext = "parquet")
+trisk_output_path <- fs::path("app", "data", "st_outputs", ext = "parquet")
 backend_trisk_run_data_path <- fs::path("app", "data", "backend_trisk_run_data", ext = "parquet")
 
 # ANALYSIS DATA CREATION
@@ -64,7 +64,6 @@ available_growth_rate <- c(
   0.01,
   0.02,
   0.095
-
 )
 available_shock_year <- c(
   2025,
@@ -79,8 +78,8 @@ available_shock_year <- c(
   # 2040
 )
 
-available_carbon_price_model  <- c("no_carbon_tax", "NZ2050", "NDC", "DN0", "B2DS")
-available_market_passthrough  <- c(0, 0.5, 1)
+available_carbon_price_model <- c("no_carbon_tax", "NZ2050", "NDC", "DN0", "B2DS")
+available_market_passthrough <- c(0, 0.5, 1)
 
 available_baseline_scenario <- c(
   "IPR2021_baseline",

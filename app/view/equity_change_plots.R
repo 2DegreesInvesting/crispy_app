@@ -4,8 +4,8 @@ box::use(
 )
 
 box::use(
-  app/logic/exposure_change_plot[pipeline_exposure_change_plot],
-  app/logic/crispy_npv_change_plot[pipeline_crispy_npv_change_plot]
+  app / logic / exposure_change_plot[pipeline_exposure_change_plot],
+  app / logic / crispy_npv_change_plot[pipeline_crispy_npv_change_plot]
 )
 
 

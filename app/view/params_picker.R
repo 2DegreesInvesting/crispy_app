@@ -4,7 +4,7 @@ box::use(
 )
 
 box::use(
-  app/logic/constant[
+  app / logic / constant[
     available_discount_rate,
     available_risk_free_rate,
     available_growth_rate,
@@ -13,7 +13,7 @@ box::use(
     available_shock_scenario,
     available_scenario_geography
   ],
-  app/logic/ui_renaming[RENAMING_SCENARIOS, REV_RENAMING_SCENARIOS]
+  app / logic / ui_renaming[RENAMING_SCENARIOS, REV_RENAMING_SCENARIOS]
 )
 
 

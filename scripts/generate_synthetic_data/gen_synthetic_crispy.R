@@ -53,7 +53,7 @@ r2dii.climate.stress.test::run_trisk(
   output_path = trisk_output_path,
   baseline_scenario = "NGFS2021_REMIND_NDC",
   shock_scenario = "NGFS2021_REMIND_NZ2050",
-  shock_year=2030
+  shock_year = 2030
 )
 
 r2dii.climate.stress.test::run_trisk(
@@ -61,7 +61,7 @@ r2dii.climate.stress.test::run_trisk(
   output_path = trisk_output_path,
   baseline_scenario = "NGFS2021_REMIND_NDC",
   shock_scenario = "NGFS2021_REMIND_NZ2050",
-  shock_year=2033
+  shock_year = 2033
 )
 
 r2dii.climate.stress.test::run_trisk(
@@ -69,7 +69,7 @@ r2dii.climate.stress.test::run_trisk(
   output_path = trisk_output_path,
   baseline_scenario = "NGFS2021_REMIND_NDC",
   shock_scenario = "NGFS2021_REMIND_NZ2050",
-  shock_year=2035
+  shock_year = 2035
 )
 
 r2dii.climate.stress.test::run_trisk(

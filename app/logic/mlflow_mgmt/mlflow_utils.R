@@ -40,7 +40,6 @@ write_and_zip_csv_artifacts <-
   function(st_results_wrangled_and_checked,
            mlflow_run_output_dir,
            save_artifacts) {
-            
     written_csv_paths <- NULL
     for (artifact_name in save_artifacts) {
       filepath <- file.path(
@@ -53,9 +52,7 @@ write_and_zip_csv_artifacts <-
       )
       readr::write_csv(st_results_wrangled_and_checked[[artifact_name]], filepath)
       zip::zip(zipfilepath, basename(filepath), root = mlflow_run_output_dir)
-      
+
       unlink(filepath)
-      
     }
   }
-

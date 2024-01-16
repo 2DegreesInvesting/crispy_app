@@ -77,8 +77,8 @@ params_grid <- list(
   # scc = c(0, 40, 400, 4000, 10000),
   # carbon_price_model = c(
   # "no_carbon_tax", "NZ2050", "NDC", "DN0", "B2DS")
-  carbon_price_model= available_carbon_price_model,
-  market_passthrough = available_market_passthrough 
+  carbon_price_model = available_carbon_price_model,
+  market_passthrough = available_market_passthrough
 
   # In a single experiment, do not change the names of parameters being tweaked in the param grid
 )

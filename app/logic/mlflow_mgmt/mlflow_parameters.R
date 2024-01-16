@@ -1,4 +1,3 @@
-
 #' creates a dataframe where each row is a set of parameters to be used as input.
 #' Baseline and shock scenario are always included in the columns, the other columns are
 #' the parameters names defined in the param_grid.

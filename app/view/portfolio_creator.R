@@ -5,8 +5,8 @@ box::use(
 )
 
 box::use(
-  app/logic/constant[max_crispy_granularity, portfolio_crispy_merge_cols],
-  app/logic/ui_renaming[rename_tibble_columns]
+  app / logic / constant[max_crispy_granularity, portfolio_crispy_merge_cols],
+  app / logic / ui_renaming[rename_tibble_columns]
 )
 
 
