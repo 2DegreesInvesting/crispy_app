@@ -3,5 +3,5 @@ linters:
     line_length_linter = line_length_linter(150),
     object_usage_linter = NULL ,  # Does not work with `box::use()`.
     object_length_linter(length = 40L),
-    object_name_linter(styles=c("snake_case", "symbols", "SNAKE_CASE"))
+    object_name_linter(styles=c("snake_case", "symbols", "SNAKE_CASE", "dotted.case"))
   )

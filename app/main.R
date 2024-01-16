@@ -12,7 +12,7 @@ box::use(
     load_backend_trajectories_data,
     load_backend_crispy_data
   ],
-  app/logic/constant[backend_trisk_run_folder]
+  app / logic / constant[backend_trisk_run_folder]
 )
 
 #######
@@ -52,14 +52,14 @@ server <- function(id) {
     run_id_r <- params_picker$server("params_picker")
 
     crispy_data_r <- shiny::reactive({
-      if (!is.null(run_id_r())){
+      if (!is.null(run_id_r())) {
         load_backend_crispy_data(backend_trisk_run_folder) |> dplyr::filter(.data$run_id == run_id_r())
-        }
+      }
     })
-    
-    trajectories_data_r <- shiny::reactive( {
-      if (!is.null(run_id_r())){
-      load_backend_trajectories_data(backend_trisk_run_folder) |> dplyr::filter(run_id == run_id_r())
+
+    trajectories_data_r <- shiny::reactive({
+      if (!is.null(run_id_r())) {
+        load_backend_trajectories_data(backend_trisk_run_folder) |> dplyr::filter(run_id == run_id_r())
       }
     })
 

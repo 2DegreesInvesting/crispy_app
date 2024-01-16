@@ -7,7 +7,6 @@
 
 # INPUT DATA
 trisk_input_path <- fs::path("app", "data", "st_inputs")
-# trisk_input_path <- "tests/testthat/ST_INPUTS_DEV"
 trisk_output_path <- fs::path("app", "data", "st_outputs")
 backend_trisk_run_folder <- fs::path("app", "data", "backend_db")
 

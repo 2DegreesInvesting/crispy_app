@@ -1,12 +1,13 @@
 box::use(
-  app / logic / trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_trisk_run_data, check_if_run_exists, get_run_data_from_run_id]
+  app / logic / trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id],
+  app / logic / constant[max_crispy_granularity]
 )
 
 TEST_TRISK_INPUT_PATH <- file.path("ST_INPUTS_DEV")
 
 TEST_TRISK_PARAMS <- list(
-  baseline_scenario = "NGFS2021_REMIND_NDC",
-  shock_scenario = "NGFS2021_REMIND_NZ2050",
+  baseline_scenario = "Oxford2021_base",
+  shock_scenario = "Oxford2021_fast",
   discount_rate = 0.1,
   risk_free_rate = 0.0,
   growth_rate = 0.01,
@@ -29,11 +30,10 @@ test_that("run_trisk_with_params returns company_trajectories, crispy_output, an
 })
 
 
-test_that("append_st_results_to_backend_trisk_run_data creates and increments the backend datasets properly", {
-
+test_that("append_st_results_to_backend_data creates and increments the backend datasets properly", {
   TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
   if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive=T)
+    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
   }
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
@@ -41,9 +41,10 @@ test_that("append_st_results_to_backend_trisk_run_data creates and increments th
 
   st_results_wrangled_and_checked_1 <- run_trisk_with_params(trisk_input_path = TEST_TRISK_INPUT_PATH, trisk_run_params = TEST_TRISK_PARAMS)
 
-  append_st_results_to_backend_trisk_run_data(
+  append_st_results_to_backend_data(
     st_results_wrangled_and_checked_1,
-    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
+    max_crispy_granularity = max_crispy_granularity
   )
 
   expect_equal(list.files(TEST_BACKEND_TRISK_RUN_FOLDER), c("company_trajectories.parquet", "crispy_output.parquet", "run_metadata.parquet"))
@@ -51,9 +52,10 @@ test_that("append_st_results_to_backend_trisk_run_data creates and increments th
 
   st_results_wrangled_and_checked_2 <- run_trisk_with_params(trisk_input_path = TEST_TRISK_INPUT_PATH, trisk_run_params = TEST_TRISK_PARAMS)
 
-  append_st_results_to_backend_trisk_run_data(
+  append_st_results_to_backend_data(
     st_results_wrangled_and_checked_2,
-    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
+    max_crispy_granularity = max_crispy_granularity
   )
 
   run_ids <- c(
@@ -66,92 +68,96 @@ test_that("append_st_results_to_backend_trisk_run_data creates and increments th
 })
 
 
-test_that("check_if_run_exists finds expected run",{
-
-    TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
+test_that("check_if_run_exists finds expected run", {
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
   if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive=T)
+    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
   }
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
-    st_results_wrangled_and_checked <- run_trisk_with_params(
-        trisk_input_path = TEST_TRISK_INPUT_PATH, 
-        trisk_run_params = TEST_TRISK_PARAMS
-        )
-    append_st_results_to_backend_trisk_run_data(
-        st_results_wrangled_and_checked,
-        backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
-    )        
-    run_id <- check_if_run_exists(
-        trisk_run_params = TEST_TRISK_PARAMS,
-        backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
-        )
+  st_results_wrangled_and_checked <- run_trisk_with_params(
+    trisk_input_path = TEST_TRISK_INPUT_PATH,
+    trisk_run_params = TEST_TRISK_PARAMS
+  )
+  append_st_results_to_backend_data(
+    st_results_wrangled_and_checked,
+    TEST_BACKEND_TRISK_RUN_FOLDER,
+    max_crispy_granularity
+  )
+  run_id <- check_if_run_exists(
+    trisk_run_params = TEST_TRISK_PARAMS,
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
+  )
 
-    expected_run_id <- st_results_wrangled_and_checked$run_metadata |> dplyr::pull(run_id)
+  expected_run_id <- st_results_wrangled_and_checked$run_metadata |> dplyr::pull(run_id)
 
-    expect_equal(run_id, expected_run_id)
+  expect_equal(run_id, expected_run_id)
 })
 
 
-test_that("check_if_run_exists returns NULL if run does not exist",{
-
-    TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
+test_that("check_if_run_exists returns NULL if run does not exist", {
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
   if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive=T)
+    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
   }
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
-    st_results_wrangled_and_checked <- run_trisk_with_params(
-        trisk_input_path = TEST_TRISK_INPUT_PATH, 
-        trisk_run_params = TEST_TRISK_PARAMS
-        )
-    append_st_results_to_backend_trisk_run_data(
-        st_results_wrangled_and_checked,
-        backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
-    )        
+  st_results_wrangled_and_checked <- run_trisk_with_params(
+    trisk_input_path = TEST_TRISK_INPUT_PATH,
+    trisk_run_params = TEST_TRISK_PARAMS
+  )
+  append_st_results_to_backend_data(
+    st_results_wrangled_and_checked,
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
+    max_crispy_granularity = max_crispy_granularity
+  )
 
 
-    wrong_test_params <- TEST_TRISK_PARAMS
-    wrong_test_params[["shock_year"]] <- 2030
+  wrong_test_params <- TEST_TRISK_PARAMS
+  wrong_test_params[["shock_year"]] <- 2030
 
-    run_id <- check_if_run_exists(
-        trisk_run_params = wrong_test_params,
-        backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
-        )
+  run_id <- check_if_run_exists(
+    trisk_run_params = wrong_test_params,
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
+  )
 
-    expect_equal(run_id, NULL)
+  expect_equal(run_id, NULL)
 })
 
 
 
 
 test_that("get_run_data_from_run_id returns the data associated to the run_id", {
-
-    TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
   if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive=T)
+    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
   }
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
-    st_results_wrangled_and_checked <- run_trisk_with_params(
-        trisk_input_path = TEST_TRISK_INPUT_PATH, 
-        trisk_run_params = TEST_TRISK_PARAMS
-        )
-    append_st_results_to_backend_trisk_run_data(
-        st_results_wrangled_and_checked,
-        backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
-    )        
-    run_id <- check_if_run_exists(
-        trisk_run_params = TEST_TRISK_PARAMS,
-        backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
-    )
+  st_results_wrangled_and_checked <- run_trisk_with_params(
+    trisk_input_path = TEST_TRISK_INPUT_PATH,
+    trisk_run_params = TEST_TRISK_PARAMS
+  )
+  append_st_results_to_backend_data(
+    st_results_wrangled_and_checked,
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
+    max_crispy_granularity = max_crispy_granularity
+  )
+  run_id <- check_if_run_exists(
+    trisk_run_params = TEST_TRISK_PARAMS,
+    backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER
+  )
 
-    run_data <- get_run_data_from_run_id(run_id, TEST_BACKEND_TRISK_RUN_FOLDER)
+  run_data <- get_run_data_from_run_id(run_id, TEST_BACKEND_TRISK_RUN_FOLDER)
 
-    crispy_output_run_id <- run_data$crispy_output |> dplyr::distinct(run_id) |> dplyr::pull()
-    expect_equal(crispy_output_run_id, run_id)
+  crispy_output_run_id <- run_data$crispy_output |>
+    dplyr::distinct(run_id) |>
+    dplyr::pull()
+  expect_equal(crispy_output_run_id, run_id)
 
-    company_trajectories_run_id <- run_data$company_trajectories |> dplyr::distinct(run_id) |> dplyr::pull()
-    expect_equal(company_trajectories_run_id, run_id)
+  company_trajectories_run_id <- run_data$company_trajectories |>
+    dplyr::distinct(run_id) |>
+    dplyr::pull()
 
+  expect_equal(company_trajectories_run_id, run_id)
 })

@@ -1,5 +1,5 @@
 load_backend_crispy_data <- function(backend_trisk_run_folder) {
-  backend_crispy_data_path <- fs::path(backend_trisk_run_folder, "crispy_output", ext="parquet")
+  backend_crispy_data_path <- fs::path(backend_trisk_run_folder, "crispy_output", ext = "parquet")
 
   if (file.exists(backend_crispy_data_path)) {
     backend_crispy_data <- arrow::read_parquet(backend_crispy_data_path) |>
@@ -19,7 +19,7 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
 }
 
 load_backend_trajectories_data <- function(backend_trisk_run_folder) {
-  backend_trajectories_data_path <- fs::path(backend_trisk_run_folder, "company_trajectories", ext="parquet")
+  backend_trajectories_data_path <- fs::path(backend_trisk_run_folder, "company_trajectories", ext = "parquet")
   if (file.exists(backend_trajectories_data_path)) {
     backend_trajectories_data <- arrow::read_parquet(backend_trajectories_data_path)
   } else {
@@ -32,11 +32,12 @@ load_backend_trajectories_data <- function(backend_trisk_run_folder) {
       production_shock_scenario = numeric()
     )
   }
+
   return(backend_trajectories_data)
 }
 
 load_backend_trisk_run_metadata <- function(backend_trisk_run_folder) {
-  backend_trisk_run_metadata_path <- fs::path(backend_trisk_run_folder, "run_metadata", ext="parquet")
+  backend_trisk_run_metadata_path <- fs::path(backend_trisk_run_folder, "run_metadata", ext = "parquet")
   if (file.exists(backend_trisk_run_metadata_path)) {
     backend_trisk_run_metadata <- arrow::read_parquet(backend_trisk_run_metadata_path)
   } else {

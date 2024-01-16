@@ -166,9 +166,6 @@ run_trisk_mlflow <-
           st_results_wrangled_and_checked <- r2dii.climate.stress.test::run_trisk(return_results = TRUE, ...)
           print("TRISK run completed")
 
-          # metrics_df <- compute_trisk_metrics(st_results_wrangled_and_checked)
-          # log_metrics_df(metrics_df)
-
 
           if (!is.null(artifact_names)) {
             write_and_zip_csv_artifacts(
