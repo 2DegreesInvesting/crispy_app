@@ -153,6 +153,7 @@ server <- function(id) {
               )
             },
             error = function(e) {
+              cat(e$message)
               # Do nothing on error
               NULL
             }

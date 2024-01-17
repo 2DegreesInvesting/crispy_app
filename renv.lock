@@ -172,6 +172,16 @@
       ],
       "Hash": "daa5319da4e6fa5595647054dcbe7e8d"
     },
+    "askpass": {
+      "Package": "askpass",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "sys"
+      ],
+      "Hash": "cad6cf7f1d5f6e906700b9d3e718c796"
+    },
     "assertthat": {
       "Package": "assertthat",
       "Version": "0.2.1",
@@ -396,6 +406,16 @@
         "lazyeval"
       ],
       "Hash": "6aa54f69598c32177e920eb3402e8293"
+    },
+    "curl": {
+      "Package": "curl",
+      "Version": "5.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "ce88d13c0b10fe88a37d9c59dba2d7f9"
     },
     "cyclocomp": {
       "Package": "cyclocomp",
@@ -947,6 +967,28 @@
       ],
       "Hash": "0984ce8da8da9ead8643c5cbbb60f83e"
     },
+    "openssl": {
+      "Package": "openssl",
+      "Version": "2.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "askpass"
+      ],
+      "Hash": "2a0dc8c6adfb6f032e4d4af82d258ab5"
+    },
+    "packrat": {
+      "Package": "packrat",
+      "Version": "0.9.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "tools",
+        "utils"
+      ],
+      "Hash": "55ddd2d4a1959535f18393478b0c14a6"
+    },
     "patchwork": {
       "Package": "patchwork",
       "Version": "1.1.3",
@@ -1104,11 +1146,10 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "r2dii.climate.stress.test",
-      "RemoteRef": "fix/app_v1_names_iso",
-      "RemoteSha": "3230655dfea03b1510c396b2a4b33690d73ac1a2",
+      "RemoteRef": "fix/speed_improvements",
+      "RemoteSha": "d45f39d6a3e0842ad46bddfea1e2de664282e7f8",
       "Requirements": [
         "R",
-        "config",
         "dplyr",
         "fs",
         "ggplot2",
@@ -1119,10 +1160,11 @@
         "rlang",
         "tibble",
         "tidyr",
+        "uuid",
         "withr",
         "zoo"
       ],
-      "Hash": "2f3094ed2eebfa42a56e9a49b1cd7610"
+      "Hash": "2a353a11f673b0a32cdc7e6ce4304d8b"
     },
     "r2dii.colours": {
       "Package": "r2dii.colours",
@@ -1241,13 +1283,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.17.3",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "4543b8cd233ae25c6aba8548be9e747e"
+      "Hash": "41b847654f567341725473431dd0d5ab"
     },
     "rex": {
       "Package": "rex",
@@ -1330,6 +1372,28 @@
         "R"
       ],
       "Hash": "1de7ab598047a87bba48434ba35d497d"
+    },
+    "rsconnect": {
+      "Package": "rsconnect",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "curl",
+        "digest",
+        "jsonlite",
+        "lifecycle",
+        "openssl",
+        "packrat",
+        "renv",
+        "rlang",
+        "rstudioapi",
+        "tools",
+        "yaml"
+      ],
+      "Hash": "c064d4993aedbf6c383041d1606aabeb"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
@@ -1438,6 +1502,19 @@
       ],
       "Hash": "c211db8327fd25b8f73ba8ef5afd3f2d"
     },
+    "shinyjs": {
+      "Package": "shinyjs",
+      "Version": "2.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "digest",
+        "jsonlite",
+        "shiny"
+      ],
+      "Hash": "802e4786b353a4bb27116957558548d5"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -1456,8 +1533,8 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "stress.test.plot.report",
-      "RemoteRef": "update/app_input_data",
-      "RemoteSha": "b8b4aa9d907017e6fe01a3855ea511a050e01206",
+      "RemoteRef": "master",
+      "RemoteSha": "a25cc67e5d6451ae690d7f4bfe7a5e7b453afa72",
       "Remotes": "RMI-PACTA/r2dii.colours",
       "Requirements": [
         "dplyr",
@@ -1471,7 +1548,7 @@
         "tidyr",
         "tidytext"
       ],
-      "Hash": "7f0756bbd75ef34da2d8c8774bad6a35"
+      "Hash": "b366d22a945b73301b42cae9ecffaa7d"
     },
     "stringi": {
       "Package": "stringi",
@@ -1508,12 +1585,6 @@
       "Version": "1.10.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "RemoteType": "standard",
-      "RemotePkgRef": "styler",
-      "RemoteRef": "styler",
-      "RemoteRepos": "https://cran.rstudio.com/",
-      "RemotePkgPlatform": "x86_64-apple-darwin20",
-      "RemoteSha": "1.10.1",
       "Requirements": [
         "R",
         "R.cache",
@@ -1527,6 +1598,13 @@
         "withr"
       ],
       "Hash": "b0911fdb2c682f526f6e9c131fd40a1f"
+    },
+    "sys": {
+      "Package": "sys",
+      "Version": "3.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3a1be13d68d47a8cd0bfd74739ca1555"
     },
     "testthat": {
       "Package": "testthat",
@@ -1694,6 +1772,16 @@
       ],
       "Hash": "1fe17157424bb09c48a8b3b550c753bc"
     },
+    "uuid": {
+      "Package": "uuid",
+      "Version": "1.2-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "303c19bfd970bece872f93a824e323d9"
+    },
     "vctrs": {
       "Package": "vctrs",
       "Version": "0.6.4",
@@ -1824,6 +1912,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0d0056cc5383fbc240ccd0cb584bf436"
+    },
+    "zip": {
+      "Package": "zip",
+      "Version": "2.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d98c94dacb7e0efcf83b0a133a705504"
     },
     "zoo": {
       "Package": "zoo",
