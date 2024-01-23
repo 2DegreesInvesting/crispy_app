@@ -29,11 +29,14 @@ server <- function(
   moduleServer(id, function(input, output, session) {
     # Initial portfolio data structure
     portfolio_data_r <- reactiveVal({
-      tibble::tibble(
-        ald_sector = character(),
-        exposure_value_usd = numeric(),
-        pd_portfolio = numeric(),
-        loss_given_default = numeric()
+      dynamic_cols <- stats::setNames(lapply(portfolio_crispy_merge_cols, function(x) character()), portfolio_crispy_merge_cols)
+      dplyr::bind_cols(
+        dplyr::as_tibble(dynamic_cols),
+        tibble::tibble(
+          exposure_value_usd = numeric(),
+          pd_portfolio = numeric(),
+          loss_given_default = numeric()
+        )
       )
     })
 
@@ -47,7 +50,7 @@ server <- function(
           portfolio_data <- portfolio_data_r()
           portfolio_data <- portfolio_data |>
             dplyr::right_join(crispy_data_r() |>
-              dplyr::distinct(.data$ald_sector))
+              dplyr::distinct_at(portfolio_crispy_merge_cols))
           portfolio_data_r(portfolio_data)
         }
 
@@ -65,11 +68,13 @@ server <- function(
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
-        dplyr::select(
-          .data$portfolio.ald_sector,
-          .data$portfolio.exposure_value_usd,
-          .data$crispy_perc_value_change,
-          .data$crispy_value_loss
+        dplyr::select_at(
+          c(
+            paste0("portfolio.", portfolio_crispy_merge_cols),
+            "portfolio.exposure_value_usd",
+            "crispy_perc_value_change",
+            "crispy_value_loss"
+          )
         )
       table_to_display <- rename_tibble_columns(table_to_display, class = "analysis_columns")
 

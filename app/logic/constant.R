@@ -1,19 +1,18 @@
 # export constant values from here
 
-max_crispy_granularity <- c(
-  "run_id",
-  "scenario_geography",
-  "ald_sector",
-  # "ald_business_unit",
-  "term"
-)
+
 portfolio_crispy_merge_cols <-
   c(
     "ald_sector"
     # , "ald_business_unit"
     # , "term"
   )
-
+max_crispy_granularity <- c(
+  "run_id",
+  "scenario_geography",
+  "term",
+  portfolio_crispy_merge_cols
+)
 
 
 # # TRISK CONFIG

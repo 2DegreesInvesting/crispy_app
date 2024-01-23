@@ -24,14 +24,15 @@ ui <- function(id) {
 ####### Server
 
 
-server <- function(id, trajectories_data_r) {
+server <- function(id, trajectories_data_r, portfolio_crispy_merge_cols) {
   moduleServer(id, function(input, output, session) {
     ### BASELINE SCENARIO
 
     observeEvent(trajectories_data_r(), ignoreInit = TRUE, {
       # Render plot
       scenario_time_plot <- pipeline_scenario_time_plot(trajectories_data_r(),
-        y_var = "production_baseline_scenario"
+        y_var = "production_baseline_scenario",
+        facet_var = portfolio_crispy_merge_cols
       )
       output$baseline_scenario_plot <- renderPlot({
         scenario_time_plot +
@@ -46,7 +47,8 @@ server <- function(id, trajectories_data_r) {
       # Render plot
 
       scenario_time_plot <- pipeline_scenario_time_plot(trajectories_data_r(),
-        y_var = "production_shock_scenario"
+        y_var = "production_shock_scenario",
+        facet_var = portfolio_crispy_merge_cols
       )
       output$shock_scenario_plot <- renderPlot({
         scenario_time_plot +

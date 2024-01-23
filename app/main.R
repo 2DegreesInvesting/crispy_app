@@ -87,7 +87,7 @@ server <- function(id) {
       portfolio_crispy_merge_cols
     )
 
-    equity_change_plots$server("equity_change_plots", analysis_data_r)
-    trajectories_plots$server("trajectories_plots", trajectories_data_r)
+    equity_change_plots$server("equity_change_plots", analysis_data_r, portfolio_crispy_merge_cols)
+    trajectories_plots$server("trajectories_plots", trajectories_data_r, portfolio_crispy_merge_cols)
   })
 }

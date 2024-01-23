@@ -1,4 +1,4 @@
-load_backend_crispy_data <- function(backend_trisk_run_folder) {
+load_backend_crispy_data <- function(backend_trisk_run_folder, max_crispy_granularity) {
   backend_crispy_data_path <- fs::path(backend_trisk_run_folder, "crispy_output", ext = "parquet")
 
   if (file.exists(backend_crispy_data_path)) {
@@ -8,6 +8,7 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
     backend_crispy_data <- tibble::tibble(
       run_id = character(),
       ald_sector = character(),
+      ald_business_unit = character(),
       term = numeric(),
       net_present_value_baseline = numeric(),
       net_present_value_shock = numeric(),
@@ -15,6 +16,10 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
       pd_shock = numeric()
     )
   }
+
+  backend_crispy_data <- backend_crispy_data |>
+    stress.test.plots.report::aggregate_crispy_facts(group_cols = max_crispy_granularity)
+
   return(backend_crispy_data)
 }
 
@@ -27,6 +32,7 @@ load_backend_trajectories_data <- function(backend_trisk_run_folder) {
       run_id = character(),
       year = numeric(),
       ald_sector = character(),
+      ald_business_unit = character(),
       production_baseline_scenario = character(),
       production_target_scenario = numeric(),
       production_shock_scenario = numeric()
