@@ -1,5 +1,5 @@
 box::use(
-  shiny[moduleServer, NS, renderUI, tags, uiOutput, eventReactive, observeEvent, div, a],
+  shiny[moduleServer, NS, renderUI, tags, uiOutput, reactive, observeEvent, div, a],
   shiny.semantic[semanticPage, segment],
   semantic.dashboard[dashboardPage, dashboardHeader, dashboardSidebar, dashboardBody, icon, box],
 )
@@ -13,7 +13,7 @@ box::use(
     load_backend_crispy_data
   ],
   app / logic / constant[
-    max_crispy_granularity,
+    max_trisk_granularity,
     portfolio_crispy_merge_cols,
     available_vars,
     hide_vars,
@@ -66,28 +66,34 @@ server <- function(id) {
       trisk_input_path,
       available_vars,
       hide_vars,
-      max_crispy_granularity,
+      max_trisk_granularity,
       use_ald_sector
     )
 
-    crispy_data_r <- shiny::reactive({
+    crispy_data_r <- reactive({
       if (!is.null(run_id_r())) {
-        load_backend_crispy_data(backend_trisk_run_folder) |> dplyr::filter(.data$run_id == run_id_r())
+        load_backend_crispy_data(backend_trisk_run_folder, max_trisk_granularity) |> 
+          dplyr::filter(.data$run_id == run_id_r()) |>
+          stress.test.plot.report::aggregate_crispy_facts(group_cols = max_trisk_granularity)
+
       }
     })
 
-    trajectories_data_r <- shiny::reactive({
+    trajectories_data_r <- reactive({
       if (!is.null(run_id_r())) {
-        load_backend_trajectories_data(backend_trisk_run_folder) |> dplyr::filter(run_id == run_id_r())
+        load_backend_trajectories_data(backend_trisk_run_folder) |> dplyr::filter(run_id == run_id_r()) |>
+        stress.test.plot.report::aggregate_trajectories_facts(group_cols = max_trisk_granularity) |>
+        stress.test.plot.report::convert_trajectories_as_percentages(group_cols = max_trisk_granularity) |>
+
       }
     })
 
     analysis_data_r <- portfolio_creator$server(
-      "portfolio_creator", crispy_data_r, max_crispy_granularity,
+      "portfolio_creator", crispy_data_r, max_trisk_granularity,
       portfolio_crispy_merge_cols
     )
 
-    equity_change_plots$server("equity_change_plots", analysis_data_r, portfolio_crispy_merge_cols)
+    equity_change_plots$server("equity_change_plots", analysis_data_r)#, portfolio_crispy_merge_cols)
     trajectories_plots$server("trajectories_plots", trajectories_data_r, portfolio_crispy_merge_cols)
   })
 }

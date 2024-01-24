@@ -1,4 +1,4 @@
-load_backend_crispy_data <- function(backend_trisk_run_folder, max_crispy_granularity) {
+load_backend_crispy_data <- function(backend_trisk_run_folder) {
   backend_crispy_data_path <- fs::path(backend_trisk_run_folder, "crispy_output", ext = "parquet")
 
   if (file.exists(backend_crispy_data_path)) {
@@ -16,9 +16,6 @@ load_backend_crispy_data <- function(backend_trisk_run_folder, max_crispy_granul
       pd_shock = numeric()
     )
   }
-
-  backend_crispy_data <- backend_crispy_data |>
-    stress.test.plots.report::aggregate_crispy_facts(group_cols = max_crispy_granularity)
 
   return(backend_crispy_data)
 }

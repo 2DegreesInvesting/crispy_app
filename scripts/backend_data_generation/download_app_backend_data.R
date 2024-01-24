@@ -6,7 +6,7 @@ box::use(
     backend_crispy_data_path,
     backend_trajectories_data_path,
     backend_trisk_run_data_path,
-    max_crispy_granularity
+    max_trisk_granularity
   ],
   app / logic / mlflow_mgmt / mlflow_data_collect[download_mlflow_search_result]
 )
@@ -35,7 +35,7 @@ download_mlflow_search_result(mlflow_uri, exp_name, all_runs, mlflow_download_di
 
 multi_crispy_data <- stress.test.plot.report::main_load_multi_crispy_data(
   crispy_outputs_dir = mlflow_download_dir,
-  max_crispy_granularity = max_crispy_granularity
+  max_trisk_granularity = max_trisk_granularity
 ) |>
   dplyr::mutate(
     run_name = sub("^crispy_output_(.*)\\.csv", "\\1", .data$run_name)

@@ -3,15 +3,13 @@
 
 portfolio_crispy_merge_cols <-
   c(
-    "ald_sector"
-    # , "ald_business_unit"
-    # , "term"
+
   )
-max_crispy_granularity <- c(
+max_trisk_granularity <- c(
   "run_id",
   "scenario_geography",
-  "term",
-  portfolio_crispy_merge_cols
+  "ald_sector",
+  "ald_business_unit"
 )
 
 

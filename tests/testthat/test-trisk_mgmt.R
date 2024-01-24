@@ -1,6 +1,6 @@
 box::use(
   app / logic / trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id],
-  app / logic / constant[max_crispy_granularity]
+  app / logic / constant[max_trisk_granularity]
 )
 
 TEST_TRISK_INPUT_PATH <- file.path("ST_INPUTS_DEV")
@@ -44,7 +44,7 @@ test_that("append_st_results_to_backend_data creates and increments the backend 
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked_1,
     backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
-    max_crispy_granularity = max_crispy_granularity
+    max_trisk_granularity = max_trisk_granularity
   )
 
   expect_equal(list.files(TEST_BACKEND_TRISK_RUN_FOLDER), c("company_trajectories.parquet", "crispy_output.parquet", "run_metadata.parquet"))
@@ -55,7 +55,7 @@ test_that("append_st_results_to_backend_data creates and increments the backend 
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked_2,
     backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
-    max_crispy_granularity = max_crispy_granularity
+    max_trisk_granularity = max_trisk_granularity
   )
 
   run_ids <- c(
@@ -82,7 +82,7 @@ test_that("check_if_run_exists finds expected run", {
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked,
     TEST_BACKEND_TRISK_RUN_FOLDER,
-    max_crispy_granularity
+    max_trisk_granularity
   )
   run_id <- check_if_run_exists(
     trisk_run_params = TEST_TRISK_PARAMS,
@@ -109,7 +109,7 @@ test_that("check_if_run_exists returns NULL if run does not exist", {
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked,
     backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
-    max_crispy_granularity = max_crispy_granularity
+    max_trisk_granularity = max_trisk_granularity
   )
 
 
@@ -141,7 +141,7 @@ test_that("get_run_data_from_run_id returns the data associated to the run_id", 
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked,
     backend_trisk_run_folder = TEST_BACKEND_TRISK_RUN_FOLDER,
-    max_crispy_granularity = max_crispy_granularity
+    max_trisk_granularity = max_trisk_granularity
   )
   run_id <- check_if_run_exists(
     trisk_run_params = TEST_TRISK_PARAMS,

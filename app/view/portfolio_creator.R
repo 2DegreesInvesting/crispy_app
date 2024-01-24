@@ -24,7 +24,7 @@ ui <- function(id) {
 
 
 server <- function(
-    id, crispy_data_r, max_crispy_granularity,
+    id, crispy_data_r, max_trisk_granularity,
     portfolio_crispy_merge_cols) {
   moduleServer(id, function(input, output, session) {
     # Initial portfolio data structure

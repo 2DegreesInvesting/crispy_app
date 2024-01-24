@@ -127,7 +127,7 @@ server <- function(id, backend_trisk_run_folder,
                    trisk_input_path,
                    available_vars,
                    hide_vars,
-                   max_crispy_granularity,
+                   max_trisk_granularity,
                    use_ald_sector) {
   moduleServer(id, function(input, output, session) {
     update_dropdowns(
@@ -175,7 +175,7 @@ server <- function(id, backend_trisk_run_folder,
               append_st_results_to_backend_data(
                 st_results_wrangled_and_checked,
                 backend_trisk_run_folder,
-                max_crispy_granularity
+                max_trisk_granularity
               )
             },
             error = function(e) {

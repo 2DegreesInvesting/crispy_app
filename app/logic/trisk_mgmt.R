@@ -30,37 +30,18 @@ run_trisk_with_params <- function(trisk_run_params, trisk_input_path) {
 append_st_results_to_backend_data <- function(
     st_results_wrangled_and_checked,
     backend_trisk_run_folder,
-    max_crispy_granularity) {
+    max_trisk_granularity) {
   for (fname in names(st_results_wrangled_and_checked)) {
     new_data <- st_results_wrangled_and_checked[[fname]]
 
     if (fname == "crispy_output") {
       new_data <- new_data |>
-        stress.test.plot.report::aggregate_crispy_facts(group_cols = max_crispy_granularity)
+        stress.test.plot.report::aggregate_crispy_facts(group_cols = c("term", max_trisk_granularity)) |>
+        dplyr::filter(.data$term == 5)
     } else if (fname == "company_trajectories") {
       new_data <- new_data |>
-        dplyr::group_by(
-          run_id,
-          year,
-          ald_sector,
-          ald_business_unit
-        ) |>
-        dplyr::summarise(
-          production_baseline_scenario = sum(production_baseline_scenario, na.rm = TRUE),
-          production_target_scenario = sum(production_target_scenario, na.rm = TRUE),
-          production_shock_scenario = sum(production_shock_scenario, na.rm = TRUE),
-          .groups = "drop"
-        ) |>
-        dplyr::group_by(run_id, ald_sector, ald_business_unit) |>
-        dplyr::mutate(
-          production_baseline_scenario = production_baseline_scenario / max(production_baseline_scenario),
-          production_target_scenario = production_target_scenario / max(production_target_scenario),
-          production_shock_scenario = production_shock_scenario / max(production_shock_scenario)
-        ) |>
-        dplyr::ungroup() |>
-        dplyr::filter(year < max(year))
+        stress.test.plot.report::aggregate_trajectories_facts(group_cols=c("year", max_trisk_granularity))
     }
-
 
     fpath <- fs::path(backend_trisk_run_folder, fname, ext = "parquet")
     if (file.exists(fpath)) {
