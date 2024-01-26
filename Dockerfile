@@ -27,4 +27,3 @@ COPY --chown=shiny:shiny rhino.yml ./
 COPY --chown=shiny:shiny app app/
 
 COPY --chown=shiny:shiny docker/shiny-server.conf /etc/shiny-server/
-USER shiny

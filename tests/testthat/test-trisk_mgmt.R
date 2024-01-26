@@ -3,7 +3,10 @@ box::use(
   app / logic / constant[max_trisk_granularity]
 )
 
-TEST_TRISK_INPUT_PATH <- file.path("ST_INPUTS_DEV")
+
+
+withr::local_envvar(new = c("TRISK_INPUT_PATH" = file.path("ST_INPUTS_DEV")))
+withr::local_envvar(new = c("BACKEND_TRISK_RUN_FOLDER" = tempdir()))
 
 TEST_TRISK_PARAMS <- list(
   baseline_scenario = "Oxford2021_base",
@@ -22,24 +25,25 @@ TEST_TRISK_PARAMS <- list(
 )
 
 
-
-
 test_that("run_trisk_with_params returns company_trajectories, crispy_output, and run_metadata", {
-  st_results_wrangled_and_checked <- run_trisk_with_params(trisk_input_path = TEST_TRISK_INPUT_PATH, trisk_run_params = TEST_TRISK_PARAMS)
+  st_results_wrangled_and_checked <- run_trisk_with_params(
+    trisk_input_path = Sys.getenv("TRISK_INPUT_PATH"),
+    trisk_run_params = TEST_TRISK_PARAMS
+  )
   expect_equal(names(st_results_wrangled_and_checked), c("company_trajectories", "crispy_output", "run_metadata"))
 })
 
 
 test_that("append_st_results_to_backend_data creates and increments the backend datasets properly", {
-  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
-  if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
-  }
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(Sys.getenv("BACKEND_TRISK_RUN_FOLDER"), uuid::UUIDgenerate())
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
   expect_true(length(list.files(TEST_BACKEND_TRISK_RUN_FOLDER)) == 0)
 
-  st_results_wrangled_and_checked_1 <- run_trisk_with_params(trisk_input_path = TEST_TRISK_INPUT_PATH, trisk_run_params = TEST_TRISK_PARAMS)
+  st_results_wrangled_and_checked_1 <- run_trisk_with_params(
+    trisk_input_path = Sys.getenv("TRISK_INPUT_PATH"),
+    trisk_run_params = TEST_TRISK_PARAMS
+  )
 
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked_1,
@@ -47,10 +51,16 @@ test_that("append_st_results_to_backend_data creates and increments the backend 
     max_trisk_granularity = max_trisk_granularity
   )
 
-  expect_equal(list.files(TEST_BACKEND_TRISK_RUN_FOLDER), c("company_trajectories.parquet", "crispy_output.parquet", "run_metadata.parquet"))
+  expect_equal(
+    list.files(TEST_BACKEND_TRISK_RUN_FOLDER),
+    c("company_trajectories.parquet", "crispy_output.parquet", "run_metadata.parquet")
+  )
 
 
-  st_results_wrangled_and_checked_2 <- run_trisk_with_params(trisk_input_path = TEST_TRISK_INPUT_PATH, trisk_run_params = TEST_TRISK_PARAMS)
+  st_results_wrangled_and_checked_2 <- run_trisk_with_params(
+    trisk_input_path = Sys.getenv("TRISK_INPUT_PATH"),
+    trisk_run_params = TEST_TRISK_PARAMS
+  )
 
   append_st_results_to_backend_data(
     st_results_wrangled_and_checked_2,
@@ -69,14 +79,11 @@ test_that("append_st_results_to_backend_data creates and increments the backend 
 
 
 test_that("check_if_run_exists finds expected run", {
-  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
-  if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
-  }
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(Sys.getenv("BACKEND_TRISK_RUN_FOLDER"), uuid::UUIDgenerate())
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
   st_results_wrangled_and_checked <- run_trisk_with_params(
-    trisk_input_path = TEST_TRISK_INPUT_PATH,
+    trisk_input_path = Sys.getenv("TRISK_INPUT_PATH"),
     trisk_run_params = TEST_TRISK_PARAMS
   )
   append_st_results_to_backend_data(
@@ -96,14 +103,11 @@ test_that("check_if_run_exists finds expected run", {
 
 
 test_that("check_if_run_exists returns NULL if run does not exist", {
-  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
-  if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
-    unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
-  }
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(Sys.getenv("BACKEND_TRISK_RUN_FOLDER"), uuid::UUIDgenerate())
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
   st_results_wrangled_and_checked <- run_trisk_with_params(
-    trisk_input_path = TEST_TRISK_INPUT_PATH,
+    trisk_input_path = Sys.getenv("TRISK_INPUT_PATH"),
     trisk_run_params = TEST_TRISK_PARAMS
   )
   append_st_results_to_backend_data(
@@ -128,14 +132,14 @@ test_that("check_if_run_exists returns NULL if run does not exist", {
 
 
 test_that("get_run_data_from_run_id returns the data associated to the run_id", {
-  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(tempdir(), uuid::UUIDgenerate())
+  TEST_BACKEND_TRISK_RUN_FOLDER <- file.path(Sys.getenv("BACKEND_TRISK_RUN_FOLDER"), uuid::UUIDgenerate())
   if (dir.exists(TEST_BACKEND_TRISK_RUN_FOLDER)) {
     unlink(TEST_BACKEND_TRISK_RUN_FOLDER, recursive = TRUE)
   }
   dir.create(TEST_BACKEND_TRISK_RUN_FOLDER)
 
   st_results_wrangled_and_checked <- run_trisk_with_params(
-    trisk_input_path = TEST_TRISK_INPUT_PATH,
+    trisk_input_path = Sys.getenv("TRISK_INPUT_PATH"),
     trisk_run_params = TEST_TRISK_PARAMS
   )
   append_st_results_to_backend_data(

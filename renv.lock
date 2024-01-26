@@ -1147,7 +1147,7 @@
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "r2dii.climate.stress.test",
       "RemoteRef": "fix/speed_improvements",
-      "RemoteSha": "3e22ab6be61345f0ebddc112052fdd8c32202349",
+      "RemoteSha": "d4acd3253f0070cd1437375c092d79552f0b57a6",
       "Requirements": [
         "R",
         "dplyr",
@@ -1164,7 +1164,7 @@
         "withr",
         "zoo"
       ],
-      "Hash": "79c0f31ab2f065f10d556baba7f9791e"
+      "Hash": "8c451f6a32adfacb6bcbf7aa769ab52f"
     },
     "r2dii.colours": {
       "Package": "r2dii.colours",
@@ -1534,7 +1534,7 @@
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "stress.test.plot.report",
       "RemoteRef": "master",
-      "RemoteSha": "a25cc67e5d6451ae690d7f4bfe7a5e7b453afa72",
+      "RemoteSha": "e976b3e9f90ed645eb14464f67629d91fe960c8b",
       "Remotes": "RMI-PACTA/r2dii.colours",
       "Requirements": [
         "dplyr",
@@ -1548,7 +1548,7 @@
         "tidyr",
         "tidytext"
       ],
-      "Hash": "b366d22a945b73301b42cae9ecffaa7d"
+      "Hash": "7b546e762fd62e437470d38892865425"
     },
     "stringi": {
       "Package": "stringi",

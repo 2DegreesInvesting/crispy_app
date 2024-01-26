@@ -1,4 +1,9 @@
 # This file allows packrat (used by rsconnect during deployment) to pick up dependencies.
+#
+# Use the following commands to install theia packages (publix github repos)
+#   renv::install("2DegreesInvesting/r2dii.climate.stress.test@fix/speed_improvements")
+#   renv::install("2DegreesInvesting/stress.test.plot.report")
+
 library(rhino)
 library(shiny)
 # library(shiny.router)

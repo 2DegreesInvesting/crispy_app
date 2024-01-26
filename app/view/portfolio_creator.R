@@ -5,7 +5,7 @@ box::use(
 )
 
 box::use(
-  app / logic / ui_renaming[rename_tibble_columns]
+  app / logic / renamings[rename_tibble_columns]
 )
 
 
@@ -27,6 +27,8 @@ server <- function(
     id, crispy_data_r, max_trisk_granularity,
     portfolio_crispy_merge_cols) {
   moduleServer(id, function(input, output, session) {
+    # PORTFOLIO DATA =========================
+
     # Initial portfolio data structure
     portfolio_data_r <- reactiveVal({
       dynamic_cols <- stats::setNames(lapply(portfolio_crispy_merge_cols, function(x) character()), portfolio_crispy_merge_cols)
@@ -34,11 +36,13 @@ server <- function(
         dplyr::as_tibble(dynamic_cols),
         tibble::tibble(
           exposure_value_usd = numeric(),
-          pd_portfolio = numeric(),
-          loss_given_default = numeric()
+            loss_given_default = numeric(), # is always NA
+        pd_portfolio = numeric() # is always NA
         )
       )
     })
+
+    # PREPARE ANALYSIS DATA ===================================
 
     analysis_data_r <- eventReactive(c(
       portfolio_data_r(),
@@ -54,8 +58,8 @@ server <- function(
           portfolio_data_r(portfolio_data)
         }
 
-        stress.test.plot.report::main_load_analysis_data(
-          portfolio_data = portfolio_data_r(),
+        stress.test.plot.report:::main_load_analysis_data(
+          portfolio_data = portfolio_data,
           multi_crispy_data = crispy_data_r(),
           portfolio_crispy_merge_cols = portfolio_crispy_merge_cols
         ) |>
@@ -65,6 +69,9 @@ server <- function(
           )
       }
     })
+
+
+    # WRANGLE ANALYSIS DATA ===================================
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
@@ -77,6 +84,9 @@ server <- function(
           )
         )
       table_to_display <- rename_tibble_columns(table_to_display, class = "analysis_columns")
+
+
+      # TABLE MGMT ===================================
 
       # Render the editable table
       output$portfolio_table <- renderDT(

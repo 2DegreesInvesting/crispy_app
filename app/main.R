@@ -4,7 +4,7 @@ box::use(
   semantic.dashboard[dashboardPage, dashboardHeader, dashboardSidebar, dashboardBody, icon, box],
 )
 box::use(
-  app / view / params_picker,
+  app / view / trisk_generator,
   app / view / portfolio_creator,
   app / view / equity_change_plots,
   app / view / trajectories_plots,
@@ -33,9 +33,9 @@ ui <- function(id) {
   ns <- NS(id)
   dashboardPage(
     title = "CRISPY",
-    dashboardHeader(title = "Crispy app"),
+    dashboardHeader(title = "Crispy Equities"),
     dashboardSidebar(
-      params_picker$ui(ns("params_picker"), available_vars),
+      trisk_generator$ui(ns("trisk_generator"), available_vars),
       size = "very wide"
     ),
     dashboardBody(
@@ -60,8 +60,8 @@ server <- function(id) {
     trisk_input_path <- Sys.getenv("TRISK_INPUT_PATH")
     backend_trisk_run_folder <- Sys.getenv("BACKEND_TRISK_RUN_FOLDER")
 
-    run_id_r <- params_picker$server(
-      "params_picker",
+    run_id_r <- trisk_generator$server(
+      "trisk_generator",
       backend_trisk_run_folder,
       trisk_input_path,
       available_vars,

@@ -11,5 +11,5 @@ options(box.path = getwd())
 
 # ENV VARIABLES
 
-Sys.setenv(TRISK_INPUT_PATH = fs::path("app", "data", "st_inputs"))
-Sys.setenv(BACKEND_TRISK_RUN_FOLDER = fs::path("app", "data", "backend_db"))
+Sys.setenv(TRISK_INPUT_PATH = file.path("app", "data", "st_inputs"))
+Sys.setenv(BACKEND_TRISK_RUN_FOLDER = file.path("app", "data", "backend_db"))
