@@ -1,10 +1,11 @@
 box::use(
-  shiny[moduleServer, NS, reactiveVal, observeEvent, observe, eventReactive, div],
+  shiny[moduleServer, NS, reactiveVal, reactive, observeEvent, observe, eventReactive, div],
   semantic.dashboard[box],
   DT[DTOutput, renderDT, datatable, JS]
 )
 
 box::use(
+  app / logic / constant[max_trisk_granularity],
   app / logic / renamings[rename_tibble_columns]
 )
 
@@ -47,6 +48,12 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
       )
     })
 
+    display_columns <- c(names(max_trisk_granularity),
+            "exposure_value_usd",
+            "crispy_perc_value_change",
+            "crispy_value_loss"
+          )
+
     # PREPARE ANALYSIS DATA ===================================
     
     analysis_data_r <- reactiveVal()
@@ -85,13 +92,8 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
-        dplyr::select_at(
-          c(
-            trisk_granularity_r(),
-            "exposure_value_usd",
-            "crispy_perc_value_change",
-            "crispy_value_loss"
-          )
+        dplyr::select(
+          dplyr::any_of(display_columns)
         )
       table_to_display <- rename_tibble_columns(table_to_display, class = "analysis_columns")
 
@@ -110,7 +112,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
               searching = FALSE, # Remove search input
               info = FALSE, # Remove "Showing N of X entries"
               columnDefs = list( # Change colors of text in cells
-                list(targets = 3:4, createdCell = JS(
+                list(targets = (n_granul_cols+2):(n_granul_cols+3), createdCell = JS(
                   "function(cell, cellData, rowData) {
               $(cell).css('color', cellData < 0 ? 'red' : 'green');
             }"
@@ -125,14 +127,18 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
 
     # Update data structure on cell edit
     observeEvent(input$portfolio_table_cell_edit, {
+      n_granul_cols <- length(trisk_granularity_r())
       info <- input$portfolio_table_cell_edit
       portfolio_data <- portfolio_data_r()
       # data can be edited only in the second column
-      if (info$col == 2) {
+      if (info$col == (n_granul_cols+1)) {
         if ((typeof(info$value) == "integer") |
           (typeof(info$value) == "double")) {
-          portfolio_data[info$row, info$col] <- info$value
+          
+          displayed_display_columns <- display_columns[display_columns %in% colnames(portfolio_data) ]
+          portfolio_data[info$row, displayed_display_columns[info$col]] <- info$value
           portfolio_data_r(portfolio_data)
+
         }
       }
     })
