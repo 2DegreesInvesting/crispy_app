@@ -8,7 +8,7 @@ box::use(
 
 pipeline_crispy_npv_change_plot <- function(
     analysis_data,
-    x_var = "portfolio.ald_sector",
+    x_var = "ald_sector",
     y_var = "crispy_perc_value_change") {
   plot_color_gradient <- c(
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "red") |> dplyr::pull(.data$hex),

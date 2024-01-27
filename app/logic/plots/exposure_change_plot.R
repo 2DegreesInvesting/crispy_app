@@ -8,8 +8,8 @@ box::use(
 
 pipeline_exposure_change_plot <- function(
     analysis_data,
-    x_var = "portfolio.ald_sector",
-    y_exposure_var = "portfolio.exposure_value_usd",
+    x_var = "ald_sector",
+    y_exposure_var = "exposure_value_usd",
     y_value_loss_var = "crispy_value_loss",
     fill_var = "crispy_perc_value_change") {
   plot_bar_color <-

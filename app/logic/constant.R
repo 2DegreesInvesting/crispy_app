@@ -1,15 +1,18 @@
+# ENV CONSTANTS ====================================
+
+trisk_input_path <- Sys.getenv("TRISK_INPUT_PATH")
+backend_trisk_run_folder <- Sys.getenv("BACKEND_TRISK_RUN_FOLDER")
+
+
+# PROJECT CONSTANTS ====================================
+
 # export constant values from here
 
 
-portfolio_crispy_merge_cols <-
-  c(
-
-  )
-max_trisk_granularity <- c(
-  "run_id",
-  "scenario_geography",
-  "ald_sector",
-  "ald_business_unit"
+max_trisk_granularity <- list(
+  "ald_sector" = 1,
+  "ald_business_unit" = 2
+  # , "company_id"=3
 )
 
 

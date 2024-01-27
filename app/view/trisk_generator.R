@@ -77,7 +77,7 @@ ui <- function(id, available_vars) {
         ),
         p("Dividend Rate"),
         slider_input(
-          ns("dividend_rate"),
+          ns("div_netprofit_prop_coef"),
           custom_ticks = available_vars$available_dividend_rate,
           value = NULL
         ),
@@ -141,7 +141,7 @@ server <- function(id, backend_trisk_run_folder,
         discount_rate = as.numeric(input$discount_rate),
         risk_free_rate = as.numeric(input$risk_free_rate),
         growth_rate = as.numeric(input$growth_rate),
-        div_netprofit_prop_coef = as.numeric(input$dividend_rate),
+        div_netprofit_prop_coef = as.numeric(input$div_netprofit_prop_coef),
         carbon_price_model = input$carbon_price_model,
         market_passthrough = as.numeric(input$market_passthrough)
       )
@@ -153,36 +153,42 @@ server <- function(id, backend_trisk_run_folder,
         trisk_run_params$market_passthrough <- 0
       }
 
-      if (!any(sapply(trisk_run_params, function(x) {
+      all_input_params_initialized <- !any(sapply(trisk_run_params, function(x) {
         is.na(x) | (nchar(x) == 0)
-      }))) {
+      }))
+      if (all_input_params_initialized) {
         run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
         if (is.null(run_id)) {
           shinyjs::runjs("$('#mymodal').modal({closable: false}).modal('show');")
-          tryCatch(
+          st_results_wrangled_and_checked <- tryCatch(
             {
-              st_results_wrangled_and_checked <- run_trisk_with_params(
+              run_trisk_with_params(
                 trisk_run_params,
                 trisk_input_path
-              )
-              append_st_results_to_backend_data(
-                st_results_wrangled_and_checked,
-                backend_trisk_run_folder,
-                max_trisk_granularity
               )
             },
             error = function(e) {
               cat(e$message)
               format_error_message(trisk_run_params)
-              # Do nothing on error
               NULL
             }
           )
-          run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-        }
 
-        run_id_r(run_id)
+          if (!is.null(st_results_wrangled_and_checked)) {
+            append_st_results_to_backend_data(
+              st_results_wrangled_and_checked,
+              backend_trisk_run_folder,
+              max_trisk_granularity
+            )
+          }
+        }
       }
+
+      run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
+
+
+      run_id_r(run_id)
+
 
       # Close the modal dialog and re-enable UI
       shinyjs::runjs("$('#mymodal').modal('hide');")

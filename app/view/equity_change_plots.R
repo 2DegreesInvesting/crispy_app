@@ -26,6 +26,7 @@ ui <- function(id) {
 server <- function(id, analysis_data_r) {
   moduleServer(id, function(input, output, session) {
     observeEvent(analysis_data_r(), {
+      
       exposure_change_plot <- pipeline_exposure_change_plot(analysis_data_r())
       output$exposure_change_plot <- renderPlot({
         exposure_change_plot

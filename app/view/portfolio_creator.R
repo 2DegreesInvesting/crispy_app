@@ -23,50 +23,60 @@ ui <- function(id) {
 ####### Server
 
 
-server <- function(
-    id, crispy_data_r, max_trisk_granularity,
-    portfolio_crispy_merge_cols) {
+server <- function(id, crispy_data_r, trisk_granularity_r) {
   moduleServer(id, function(input, output, session) {
     # PORTFOLIO DATA =========================
 
     # Initial portfolio data structure
-    portfolio_data_r <- reactiveVal({
-      dynamic_cols <- stats::setNames(lapply(portfolio_crispy_merge_cols, function(x) character()), portfolio_crispy_merge_cols)
-      dplyr::bind_cols(
-        dplyr::as_tibble(dynamic_cols),
-        tibble::tibble(
-          exposure_value_usd = numeric(),
-            loss_given_default = numeric(), # is always NA
+    portfolio_data_r <- reactiveVal()
+    observe({
+      dynamic_cols <- stats::setNames(lapply(trisk_granularity_r(), function(x) character()), trisk_granularity_r())
+      dynamic_cols <- dplyr::as_tibble(dynamic_cols)
+
+      static_cols <- tibble::tibble(
+        portfolio_id = character(), # is always 1 for App Crispy Equities 
+        asset_type = character(), # is always fixed_income for App Crispy Equities 
+        exposure_value_usd = numeric(),
+        loss_given_default = numeric(), # is always NA
+        expiration_date = character(), # is always NA
         pd_portfolio = numeric() # is always NA
-        )
+      )
+
+      portfolio_data_r(
+        dplyr::bind_cols(dynamic_cols, static_cols)
       )
     })
 
     # PREPARE ANALYSIS DATA ===================================
-
-    analysis_data_r <- eventReactive(c(
-      portfolio_data_r(),
-      crispy_data_r()
-    ), ignoreInit = TRUE, {
-      if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r())) {
+    
+    analysis_data_r <- reactiveVal()
+    
+    observe({
+      if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r()) & !is.null(trisk_granularity_r())) {
         if (nrow(portfolio_data_r()) == 0) {
           # initialise the porfolio sector column
           portfolio_data <- portfolio_data_r()
           portfolio_data <- portfolio_data |>
             dplyr::right_join(crispy_data_r() |>
-              dplyr::distinct_at(portfolio_crispy_merge_cols))
+              dplyr::distinct_at(trisk_granularity_r())) |>
+              dplyr::mutate(
+                portfolio_id = "1",
+                asset_type = "fixed_income"
+              )
           portfolio_data_r(portfolio_data)
         }
 
-        stress.test.plot.report:::main_load_analysis_data(
-          portfolio_data = portfolio_data,
+        analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
+          portfolio_data = portfolio_data_r(),
           multi_crispy_data = crispy_data_r(),
-          portfolio_crispy_merge_cols = portfolio_crispy_merge_cols
+          granularity = trisk_granularity_r()
         ) |>
           dplyr::mutate(
             crispy_perc_value_change = round(crispy_perc_value_change, digits = 4),
             crispy_value_loss = round(crispy_value_loss, digits = 2)
           )
+          
+        analysis_data_r(analysis_data)  
       }
     })
 
@@ -77,8 +87,8 @@ server <- function(
       table_to_display <- analysis_data_r() |>
         dplyr::select_at(
           c(
-            paste0("portfolio.", portfolio_crispy_merge_cols),
-            "portfolio.exposure_value_usd",
+            trisk_granularity_r(),
+            "exposure_value_usd",
             "crispy_perc_value_change",
             "crispy_value_loss"
           )
@@ -89,9 +99,9 @@ server <- function(
       # TABLE MGMT ===================================
 
       # Render the editable table
-      output$portfolio_table <- renderDT(
+      output$portfolio_table <- DT::renderDT(
         {
-          datatable(table_to_display,
+          DT::datatable(table_to_display,
             editable = list(target = "cell", disable = list(columns = c(1, 3, 4))),
             options = list(
               lengthChange = FALSE, # Remove "Show XXX entries" option

@@ -1,6 +1,6 @@
 box::use(
   app / logic / trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id],
-  app / logic / constant[max_trisk_granularity]
+  app / logic / constant[trisk_granularity]
 )
 
 

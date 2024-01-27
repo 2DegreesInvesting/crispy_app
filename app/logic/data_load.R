@@ -3,7 +3,7 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
 
   if (file.exists(backend_crispy_data_path)) {
     backend_crispy_data <- arrow::read_parquet(backend_crispy_data_path) |>
-      dplyr::filter(term == 5)
+      dplyr::filter(term == 1)
   } else {
     backend_crispy_data <- tibble::tibble(
       run_id = character(),
@@ -16,7 +16,6 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
       pd_shock = numeric()
     )
   }
-
   return(backend_crispy_data)
 }
 
@@ -52,7 +51,7 @@ load_backend_trisk_run_metadata <- function(backend_trisk_run_folder) {
       scenario_geography = character(),
       risk_free_rate = numeric(),
       discount_rate = numeric(),
-      dividend_rate = numeric(),
+      dividend_rate = numeric(), # TODO remove
       growth_rate = numeric(),
       shock_year = numeric(),
       div_netprofit_prop_coef = numeric(),

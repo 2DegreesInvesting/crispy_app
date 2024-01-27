@@ -36,11 +36,13 @@ append_st_results_to_backend_data <- function(
 
     if (fname == "crispy_output") {
       new_data <- new_data |>
-        stress.test.plot.report::aggregate_crispy_facts(group_cols = c("term", max_trisk_granularity)) |>
-        dplyr::filter(.data$term == 5)
+        stress.test.plot.report::main_load_multi_crispy_data(granularity = max_trisk_granularity) |>
+        dplyr::filter(.data$term == 1)
+        
     } else if (fname == "company_trajectories") {
       new_data <- new_data |>
-        stress.test.plot.report::aggregate_trajectories_facts(group_cols=c("year", max_trisk_granularity))
+        stress.test.plot.report::main_data_load_trajectories_data(granularity = max_trisk_granularity)
+      
     }
 
     fpath <- fs::path(backend_trisk_run_folder, fname, ext = "parquet")
@@ -87,19 +89,3 @@ get_run_data_from_run_id <- function(run_id, backend_trisk_run_folder) {
   ))
 }
 
-#' Function to remove outliers based on z-score
-remove_outliers <- function(df, column, max_zscore = 3) {
-  # Compute the mean and standard deviation of the column
-  mean_value <- mean(df[[column]], na.rm = TRUE)
-  sd_value <- sd(df[[column]], na.rm = TRUE)
-
-  # Calculate the Z-scores for the column
-  z_scores <- (df[[column]] - mean_value) / sd_value
-
-  outlier_companies <- unique(df[abs(z_scores) > max_zscore, "portfolio.company_id"]) %>% pull()
-
-  # Filter out rows where the absolute z-score is greater than 3
-  df_filtered <- df %>% filter(!(portfolio.company_id %in% outlier_companies))
-
-  return(df_filtered)
-}
