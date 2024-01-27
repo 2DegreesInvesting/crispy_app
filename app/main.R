@@ -68,6 +68,7 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
+
     run_id_r <- trisk_generator$server(
       "trisk_generator",
       backend_trisk_run_folder = backend_trisk_run_folder,
@@ -88,20 +89,19 @@ server <- function(id) {
 
     crispy_data_r <- reactiveVal()
     trajectories_data_r <- reactiveVal()
-
-
     observe({
       if (!is.null(run_id_r())) {
+
         crispy_data_r(
           load_backend_crispy_data(backend_trisk_run_folder) |>
             dplyr::filter(.data$run_id == run_id_r()) 
           )
-
-
+          
         trajectories_data_r(
           load_backend_trajectories_data(backend_trisk_run_folder) |>
           dplyr::filter(.data$run_id == run_id_r()) 
         )
+
       }
     })
 
@@ -110,6 +110,7 @@ server <- function(id) {
     )
 
     equity_change_plots$server("equity_change_plots", analysis_data_r)
+
     trajectories_plots$server("trajectories_plots", trajectories_data_r, trisk_granularity_r)
   })
 }

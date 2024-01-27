@@ -37,6 +37,7 @@ REV_RENAMING_SCENARIOS <- stats::setNames(names(RENAMING_SCENARIOS), RENAMING_SC
 
 RENAMING_ANALYSIS_COLUMNS <- c(
   "ald_sector" = "Sector",
+  "ald_business_unit" = "Business Unit",
   "exposure_value_usd" = "Exposure (USD)",
   "pd_portfolio" = "Probability of Default",
   "loss_given_default" = "Loss Given Default",

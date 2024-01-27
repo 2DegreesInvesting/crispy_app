@@ -97,12 +97,13 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
 
 
       # TABLE MGMT ===================================
-
+      
+      n_granul_cols <- length(trisk_granularity_r())
       # Render the editable table
       output$portfolio_table <- DT::renderDT(
         {
           DT::datatable(table_to_display,
-            editable = list(target = "cell", disable = list(columns = c(1, 3, 4))),
+            editable = list(target = "cell", disable = list(columns = c(1:n_granul_cols, n_granul_cols+2, n_granul_cols+3))),
             options = list(
               lengthChange = FALSE, # Remove "Show XXX entries" option
               paging = FALSE, # Remove pagination
