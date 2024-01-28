@@ -10,7 +10,6 @@ pipeline_crispy_npv_change_plot <- function(
     analysis_data,
     x_var = "ald_sector",
     y_var = "crispy_perc_value_change") {
-
   x_var <- dplyr::intersect(colnames(analysis_data), x_var)
 
   data_crispy_npv_change_plot <- prepare_for_crispy_npv_change_plot(analysis_data, x_var, y_var)
@@ -28,7 +27,7 @@ prepare_for_crispy_npv_change_plot <- function(analysis_data, x_var, y_var) {
     select_at(
       c(x_var, y_var)
     ) |>
-    tidyr::unite("x_var", !!!x_var, sep = " ") 
+    tidyr::unite("x_var", !!!x_var, sep = " ")
   return(data_exposure_change)
 }
 
@@ -37,10 +36,10 @@ draw_crispy_npv_change_plot <- function(
     data_crispy_npv_change_plot,
     x_var,
     y_var) {
-    plot_color_gradient <- c(
-      r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "red") |> dplyr::pull(.data$hex),
-      r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "grey") |> dplyr::pull(.data$hex),
-      r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "green") |> dplyr::pull(.data$hex)
+  plot_color_gradient <- c(
+    r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "red") |> dplyr::pull(.data$hex),
+    r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "grey") |> dplyr::pull(.data$hex),
+    r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "green") |> dplyr::pull(.data$hex)
   )
   bar_width <- 0.9 # Adjust as needed TODO variabiliser conf
 
@@ -55,11 +54,12 @@ draw_crispy_npv_change_plot <- function(
     ) +
     # scale_x_discrete(position = "bottom", labels = r2dii.plot::to_title) +
     scale_y_continuous(labels = scales::percent) +
-    labs(y = "Crispy npv change")+#, x = "Sector") +
+    labs(y = "Crispy npv change") + # , x = "Sector") +
     r2dii.plot::theme_2dii() +
     theme(
       legend.position = "none",
-      axis.text.x = element_text(angle = 45, hjust = 1))
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
 
 
   return(crispy_npv_change_plot)

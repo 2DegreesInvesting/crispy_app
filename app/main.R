@@ -89,19 +89,17 @@ server <- function(id) {
     trajectories_data_r <- reactiveVal()
     observe({
       if (!is.null(run_id_r())) {
-
         crispy_data_r(
           load_backend_crispy_data(backend_trisk_run_folder) |>
             dplyr::filter(.data$run_id == run_id_r()) |>
             stress.test.plot.report::main_load_multi_crispy_data(granularity = trisk_granularity_r())
         )
-        
+
         trajectories_data_r(
           load_backend_trajectories_data(backend_trisk_run_folder) |>
-          dplyr::filter(.data$run_id == run_id_r())  |>
-          stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
+            dplyr::filter(.data$run_id == run_id_r()) |>
+            stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
         )
-
       }
     })
 

@@ -5,22 +5,21 @@ box::use(
   ],
   ggrepel[geom_text_repel]
 )
-    
+
 
 pipeline_scenario_time_plot <- function(
     scenario_data,
     x_var = "year",
     y_var,
-    linecolor="ald_sector",
+    linecolor = "ald_sector",
     facet_var = "ald_business_unit") {
-
   linecolor <- dplyr::intersect(colnames(scenario_data), linecolor)
 
   data_scenario_time_plot <- prepare_for_scenario_time_plot(scenario_data, x_var, y_var, facet_var, linecolor)
 
   scenario_time_plot <- draw_scenario_time_plot(
     data_scenario_time_plot,
-    x_var = x_var, y_var = y_var, facet_var = facet_var, linecolor=linecolor
+    x_var = x_var, y_var = y_var, facet_var = facet_var, linecolor = linecolor
   )
 
   return(scenario_time_plot)
@@ -41,7 +40,6 @@ draw_scenario_time_plot <- function(
     y_var,
     facet_var,
     linecolor) {
-  
   facets_colors <- r2dii.colours::palette_2dii_plot[seq_along(unique(data_scenario_time_plot[[linecolor]])), ]$hex
 
   scenario_time_plot <- ggplot(data_scenario_time_plot, aes(x = !!rlang::sym(x_var), y = !!rlang::sym(y_var), color = !!rlang::sym(linecolor))) +

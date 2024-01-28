@@ -3,7 +3,7 @@ box::use(
   arrow[read_parquet, write_parquet],
   dplyr[bind_rows],
   r2dii.climate.stress.test[run_trisk],
-  app / logic / data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
+  app/logic/data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
 )
 
 # Function to run the trisk model with given parameters and input path
@@ -51,11 +51,9 @@ append_st_results_to_backend_data <- function(
       new_data <- new_data |>
         stress.test.plot.report::main_load_multi_crispy_data(granularity = names(max_trisk_granularity)) |>
         dplyr::filter(.data$term == 1)
-        
     } else if (fname == "company_trajectories") {
       new_data <- new_data |>
         stress.test.plot.report::main_data_load_trajectories_data(granularity = names(max_trisk_granularity))
-      
     }
 
     # Get the path of the file to write the data to

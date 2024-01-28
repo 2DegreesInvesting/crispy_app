@@ -11,9 +11,7 @@ pipeline_exposure_change_plot <- function(
     x_var = "ald_sector",
     y_exposure_var = "exposure_value_usd",
     y_value_loss_var = "crispy_value_loss",
-    fill_var = "crispy_perc_value_change"
-    ) {
-
+    fill_var = "crispy_perc_value_change") {
   data_exposure_change <- prepare_for_exposure_change_plot(analysis_data, x_var, y_exposure_var, y_value_loss_var, fill_var)
 
   exposure_change_plot <- draw_exposure_change_plot(
@@ -29,7 +27,7 @@ prepare_for_exposure_change_plot <- function(analysis_data, x_var, y_exposure_va
   data_exposure_change <- analysis_data |>
     dplyr::select_at(
       c(x_var, y_exposure_var, y_value_loss_var, fill_var)
-    ) 
+    )
   return(data_exposure_change)
 }
 
@@ -39,7 +37,6 @@ draw_exposure_change_plot <- function(
     x_var,
     y_exposure_var,
     y_value_loss_var) {
-  
   plot_bar_color <-
     r2dii.colours::palette_1in1000_plot |>
     dplyr::filter(.data$label == "grey") |>
@@ -49,7 +46,7 @@ draw_exposure_change_plot <- function(
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "green") |> dplyr::pull(.data$hex)
   )
   bar_width <- 0.9 # Adjust as needed TODO variabiliser conf
-  
+
 
   exposure_change_plot <- ggplot(data_exposure_change, aes(x = !!rlang::sym(x_var))) +
     geom_col(aes(y = !!rlang::sym(y_exposure_var)), width = bar_width, fill = plot_bar_color) +
@@ -66,15 +63,13 @@ draw_exposure_change_plot <- function(
       values = c(plot_color_gradient[1], plot_color_gradient[2]),
       breaks = c("Loss", "Gain")
     ) +
-    labs(y = "Value USD")+#, x = "Sector") +
+    labs(y = "Value USD", x = "") +
     r2dii.plot::theme_2dii() +
-    # scale_x_discrete(position = "bottom", labels = r2dii.plot::to_title) +
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6)) +
     theme(
       legend.position = "none",
-      # legend.title = element_text(),
       axis.text.x = element_text(angle = 45, hjust = 1)
-      ) +
+    ) +
     labs(title = "Estimated impact of the Shock on Exposure")
 
   return(exposure_change_plot)

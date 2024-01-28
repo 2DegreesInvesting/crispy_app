@@ -8,8 +8,8 @@ box::use(
 )
 
 box::use(
-  app / logic / renamings[RENAMING_SCENARIOS, REV_RENAMING_SCENARIOS],
-  app / logic / trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id]
+  app/logic/renamings[RENAMING_SCENARIOS, REV_RENAMING_SCENARIOS],
+  app/logic/trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id]
 )
 
 

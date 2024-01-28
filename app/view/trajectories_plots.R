@@ -4,7 +4,7 @@ box::use(
 )
 
 box::use(
-  app / logic / plots / scenario_time_plot[pipeline_scenario_time_plot]
+  app/logic/plots/scenario_time_plot[pipeline_scenario_time_plot]
 )
 
 
@@ -26,8 +26,6 @@ ui <- function(id) {
 
 server <- function(id, trajectories_data_r, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-    
-
     observeEvent(trajectories_data_r(), ignoreInit = TRUE, {
       granul_levels <- dplyr::intersect(colnames(trajectories_data_r()), names(max_trisk_granularity))
       granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
@@ -48,7 +46,7 @@ server <- function(id, trajectories_data_r, max_trisk_granularity) {
       })
 
 
-### SHOCK SCENARIO
+      ### SHOCK SCENARIO
       # Render plot
       scenario_time_plot <- pipeline_scenario_time_plot(trajectories_data_r(),
         y_var = "production_shock_scenario",
