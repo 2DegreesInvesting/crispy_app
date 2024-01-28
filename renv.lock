@@ -1566,8 +1566,8 @@
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "stress.test.plot.report",
       "RemoteRef": "master",
-      "RemoteSha": "e7ecc503b46c0d5547c1da92d95784b10478919c",
-      "Remotes": "RMI-PACTA/r2dii.colours",
+      "RemoteSha": "aecdfa4f8349449ebae0448e956124678af09bbe",
+      "Remotes": "2DegreesInvesting/r2dii.climate.stress.test, 2DegreesInvesting/STDataMGMT, RMI-PACTA/r2dii.colours",
       "Requirements": [
         "box",
         "dplyr",
@@ -1579,9 +1579,10 @@
         "r2dii.plot",
         "stringr",
         "tidyr",
-        "tidytext"
+        "tidytext",
+        "withr"
       ],
-      "Hash": "93765f9fe0c8d4eb89329cc0c10820b6"
+      "Hash": "b90075cd08f4578d56348be0552f37a1"
     },
     "stringi": {
       "Package": "stringi",

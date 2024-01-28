@@ -1,5 +1,5 @@
 box::use(
-  shiny[moduleServer, NS, reactiveVal, reactive, observeEvent, observe, eventReactive, div],
+  shiny[moduleServer, NS, reactiveVal, reactive, observeEvent, observe, eventReactive, div, reactiveValues],
   semantic.dashboard[box],
   DT[DTOutput, renderDT, datatable, JS]
 )
@@ -24,35 +24,50 @@ ui <- function(id) {
 ####### Server
 
 
-server <- function(id, crispy_data_r, trisk_granularity_r) {
+server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
     # PORTFOLIO DATA =========================
-
-    # Initial portfolio data structure
-    portfolio_data_r <- reactiveVal()
-    observe({
-      dynamic_cols <- stats::setNames(lapply(trisk_granularity_r(), function(x) character()), trisk_granularity_r())
-      dynamic_cols <- dplyr::as_tibble(dynamic_cols)
-
-      static_cols <- tibble::tibble(
-        portfolio_id = character(), # is always 1 for App Crispy Equities 
-        asset_type = character(), # is always fixed_income for App Crispy Equities 
-        exposure_value_usd = numeric(),
-        loss_given_default = numeric(), # is always NA
-        expiration_date = character(), # is always NA
-        pd_portfolio = numeric() # is always NA
-      )
-
-      portfolio_data_r(
-        dplyr::bind_cols(dynamic_cols, static_cols)
-      )
-    })
-
     display_columns <- c(names(max_trisk_granularity),
             "exposure_value_usd",
             "crispy_perc_value_change",
             "crispy_value_loss"
           )
+
+
+
+# Create a reactiveValues object to store the portfolio states
+portfolio_states <- reactiveValues()
+
+# Initial portfolio data structure
+portfolio_data_r <- reactiveVal()
+
+observe({
+trisk_granularity_names <- paste0(trisk_granularity_r(), collapse="-") # Convert to character vector
+
+  # If the portfolio state for the current granularity doesn't exist, create it@
+  if (!(trisk_granularity_names %in% names(portfolio_states))) {
+    dynamic_cols <- stats::setNames(lapply(trisk_granularity_r(), function(x) character()), trisk_granularity_r())
+    dynamic_cols <- dplyr::as_tibble(dynamic_cols)
+
+    static_cols <- tibble::tibble(
+      portfolio_id = character(), # is always 1 for App Crispy Equities 
+      asset_type = character(), # is always fixed_income for App Crispy Equities 
+      exposure_value_usd = numeric(),
+      loss_given_default = numeric(), # is always NA
+      expiration_date = character(), # is always NA
+      pd_portfolio = numeric() # is always NA
+    )
+    portfolio_data <- dplyr::bind_cols(dynamic_cols, static_cols)
+    portfolio_data_r(portfolio_data)
+  
+  # Save the new portfolio state in the reactiveValues object
+  # Update the portfolio data to the state corresponding to the current granularity
+  portfolio_states[[trisk_granularity_names]] <- portfolio_data_r()
+
+  } else {
+    portfolio_data_r(portfolio_states[[trisk_granularity_names]])
+  }
+})
 
     # PREPARE ANALYSIS DATA ===================================
     
@@ -63,6 +78,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
         if (nrow(portfolio_data_r()) == 0) {
           # initialise the porfolio sector column
           portfolio_data <- portfolio_data_r()
+          
           portfolio_data <- portfolio_data |>
             dplyr::right_join(crispy_data_r() |>
               dplyr::distinct_at(trisk_granularity_r())) |>
@@ -98,7 +114,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
       table_to_display <- rename_tibble_columns(table_to_display, class = "analysis_columns")
 
 
-      # TABLE MGMT ===================================
+      # TABLE DISPLAY ===================================
       
       n_granul_cols <- length(trisk_granularity_r())
       # Render the editable table
@@ -125,6 +141,8 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
       )
     })
 
+    # TABLE INPUTS MGMT ===================================
+
     # Update data structure on cell edit
     observeEvent(input$portfolio_table_cell_edit, {
       n_granul_cols <- length(trisk_granularity_r())
@@ -135,12 +153,19 @@ server <- function(id, crispy_data_r, trisk_granularity_r) {
         if ((typeof(info$value) == "integer") |
           (typeof(info$value) == "double")) {
           
+          # update the portfolio data with UI cell change
           displayed_display_columns <- display_columns[display_columns %in% colnames(portfolio_data) ]
           portfolio_data[info$row, displayed_display_columns[info$col]] <- info$value
           portfolio_data_r(portfolio_data)
 
         }
       }
+        # Save the new portfolio state in the reactiveValues object
+        # Update the portfolio data to the state corresponding to the current granularity
+        trisk_granularity_names <- dplyr::intersect(names(max_trisk_granularity), colnames(portfolio_data_r()))
+        trisk_granularity_names <- paste0(trisk_granularity_names, collapse="-") # Convert to character vector
+        portfolio_states[[trisk_granularity_names]] <- portfolio_data_r()
+
     })
 
     return(analysis_data_r)

@@ -23,16 +23,19 @@ ui <- function(id) {
 
 
 
-server <- function(id, analysis_data_r) {
+server <- function(id, analysis_data_r, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
     observeEvent(analysis_data_r(), {
       
-      exposure_change_plot <- pipeline_exposure_change_plot(analysis_data_r())
+      granul_levels <- dplyr::intersect(colnames(analysis_data_r()), names(max_trisk_granularity))
+      granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
+
+      exposure_change_plot <- pipeline_exposure_change_plot(analysis_data_r(), x_var=granul_top_level)
       output$exposure_change_plot <- renderPlot({
         exposure_change_plot
       })
 
-      crispy_npv_change_plot <- pipeline_crispy_npv_change_plot(analysis_data_r())
+      crispy_npv_change_plot <- pipeline_crispy_npv_change_plot(analysis_data_r(), x_var=granul_top_level)
       output$crispy_npv_change_plot <- renderPlot({
         crispy_npv_change_plot
       })
