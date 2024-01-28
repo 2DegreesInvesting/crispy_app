@@ -74,14 +74,16 @@ trisk_granularity_names <- paste0(trisk_granularity_r(), collapse="-") # Convert
     analysis_data_r <- reactiveVal()
     
     observe({
-      if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r()) & !is.null(trisk_granularity_r())) {
+      if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r())) {
+        granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
+
         if (nrow(portfolio_data_r()) == 0) {
           # initialise the porfolio sector column
           portfolio_data <- portfolio_data_r()
           
           portfolio_data <- portfolio_data |>
             dplyr::right_join(crispy_data_r() |>
-              dplyr::distinct_at(trisk_granularity_r())) |>
+              dplyr::distinct_at(granularity)) |>
               dplyr::mutate(
                 portfolio_id = "1",
                 asset_type = "fixed_income"
@@ -92,7 +94,7 @@ trisk_granularity_names <- paste0(trisk_granularity_r(), collapse="-") # Convert
         analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
           portfolio_data = portfolio_data_r(),
           multi_crispy_data = crispy_data_r(),
-          granularity = trisk_granularity_r()
+          granularity = granularity
         ) |>
           dplyr::mutate(
             crispy_perc_value_change = round(crispy_perc_value_change, digits = 4),
