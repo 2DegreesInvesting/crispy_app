@@ -5,7 +5,7 @@ box::use(
   ],
   shiny.semantic[slider_input, dropdown_input, segment, update_dropdown_input, update_slider],
   shinyjs[useShinyjs],
-  semantic.dashboard[box]
+  shiny.semantic[card, cards]
 )
 
 box::use(
@@ -31,35 +31,37 @@ ui <- function(id, available_vars) {
       )
     ),
     # First segment in the left half
-    div(
-      class = "eight wide column",
-      box(
-        title = "Scenario Choice",
-        p("Baseline Scenario"),
-        dropdown_input(ns("baseline_scenario"),
+    segment(
+        div(class="content",
+         div(class="header", "Scenario Choice"),
+        div(class="description", 
+        div(class="content",
+        div(class="header", "Baseline Scenario"),
+        div(class="description", dropdown_input(ns("baseline_scenario"),
           choices = NULL
-        ),
-        p("Target Scenario"),
-        dropdown_input(ns("shock_scenario"),
+        ))),
+        div(class="content",
+        div(class="header", "Target Scenario"),
+        div(class="description", dropdown_input(ns("shock_scenario"),
           choices = NULL
-        ),
-        p("Scenario Geography"),
-        dropdown_input(ns("scenario_geography"),
+        ))),
+        div(class="content",
+        div(class="header", "Scenario Geography"),
+        div(class="description", dropdown_input(ns("scenario_geography"),
           choices = NULL
-        )
-      )
-    ),
-    # Second segment in the right half
-    div(
-      class = "eight wide column",
-      box(
-        title = "TRISK params",
-        p("Shock Year"),
-        slider_input(
+        )))
+      ))),
+      segment(
+         div(class="content",
+         div(class="header", "TRISK params"),
+        div(class="description", 
+        div(class="content",
+        div(class="header",  "Shock Year"),
+        div(class="description", slider_input(
           ns("shock_year"),
           custom_ticks = available_vars$available_shock_year,
           value = NULL
-        ),
+        )))),
         p("Risk-Free Rate"),
         slider_input(
           ns("risk_free_rate"),
@@ -99,8 +101,9 @@ ui <- function(id, available_vars) {
           ),
           ns = ns
         )
+        )
       )
-    )
+    
   )
 }
 

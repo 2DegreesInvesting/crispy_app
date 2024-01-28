@@ -37,13 +37,16 @@ ui <- function(id) {
     dashboardHeader(title = "Crispy Equities"),
     dashboardSidebar(
       div(
-        box(
-          title = "Granularity",
+      shiny.semantic::segment(
+                  div(class="content",
+         div(class="header", "Granularity")
+        ),
+        div(class="content",
           slider_input(
             ns("granularity_switch"),
             custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
             value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
-          )
+          ))
         ),
         trisk_generator$ui(ns("trisk_generator"), available_vars),
         shiny::img(
@@ -55,8 +58,8 @@ ui <- function(id) {
       margin-right: auto;
       margin-top: 10px;
       margin-bottom: 10px;"
-        )
-      ),
+        ))
+      ,
       size = "wide"
     ),
     dashboardBody(
