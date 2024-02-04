@@ -9,7 +9,7 @@ box::use(
 
 # Load required modules and logic files
 box::use(
-  app/view/trisk_generator,
+  app/view/sidebar_parameters,
   app/view/portfolio_creator,
   app/view/equity_change_plots,
   app/view/trajectories_plots,
@@ -37,27 +37,16 @@ ui <- function(id) {
     dashboardHeader(title = "Crispy Equities"),
     dashboardSidebar(
       div(
-      shiny.semantic::segment(
-                  div(class="content",
-         div(class="header", "Granularity")
-        ),
-        div(class="content",
-          slider_input(
-            ns("granularity_switch"),
-            custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
-            value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
-          ))
-        ),
-        trisk_generator$ui(ns("trisk_generator"), available_vars),
+        sidebar_parameters$ui(ns("sidebar_parameters"), max_trisk_granularity, available_vars),
         shiny::img(
           src = "static/logo_1in1000.png",
           height = "20%", width = "auto",
           style = "
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: 10px;
-      margin-bottom: 10px;"
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;"
         ))
       ,
       size = "wide"
@@ -77,31 +66,19 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    # get granularity columns
-    trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
-      granularity_picked <- input$granularity_switch |>
-        rename_string_vector(words_class = "analysis_columns", dev_to_ux = FALSE)
 
-      granularity_level <- max_trisk_granularity[granularity_picked]
-      # Filter names based on values <= given_integer
-      granularity_columns <- names(max_trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
-
-      return(granularity_columns)
-    })
-
-
-    # This section of code generates TRISK outputs and consumes them for analysis and visualization.
-
-    # Generate TRISK outputs
-    run_id_r <- trisk_generator$server(
-      "trisk_generator",
-      backend_trisk_run_folder = backend_trisk_run_folder,
+    # In the sidebar the TRISK runs are generated
+    params <- sidebar_parameters$server(
+      "sidebar_parameters",
+      max_trisk_granularity=max_trisk_granularity,
       trisk_input_path = trisk_input_path,
-      available_vars = available_vars,
-      hide_vars = hide_vars,
-      max_trisk_granularity = max_trisk_granularity,
-      use_ald_sector = use_ald_sector
-    )
+      backend_trisk_run_folder = backend_trisk_run_folder,
+      available_vars=available_vars,
+      hide_vars=hide_vars,
+      use_ald_sector=use_ald_sector
+      )
+    trisk_granularity_r <- params$trisk_granularity_r
+    run_id_r <- params$run_id_r
 
     # Connect to the data sources, filter run perimter, and process to the appropriate granularity
     crispy_data_r <- reactiveVal()
@@ -126,8 +103,10 @@ server <- function(id) {
     # Manages the porfolio creator module
     # Create analysis data by merging crispy to portfolio
     analysis_data_r <- portfolio_creator$server(
-      "portfolio_creator", crispy_data_r, trisk_granularity_r,
-      max_trisk_granularity
+      "portfolio_creator", 
+      crispy_data_r, 
+      trisk_granularity_r, 
+      max_trisk_granularity 
     )
 
     # Consume TRISK outputs

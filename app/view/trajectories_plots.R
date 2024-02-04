@@ -1,5 +1,5 @@
 box::use(
-  shiny[moduleServer, NS, req, div, plotOutput, uiOutput, eventReactive, observeEvent, renderUI, renderPlot, reactive],
+  shiny[moduleServer, NS, req, tagList, div, plotOutput, uiOutput, eventReactive, observeEvent, renderUI, renderPlot, reactive],
   semantic.dashboard[box]
 )
 
@@ -12,7 +12,7 @@ box::use(
 
 ui <- function(id) {
   ns <- NS(id)
-  list(
+  tagList(
     # Third row with 1 taking the entire page width
     box(title="Baseline Trajectories", width = 16, plotOutput(ns("baseline_scenario_plot"), height = "900px")),
 

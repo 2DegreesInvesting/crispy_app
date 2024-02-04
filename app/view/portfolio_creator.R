@@ -107,7 +107,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity
     })
 
 
-    # WRANGLE ANALYSIS DATA ===================================
+    # TABLE DISPLAY ===================================
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
@@ -117,7 +117,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity
 
       table_to_display <- rename_tibble_columns(table_to_display, words_class = "analysis_columns")
 
-      # TABLE DISPLAY ===================================
+      
 
       n_granul_cols <- length(trisk_granularity_r())
       # Render the editable table
