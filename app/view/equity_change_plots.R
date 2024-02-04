@@ -14,8 +14,8 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
   fluidRow(
-    box(width = 8, plotOutput(ns("crispy_npv_change_plot"))),
-    box(width = 8, plotOutput(ns("exposure_change_plot")))
+    box(title="NPV Change", width = 8, plotOutput(ns("crispy_npv_change_plot"))),
+    box(title="Exposure Change", width = 8, plotOutput(ns("exposure_change_plot")))
   )
 }
 

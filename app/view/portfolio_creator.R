@@ -18,7 +18,7 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
   # First row with 3 taking the entire page width
-  box(width = 16, DTOutput(outputId = ns("portfolio_table")))
+  box(title="Equities portfolio", width = 16, DTOutput(outputId = ns("portfolio_table")), collapsible=FALSE)
 }
 
 ####### Server

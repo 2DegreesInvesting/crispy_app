@@ -108,6 +108,7 @@ server <- function(id) {
     trajectories_data_r <- reactiveVal()
 
     observeEvent(c(run_id_r(), trisk_granularity_r()), ignoreInit = TRUE, {
+      if (!is.null(run_id_r())){
       crispy_data_r(
         load_backend_crispy_data(backend_trisk_run_folder) |>
           dplyr::filter(.data$run_id == run_id_r()) |>
@@ -119,7 +120,8 @@ server <- function(id) {
           dplyr::filter(.data$run_id == run_id_r()) |>
           stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
       )
-    })
+    }}
+    )
 
     # Manages the porfolio creator module
     # Create analysis data by merging crispy to portfolio

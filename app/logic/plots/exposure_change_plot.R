@@ -41,12 +41,15 @@ draw_exposure_change_plot <- function(
     r2dii.colours::palette_1in1000_plot |>
     dplyr::filter(.data$label == "grey") |>
     dplyr::pull(.data$hex)
+  
+  # HARDCODED PARAMETERS   
   plot_color_gradient <- c(
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "red") |> dplyr::pull(.data$hex),
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "green") |> dplyr::pull(.data$hex)
   )
   bar_width <- 0.9 # Adjust as needed TODO variabiliser conf
 
+  # PLOTTING
 
   exposure_change_plot <- ggplot(data_exposure_change, aes(x = !!rlang::sym(x_var))) +
     geom_col(aes(y = !!rlang::sym(y_exposure_var)), width = bar_width, fill = plot_bar_color) +

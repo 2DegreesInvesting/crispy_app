@@ -18,7 +18,7 @@ box::use(
 
 ui <- function(id, available_vars) {
   ns <- NS(id)
-  div(
+  list(
     useShinyjs(), # Initialize shinyjs
     # Custom Semantic UI Modal
     tags$div(
@@ -143,7 +143,7 @@ server <- function(id, backend_trisk_run_folder,
       )
     })
 
-    trisk_run_params_r <- shiny::debounce(trisk_run_params_r, millis = 500)
+    trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500)
     observeEvent(trisk_run_params_r(), {
       trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
 
