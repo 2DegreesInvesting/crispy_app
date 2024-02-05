@@ -4,28 +4,23 @@ box::use(
 )
 
 
-dashboard_header_crispy <- function(page_select = "") {
+dashboard_header_crispy <- function(id, page_select = "") {
   dashboardHeader(
-    title = "My Dashboard",
+    title = "Crispy App",
     # Create a right-side menu
     dropdownMenu(
+      id=id,
       type = "messages",
       show_counter = FALSE,
       icon = icon("th"),
       .list = list(
         menuItem(
-          "Home",
+          "Homepage",
           icon = icon("home"),
           href = shiny.router::route_link("/"),
-          selected = ifelse(page_select == "Home", TRUE, FALSE)
+          selected = ifelse(page_select == "Homepage", TRUE, FALSE)
         ),
         div(class = "divider"),
-        menuItem(
-          "Portfolio",
-          icon = icon("table"),
-          href = shiny.router::route_link("portfolio"),
-          selected = ifelse(page_select == "Portfolio", TRUE, FALSE)
-        ),
         menuItem(
           "Crispy Equities",
           icon = icon("factory"),
