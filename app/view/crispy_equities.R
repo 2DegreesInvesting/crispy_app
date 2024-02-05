@@ -9,7 +9,6 @@ box::use(
 
 box::use(
   app / view / modules / menus[dashboard_header_crispy],
-  app / view / modules / sidebar_parameters,
   app / view / modules / portfolio_mgmt,
   app / view / modules / equity_change_plots,
   app / view / modules / trajectories_plots
@@ -19,48 +18,26 @@ box::use(
 
 ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
-  semanticPage(
-  dashboardPage(
-    title = "CRISPY Equities",
-    # dashboardHeader
-    dashboard_header_crispy(id=ns("equitities_menu"),page_select = "Crispy Equities"),
-    # dashboardSidebar
-    sidebar_parameters$ui(
-      ns("sidebar_parameters"),
-      max_trisk_granularity = max_trisk_granularity,
-      available_vars = available_vars
-    ),
-    # dashboardBody
-    dashboardBody(
-      tagList(
-        portfolio_mgmt$ui(
-          ns("portfolio_equities"),
-          title = "Equities portfolio"
-        ),
-        equity_change_plots$ui(ns("equity_change_plots")),
-        trajectories_plots$ui(ns("trajectories_plots"))
-      )
+
+  # dashboardBody
+  dashboardBody(
+    tagList(
+      portfolio_mgmt$ui(
+        ns("portfolio_equities"),
+        title = "Equities portfolio"
+      ),
+      equity_change_plots$ui(ns("equity_change_plots")),
+      trajectories_plots$ui(ns("trajectories_plots"))
     )
-  )
   )
 }
 
 ####### Server
 
-server <- function(id, max_trisk_granularity, trisk_input_path, backend_trisk_run_folder, available_vars, hide_vars, use_ald_sector) {
+server <- function(id, perimeter, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
     # SELECT PARAMETERS =========================
 
-    # the TRISK runs are generated In the sidebar module
-    perimeter <- sidebar_parameters$server(
-      "sidebar_parameters",
-      max_trisk_granularity = max_trisk_granularity, # constant
-      trisk_input_path = trisk_input_path, # constant
-      backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      available_vars = available_vars, # constant
-      hide_vars = hide_vars, # constant
-      use_ald_sector = use_ald_sector # constant
-    )
 
     trisk_granularity_r <- perimeter$trisk_granularity_r
     crispy_data_r <- perimeter$trisk_outputs$crispy_data_r

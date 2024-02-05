@@ -23,7 +23,6 @@ box::use(
 ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
 
-  dashboardSidebar(
     div(
       tagList(
         useShinyjs(), # Initialize shinyjs
@@ -164,9 +163,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
             margin-bottom: 10px;"
         )
       )
-    ),
-    size = "wide"
-  )
+    )
 }
 
 

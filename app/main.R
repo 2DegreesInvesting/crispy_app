@@ -4,12 +4,13 @@
 box::use(
   shiny[moduleServer, NS, renderUI, tags, uiOutput, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
   shiny.semantic[semanticPage],
-  shiny.router[router_ui, router_server, route]
+  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader]
 )
 
 # Load required modules and logic files
 box::use(
   # modules
+  app / view / sidebar_parameters,
   app / view / homepage,
   app / view / crispy_equities,
   # logic
@@ -31,42 +32,83 @@ box::use(
 #' @export
 ui <- function(id) {
   ns <- NS(id)
-  
-    router_ui(
-      route(
-        path = "/",
-        ui = homepage$ui(
-          ns("homepage")
+
+
+
+  dashboardPage(
+    title = "Homepage",
+    # dashboardHeader
+    dashboardHeader(title = "CRISPY"),
+    # dashboardSidebar
+    dashboardSidebar(
+    sidebar_parameters$ui(
+      ns("sidebar_parameters"),
+      max_trisk_granularity = max_trisk_granularity,
+      available_vars = available_vars
+    )    ,
+    size = "wide"
+  ),
+    # dashboardBody
+    dashboardBody(
+      tags$div(
+        class = "ui top attached tabular menu",
+        tags$a(class = "item active", `data-tab` = "first", "Home"),
+        tags$a(class = "item", `data-tab` = "second", "Equities"),
+        tags$a(class = "item", `data-tab` = "third", "Loans")
+      ),
+      tags$div(
+        class = "ui bottom attached active tab segment", `data-tab` = "first",
+        div(
+          class = "ui container",
+          homepage$ui(
+            ns("homepage")
+          )
         )
-      ), # Default route
-      route(
-        path = "crispy_equities",
-        ui = crispy_equities$ui(
-          ns("crispy_equities"),
-          max_trisk_granularity = max_trisk_granularity, # constant
-          available_vars = available_vars # constant
+      ),
+      tags$div(
+        class = "ui bottom attached tab segment", `data-tab` = "second",
+        div(
+          class = "ui container",
+          crispy_equities$ui(
+            ns("crispy_equities"),
+            max_trisk_granularity = max_trisk_granularity, # constant
+            available_vars = available_vars # constant
+          )
         )
+      ),
+      tags$script(
+        "$(document).ready(function() {
+      // Initialize tabs
+      $('.menu .item').tab();
+    });"
       )
     )
-  
+  )
 }
 
 # Define the server function
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    router_server(root_page = "/")
+    # the TRISK runs are generated In the sidebar module
+    perimeter <- sidebar_parameters$server(
+      "sidebar_parameters",
+      max_trisk_granularity = max_trisk_granularity, # constant
+      trisk_input_path = trisk_input_path, # constant
+      backend_trisk_run_folder = backend_trisk_run_folder, # constant
+      available_vars = available_vars, # constant
+      hide_vars = hide_vars, # constant
+      use_ald_sector = use_ald_sector # constant
+    )
+
+
 
     homepage$server("homepage")
 
     crispy_equities$server(
       "crispy_equities",
       max_trisk_granularity = max_trisk_granularity,
-      trisk_input_path = trisk_input_path,
-      backend_trisk_run_folder = backend_trisk_run_folder,
-      available_vars = available_vars,
-      hide_vars = hide_vars,
-      use_ald_sector = use_ald_sector
+      perimeter = perimeter
     )
   })
 }

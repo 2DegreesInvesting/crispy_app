@@ -8,8 +8,8 @@ dashboard_header_crispy <- function(id, page_select = "") {
   dashboardHeader(
     title = "Crispy App",
     # Create a right-side menu
-    dropdownMenu(
-      id=id,
+    right = dropdownMenu(
+      id = id,
       type = "messages",
       show_counter = FALSE,
       icon = icon("th"),

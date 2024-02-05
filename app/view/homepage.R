@@ -1,8 +1,8 @@
 # Load required packages
 box::use(
-  shiny[moduleServer, NS, div, h1],
+  shiny[moduleServer, NS, div, h1, tags],
   shiny.semantic[semanticPage],
-  semantic.dashboard[dashboardPage, dashboardBody,dashboardSidebar]
+  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader]
 )
 
 box::use(
@@ -15,26 +15,10 @@ ui <- function(id) {
   ns <- NS(id)
 
 
-  dashboardPage(
-    title = "Homepage",
-    # dashboardHeader
-    dashboard_header_crispy(id=ns("homepage_menu"), page_select = "Homepage"),
-    # dashboardSidebar
-    dashboardSidebar(
-      div(
-        class = "ui container",
-        h1("Sidebar")
-      )
-    ),
-    # dashboardBody
-    dashboardBody(
-      semanticPage(
-        div(
-          class = "ui container",
-          h1("Welcome to the homepage")
-        )
-      )
-    )
+
+  # dashboardBody
+  dashboardBody(
+    semanticPage()
   )
 }
 
