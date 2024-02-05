@@ -12,7 +12,7 @@ box::use(
 
 ####### UI
 
-ui <- function(id, title="") {
+ui <- function(id, title = "") {
   ns <- NS(id)
   box(title = title, width = 16, DTOutput(outputId = ns("portfolio_table")), collapsible = FALSE)
 }
@@ -21,12 +21,11 @@ ui <- function(id, title="") {
 
 
 server <- function(
-    id, 
-    crispy_data_r, 
-    trisk_granularity_r, 
+    id,
+    crispy_data_r,
+    trisk_granularity_r,
     max_trisk_granularity, display_columns, editable_columns_names, colored_columns_names) {
   moduleServer(id, function(input, output, session) {
-    
     # PORTFOLIO DATA =========================
 
     # Create a reactiveValues object to store the portfolio states

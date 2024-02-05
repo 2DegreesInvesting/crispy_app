@@ -3,14 +3,13 @@ box::use(
   arrow[read_parquet, write_parquet],
   dplyr[bind_rows],
   r2dii.climate.stress.test[run_trisk],
-  app/logic/data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
+  app / logic / data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
 )
 
 # fetch or create a trisk run
-trisk_generator <- function(backend_trisk_run_folder, trisk_input_path, trisk_run_params, max_trisk_granularity){
-
+trisk_generator <- function(backend_trisk_run_folder, trisk_input_path, trisk_run_params, max_trisk_granularity) {
   run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-  
+
   if (is.null(run_id)) {
     shinyjs::runjs("$('#mymodal').modal({closable: false}).modal('show');")
     st_results_wrangled_and_checked <- tryCatch(
@@ -38,7 +37,7 @@ trisk_generator <- function(backend_trisk_run_folder, trisk_input_path, trisk_ru
     shinyjs::runjs("$('#mymodal').modal('hide');")
     run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
   }
-  
+
 
   return(run_id)
 }

@@ -9,13 +9,13 @@ box::use(
 )
 
 box::use(
-  app/logic/renamings[rename_string_vector],
-  app/logic/trisk_mgmt[trisk_generator],
-  app/logic/data_load[
+  app / logic / renamings[rename_string_vector],
+  app / logic / trisk_mgmt[trisk_generator],
+  app / logic / data_load[
     load_backend_trajectories_data,
     load_backend_crispy_data
   ],
-  app/logic/renamings[rename_string_vector],
+  app / logic / renamings[rename_string_vector],
 )
 
 
@@ -37,102 +37,120 @@ ui <- function(id, max_trisk_granularity, available_vars) {
     ),
     # First segment in the left half // Granularity
     shiny.semantic::segment(
-        div(class="content",
-         div(class="header", "Granularity")
-        ),
-        div(class="content",
-          slider_input(
-            ns("granularity_switch"),
-            custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
-            value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
-          ))
-        ),
-    # Second segment in the left half // Scenario Choice
-    segment(
-        div(class="content",
-         div(class="header", "Scenario Choice"),
-          div(class="description", 
-            div(class="content",
-            div(class="header", "Baseline Scenario"),
-            div(
-              class="description", 
-              dropdown_input(ns("baseline_scenario"),
-              choices = NULL
-            ))),
-            div(class="content",
-            div(class="header", "Target Scenario"),
-            div(
-              class="description", 
-              dropdown_input(ns("shock_scenario"),
-              choices = NULL
-            ))),
-            div(class="content",
-            div(class="header", "Scenario Geography"),
-            div(
-              class="description", 
-              dropdown_input(ns("scenario_geography"),
-              choices = NULL
-            )))
-          )
-        )
+      div(
+        class = "content",
+        div(class = "header", "Granularity")
       ),
-      # Third segment in the left half // TRISK params
-      segment(
-         div(class="content",
-         div(class="header", "TRISK params"),
-          div(class="description", 
-          div(class="content",
-
-          div(class="header",  "Shock Year"),
-          div(class="description", 
-          
-          slider_input(
-            ns("shock_year"),
-            custom_ticks = available_vars$available_shock_year,
-            value = NULL
-          )))),
-          p("Risk-Free Rate"),
-          slider_input(
-            ns("risk_free_rate"),
-            custom_ticks = available_vars$available_risk_free_rate,
-            value = NULL
-          ),
-          p("Discount Rate"),
-          slider_input(
-            ns("discount_rate"),
-            custom_ticks = available_vars$available_discount_rate,
-            value = NULL
-          ),
-          p("Growth Rate"),
-          slider_input(
-            ns("growth_rate"),
-            custom_ticks = available_vars$available_growth_rate,
-            value = NULL
-          ),
-          p("Dividend Rate"),
-          slider_input(
-            ns("div_netprofit_prop_coef"),
-            custom_ticks = available_vars$available_dividend_rate,
-            value = NULL
-          ),
-          p("Carbon Price Model"),
-          dropdown_input(ns("carbon_price_model"),
-            choices = available_vars$available_carbon_price_model,
-            value = "no_carbon_tax"
-          ),
-          conditionalPanel(
-            condition = "input.carbon_price_model != 'no_carbon_tax'",
-            p("Market Passthrough"),
-            slider_input(
-              ns("market_passthrough"),
-              custom_ticks = available_vars$available_market_passthrough,
-              value = NULL
-            ),
-          ns = ns
-        )
+      div(
+        class = "content",
+        slider_input(
+          ns("granularity_switch"),
+          custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
+          value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
         )
       )
-    
+    ),
+    # Second segment in the left half // Scenario Choice
+    segment(
+      div(
+        class = "content",
+        div(class = "header", "Scenario Choice"),
+        div(
+          class = "description",
+          div(
+            class = "content",
+            div(class = "header", "Baseline Scenario"),
+            div(
+              class = "description",
+              dropdown_input(ns("baseline_scenario"),
+                choices = NULL
+              )
+            )
+          ),
+          div(
+            class = "content",
+            div(class = "header", "Target Scenario"),
+            div(
+              class = "description",
+              dropdown_input(ns("shock_scenario"),
+                choices = NULL
+              )
+            )
+          ),
+          div(
+            class = "content",
+            div(class = "header", "Scenario Geography"),
+            div(
+              class = "description",
+              dropdown_input(ns("scenario_geography"),
+                choices = NULL
+              )
+            )
+          )
+        )
+      )
+    ),
+    # Third segment in the left half // TRISK params
+    segment(
+      div(
+        class = "content",
+        div(class = "header", "TRISK params"),
+        div(
+          class = "description",
+          div(
+            class = "content",
+            div(class = "header", "Shock Year"),
+            div(
+              class = "description",
+              slider_input(
+                ns("shock_year"),
+                custom_ticks = available_vars$available_shock_year,
+                value = NULL
+              )
+            )
+          )
+        ),
+        p("Risk-Free Rate"),
+        slider_input(
+          ns("risk_free_rate"),
+          custom_ticks = available_vars$available_risk_free_rate,
+          value = NULL
+        ),
+        p("Discount Rate"),
+        slider_input(
+          ns("discount_rate"),
+          custom_ticks = available_vars$available_discount_rate,
+          value = NULL
+        ),
+        p("Growth Rate"),
+        slider_input(
+          ns("growth_rate"),
+          custom_ticks = available_vars$available_growth_rate,
+          value = NULL
+        ),
+        p("Dividend Rate"),
+        slider_input(
+          ns("div_netprofit_prop_coef"),
+          custom_ticks = available_vars$available_dividend_rate,
+          value = NULL
+        ),
+        p("Carbon Price Model"),
+        dropdown_input(ns("carbon_price_model"),
+          choices = available_vars$available_carbon_price_model,
+          value = "no_carbon_tax"
+        ),
+        conditionalPanel(
+          condition = "input.carbon_price_model != 'no_carbon_tax'",
+          p("Market Passthrough"),
+          slider_input(
+            ns("market_passthrough"),
+            custom_ticks = available_vars$available_market_passthrough,
+            value = NULL
+          ),
+          ns = ns
+        )
+      )
+    )
   )
 }
 
@@ -148,29 +166,28 @@ server <- function(id, backend_trisk_run_folder,
                    max_trisk_granularity,
                    use_ald_sector) {
   moduleServer(id, function(input, output, session) {
-    
     # Update UI elements =========================
 
     update_scenarios_dropdowns(
-      input, 
-      session, 
-      trisk_input_path, 
-      hide_vars, 
+      input,
+      session,
+      trisk_input_path,
+      hide_vars,
       use_ald_sector
     )
 
     sync_discount_and_growth(
-      input, 
-      session, 
+      input,
+      session,
       available_vars
-      )
+    )
 
     # Collect UI elements (and compute trisks if necessary) =========================
 
     trisk_granularity_r <- get_granularity_columns(
-      input, 
+      input,
       max_trisk_granularity
-      )
+    )
 
     # reactive variable containing trisk run parameters
     trisk_run_params_r <- shiny::reactive({
@@ -188,29 +205,32 @@ server <- function(id, backend_trisk_run_folder,
       )
     })
     # prevent the UI modal from updating too often (ie. blinking)
-    trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500) 
+    trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500)
 
-    # fetch or compute trisk 
+    # fetch or compute trisk
     run_id_r <- get_run_id(
-      trisk_run_params_r=trisk_run_params_r, 
-      backend_trisk_run_folder=backend_trisk_run_folder, 
-      trisk_input_path=trisk_input_path, 
-      max_trisk_granularity=max_trisk_granularity
-      )
+      trisk_run_params_r = trisk_run_params_r,
+      backend_trisk_run_folder = backend_trisk_run_folder,
+      trisk_input_path = trisk_input_path,
+      max_trisk_granularity = max_trisk_granularity
+    )
 
 
     trisk_outputs <- fetch_crispy_and_trajectories_data(
-      backend_trisk_run_folder=backend_trisk_run_folder, 
-      run_id_r=run_id_r, 
-      trisk_granularity_r=trisk_granularity_r)
+      backend_trisk_run_folder = backend_trisk_run_folder,
+      run_id_r = run_id_r,
+      trisk_granularity_r = trisk_granularity_r
+    )
 
 
-perimeter <- list(
-        "trisk_granularity_r"=trisk_granularity_r,
-        "trisk_outputs"=trisk_outputs        )
-      
+    perimeter <- list(
+      "trisk_granularity_r" = trisk_granularity_r,
+      "trisk_outputs" = trisk_outputs
+    )
+
     return(
-        perimeter)
+      perimeter
+    )
   })
 }
 
@@ -219,9 +239,9 @@ perimeter <- list(
 
 # Synchronise the scenarios available depending on user scenario choice
 update_scenarios_dropdowns <- function(input, session,
-                             trisk_input_path,
-                             hide_vars,
-                             use_ald_sector) {
+                                       trisk_input_path,
+                                       hide_vars,
+                                       use_ald_sector) {
   possible_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
   # Observe changes in possible_combinations and update baseline_scenario dropdown
   observe({
@@ -283,7 +303,7 @@ update_scenarios_dropdowns <- function(input, session,
   })
 }
 
-# synchronise discount and growth rates sliders, 
+# synchronise discount and growth rates sliders,
 # to always keep growth rate < discount rate
 sync_discount_and_growth <- function(input, session, available_vars) {
   # When growth rate changes, check if growth rate is higher and adjust if necessary
@@ -302,66 +322,66 @@ sync_discount_and_growth <- function(input, session, available_vars) {
 
 # get the column names defining the displayed data granularity
 get_granularity_columns <- function(input, max_trisk_granularity) {
-    # get granularity columns
-    trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
-      granularity_picked <- input$granularity_switch |>
-        rename_string_vector(words_class = "analysis_columns", dev_to_ux = FALSE)
+  # get granularity columns
+  trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
+    granularity_picked <- input$granularity_switch |>
+      rename_string_vector(words_class = "analysis_columns", dev_to_ux = FALSE)
 
-      granularity_level <- max_trisk_granularity[granularity_picked]
-      # Filter names based on values <= given_integer
-      trisk_granularity <- names(max_trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
+    granularity_level <- max_trisk_granularity[granularity_picked]
+    # Filter names based on values <= given_integer
+    trisk_granularity <- names(max_trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
 
-      return(trisk_granularity)
-    })
+    return(trisk_granularity)
+  })
   return(trisk_granularity_r)
-}    
+}
 
-# Function to collect run parameters from the UI, 
+# Function to collect run parameters from the UI,
 # and then generate or fetch a trisk run
-get_run_id <- function( trisk_run_params_r,
-                        backend_trisk_run_folder,
-                        trisk_input_path,
-                        max_trisk_granularity){
-    run_id_r <- reactiveVal(NULL)
+get_run_id <- function(trisk_run_params_r,
+                       backend_trisk_run_folder,
+                       trisk_input_path,
+                       max_trisk_granularity) {
+  run_id_r <- reactiveVal(NULL)
 
-    # Search for existing run, if not, run TRISK
-    observeEvent(trisk_run_params_r(), {
-      trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
+  # Search for existing run, if not, run TRISK
+  observeEvent(trisk_run_params_r(), {
+    trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
 
 
-      all_input_params_initialized <- !any(sapply(trisk_run_params, function(x) {
-        is.null(x)
-      }))
+    all_input_params_initialized <- !any(sapply(trisk_run_params, function(x) {
+      is.null(x)
+    }))
 
-      if (all_input_params_initialized) {
-        if (trisk_run_params$carbon_price_model == "no_carbon_tax") {
-          trisk_run_params$market_passthrough <- 0
-        }
-
-        run_id <- trisk_generator(
-          backend_trisk_run_folder=backend_trisk_run_folder,
-          trisk_input_path=trisk_input_path,
-          trisk_run_params=trisk_run_params,
-          max_trisk_granularity=max_trisk_granularity
-        )
-        run_id_r(run_id)
+    if (all_input_params_initialized) {
+      if (trisk_run_params$carbon_price_model == "no_carbon_tax") {
+        trisk_run_params$market_passthrough <- 0
       }
-    })
-    return(run_id_r)
+
+      run_id <- trisk_generator(
+        backend_trisk_run_folder = backend_trisk_run_folder,
+        trisk_input_path = trisk_input_path,
+        trisk_run_params = trisk_run_params,
+        max_trisk_granularity = max_trisk_granularity
+      )
+      run_id_r(run_id)
+    }
+  })
+  return(run_id_r)
 }
 
 
-fetch_crispy_and_trajectories_data <- function( backend_trisk_run_folder,
-                                                run_id_r,
-                                                trisk_granularity_r){
-    # FETCH CRISPY AND TRAJECTORIES DATA =========================
+fetch_crispy_and_trajectories_data <- function(backend_trisk_run_folder,
+                                               run_id_r,
+                                               trisk_granularity_r) {
+  # FETCH CRISPY AND TRAJECTORIES DATA =========================
 
-    # Connect to the data sources, filter run perimter, and process to the appropriate granularity
-    crispy_data_r <- reactiveVal()
-    trajectories_data_r <- reactiveVal()
+  # Connect to the data sources, filter run perimter, and process to the appropriate granularity
+  crispy_data_r <- reactiveVal()
+  trajectories_data_r <- reactiveVal()
 
-    observeEvent(c(run_id_r(), trisk_granularity_r()), ignoreInit = TRUE, {
-      if (!is.null(run_id_r())){
+  observeEvent(c(run_id_r(), trisk_granularity_r()), ignoreInit = TRUE, {
+    if (!is.null(run_id_r())) {
       crispy_data_r(
         load_backend_crispy_data(backend_trisk_run_folder) |>
           dplyr::filter(.data$run_id == run_id_r()) |>
@@ -373,13 +393,13 @@ fetch_crispy_and_trajectories_data <- function( backend_trisk_run_folder,
           dplyr::filter(.data$run_id == run_id_r()) |>
           stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
       )
-    }}
-    )
+    }
+  })
 
-    trisk_outputs <- list(
-      "crispy_data_r"=crispy_data_r,
-      "trajectories_data_r"=trajectories_data_r
-    )
+  trisk_outputs <- list(
+    "crispy_data_r" = crispy_data_r,
+    "trajectories_data_r" = trajectories_data_r
+  )
 
-    return(trisk_outputs)
+  return(trisk_outputs)
 }

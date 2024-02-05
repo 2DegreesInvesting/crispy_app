@@ -41,8 +41,8 @@ draw_exposure_change_plot <- function(
     r2dii.colours::palette_1in1000_plot |>
     dplyr::filter(.data$label == "grey") |>
     dplyr::pull(.data$hex)
-  
-  # HARDCODED PARAMETERS   
+
+  # HARDCODED PARAMETERS
   plot_color_gradient <- c(
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "red") |> dplyr::pull(.data$hex),
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "green") |> dplyr::pull(.data$hex)
