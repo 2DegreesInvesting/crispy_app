@@ -10,7 +10,12 @@ box::use(
 
 box::use(
   app/logic/renamings[rename_string_vector],
-  app/logic/trisk_mgmt[trisk_generator]
+  app/logic/trisk_mgmt[trisk_generator],
+  app/logic/data_load[
+    load_backend_trajectories_data,
+    load_backend_crispy_data
+  ],
+  app/logic/renamings[rename_string_vector],
 )
 
 
@@ -187,19 +192,25 @@ server <- function(id, backend_trisk_run_folder,
 
     # fetch or compute trisk 
     run_id_r <- get_run_id(
-      trisk_run_params_r, 
-      backend_trisk_run_folder, 
-      trisk_input_path, 
-      max_trisk_granularity
+      trisk_run_params_r=trisk_run_params_r, 
+      backend_trisk_run_folder=backend_trisk_run_folder, 
+      trisk_input_path=trisk_input_path, 
+      max_trisk_granularity=max_trisk_granularity
       )
 
 
-    return(
-        list(
+    trisk_outputs <- fetch_crispy_and_trajectories_data(
+      backend_trisk_run_folder=backend_trisk_run_folder, 
+      run_id_r=run_id_r, 
+      trisk_granularity_r=trisk_granularity_r)
+
+
+perimeter <- list(
         "trisk_granularity_r"=trisk_granularity_r,
-        "run_id_r"=run_id_r
-        )
-      )
+        "trisk_outputs"=trisk_outputs        )
+      
+    return(
+        perimeter)
   })
 }
 
@@ -337,4 +348,38 @@ get_run_id <- function( trisk_run_params_r,
       }
     })
     return(run_id_r)
+}
+
+
+fetch_crispy_and_trajectories_data <- function( backend_trisk_run_folder,
+                                                run_id_r,
+                                                trisk_granularity_r){
+    # FETCH CRISPY AND TRAJECTORIES DATA =========================
+
+    # Connect to the data sources, filter run perimter, and process to the appropriate granularity
+    crispy_data_r <- reactiveVal()
+    trajectories_data_r <- reactiveVal()
+
+    observeEvent(c(run_id_r(), trisk_granularity_r()), ignoreInit = TRUE, {
+      if (!is.null(run_id_r())){
+      crispy_data_r(
+        load_backend_crispy_data(backend_trisk_run_folder) |>
+          dplyr::filter(.data$run_id == run_id_r()) |>
+          stress.test.plot.report::main_load_multi_crispy_data(granularity = trisk_granularity_r())
+      )
+
+      trajectories_data_r(
+        load_backend_trajectories_data(backend_trisk_run_folder) |>
+          dplyr::filter(.data$run_id == run_id_r()) |>
+          stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
+      )
+    }}
+    )
+
+    trisk_outputs <- list(
+      "crispy_data_r"=crispy_data_r,
+      "trajectories_data_r"=trajectories_data_r
+    )
+
+    return(trisk_outputs)
 }
