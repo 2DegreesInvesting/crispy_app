@@ -9,10 +9,11 @@ box::use(
 
 # Load required modules and logic files
 box::use(
+  # modules
   app/view/sidebar_parameters,
-  app/view/portfolio_creator,
-  app/view/equity_change_plots,
-  app/view/trajectories_plots,
+  app/view/portfolio,
+  app/view/crispy_equities,
+  # logic
   app/logic/data_load[
     load_backend_trajectories_data,
     load_backend_crispy_data
@@ -54,9 +55,8 @@ ui <- function(id) {
     dashboardBody(
       # First row with the left (1/3 width) the right (2/3 width)
       semanticPage(
-        portfolio_creator$ui(ns("portfolio_creator")),
-        equity_change_plots$ui(ns("equity_change_plots")),
-        trajectories_plots$ui(ns("trajectories_plots"))
+        portfolio$ui(ns("portfolio")),
+        crispy_equities$ui(ns("crispy_equities"))
       )
     )
   )
@@ -66,6 +66,8 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
+
+    # SELECT PARAMETERS =========================
 
     # In the sidebar the TRISK runs are generated
     params <- sidebar_parameters$server(
@@ -79,6 +81,8 @@ server <- function(id) {
       )
     trisk_granularity_r <- params$trisk_granularity_r
     run_id_r <- params$run_id_r
+
+    # FETCH CRISPY AND TRAJECTORIES DATA =========================
 
     # Connect to the data sources, filter run perimter, and process to the appropriate granularity
     crispy_data_r <- reactiveVal()
@@ -100,21 +104,26 @@ server <- function(id) {
     }}
     )
 
+    # MANAGE PORTFOLIO AND GENERATE ANALYSIS DATA =========================
+
     # Manages the porfolio creator module
-    # Create analysis data by merging crispy to portfolio
-    analysis_data_r <- portfolio_creator$server(
-      "portfolio_creator", 
-      crispy_data_r, 
-      trisk_granularity_r, 
-      max_trisk_granularity 
+    # Create analysis data by merging crispy to portfolio, and aggrgating to the appropriate granularity
+    analysis_data_r <- portfolio$server(
+      "portfolio", 
+      crispy_data_r=crispy_data_r, 
+      trisk_granularity_r=trisk_granularity_r, 
+      max_trisk_granularity=max_trisk_granularity 
     )
 
-    # Consume TRISK outputs
+    # CONSUME TRISK OUTPUTS =========================
 
-    # Generate equity change plots
-    equity_change_plots$server("equity_change_plots", analysis_data_r, max_trisk_granularity)
-
-    # Generate trajectories plots
-    trajectories_plots$server("trajectories_plots", trajectories_data_r, max_trisk_granularity)
+    # Crispy Equities module
+    crispy_equities$server(
+      "crispy_equities", 
+      analysis_data_r=analysis_data_r, 
+      trajectories_data_r=trajectories_data_r, 
+      max_trisk_granularity=max_trisk_granularity
+    )
+    
   })
 }

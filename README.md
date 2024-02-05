@@ -1,6 +1,8 @@
 # Crispy App
 This app is built with [Rhino](https://github.com/Appsilon/rhino).
 
+Documentation about the folders structure : https://appsilon.github.io/rhino/articles/explanation/application-structure.html 
+
 ## Prerequisites
 This is an application built in [Shiny](https://shiny.rstudio.com/).
 To run it, make sure you have R (>= 4.0.0) installed.

@@ -10,8 +10,7 @@ box::use(
 
 box::use(
   app/logic/renamings[rename_string_vector],
-  app/logic/trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id],
-  app/logic/trisk_generation[trisk_generator]
+  app/logic/trisk_mgmt[trisk_generator]
 )
 
 
@@ -78,8 +77,11 @@ ui <- function(id, max_trisk_granularity, available_vars) {
          div(class="header", "TRISK params"),
           div(class="description", 
           div(class="content",
+
           div(class="header",  "Shock Year"),
-          div(class="description", slider_input(
+          div(class="description", 
+          
+          slider_input(
             ns("shock_year"),
             custom_ticks = available_vars$available_shock_year,
             value = NULL
@@ -141,22 +143,62 @@ server <- function(id, backend_trisk_run_folder,
                    max_trisk_granularity,
                    use_ald_sector) {
   moduleServer(id, function(input, output, session) {
+    
+    # Update UI elements =========================
 
     update_scenarios_dropdowns(
-      input, session, trisk_input_path, hide_vars, use_ald_sector
+      input, 
+      session, 
+      trisk_input_path, 
+      hide_vars, 
+      use_ald_sector
     )
 
-    sync_discount_and_growth(input, session, available_vars)
+    sync_discount_and_growth(
+      input, 
+      session, 
+      available_vars
+      )
 
-    trisk_granularity_r <- get_granularity_columns(input, max_trisk_granularity)
-    run_id_r <- get_run_id(input, backend_trisk_run_folder, trisk_input_path, max_trisk_granularity)
+    # Collect UI elements (and compute trisks if necessary) =========================
+
+    trisk_granularity_r <- get_granularity_columns(
+      input, 
+      max_trisk_granularity
+      )
+
+    # reactive variable containing trisk run parameters
+    trisk_run_params_r <- shiny::reactive({
+      reactiveValues(
+        baseline_scenario = rename_string_vector(input$baseline_scenario, words_class = "scenarios", dev_to_ux = FALSE),
+        shock_scenario = rename_string_vector(input$shock_scenario, words_class = "scenarios", dev_to_ux = FALSE),
+        scenario_geography = input$scenario_geography,
+        shock_year = as.numeric(input$shock_year),
+        discount_rate = as.numeric(input$discount_rate),
+        risk_free_rate = as.numeric(input$risk_free_rate),
+        growth_rate = as.numeric(input$growth_rate),
+        div_netprofit_prop_coef = as.numeric(input$div_netprofit_prop_coef),
+        carbon_price_model = input$carbon_price_model,
+        market_passthrough = as.numeric(input$market_passthrough)
+      )
+    })
+    # prevent the UI modal from updating too often (ie. blinking)
+    trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500) 
+
+    # fetch or compute trisk 
+    run_id_r <- get_run_id(
+      trisk_run_params_r, 
+      backend_trisk_run_folder, 
+      trisk_input_path, 
+      max_trisk_granularity
+      )
 
 
     return(
-      list(
-      "trisk_granularity_r"=trisk_granularity_r,
-      "run_id_r"=run_id_r
-    )
+        list(
+        "trisk_granularity_r"=trisk_granularity_r,
+        "run_id_r"=run_id_r
+        )
       )
   })
 }
@@ -164,7 +206,7 @@ server <- function(id, backend_trisk_run_folder,
 
 ####### Logic
 
-
+# Synchronise the scenarios available depending on user scenario choice
 update_scenarios_dropdowns <- function(input, session,
                              trisk_input_path,
                              hide_vars,
@@ -230,6 +272,8 @@ update_scenarios_dropdowns <- function(input, session,
   })
 }
 
+# synchronise discount and growth rates sliders, 
+# to always keep growth rate < discount rate
 sync_discount_and_growth <- function(input, session, available_vars) {
   # When growth rate changes, check if growth rate is higher and adjust if necessary
   observeEvent(c(input$growth_rate, input$discount_rate), {
@@ -245,6 +289,7 @@ sync_discount_and_growth <- function(input, session, available_vars) {
   })
 }
 
+# get the column names defining the displayed data granularity
 get_granularity_columns <- function(input, max_trisk_granularity) {
     # get granularity columns
     trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
@@ -260,28 +305,13 @@ get_granularity_columns <- function(input, max_trisk_granularity) {
   return(trisk_granularity_r)
 }    
 
-
-get_run_id <- function( input,
+# Function to collect run parameters from the UI, 
+# and then generate or fetch a trisk run
+get_run_id <- function( trisk_run_params_r,
                         backend_trisk_run_folder,
                         trisk_input_path,
                         max_trisk_granularity){
     run_id_r <- reactiveVal(NULL)
-
-    trisk_run_params_r <- shiny::reactive({
-      reactiveValues(
-        baseline_scenario = rename_string_vector(input$baseline_scenario, words_class = "scenarios", dev_to_ux = FALSE),
-        shock_scenario = rename_string_vector(input$shock_scenario, words_class = "scenarios", dev_to_ux = FALSE),
-        scenario_geography = input$scenario_geography,
-        shock_year = as.numeric(input$shock_year),
-        discount_rate = as.numeric(input$discount_rate),
-        risk_free_rate = as.numeric(input$risk_free_rate),
-        growth_rate = as.numeric(input$growth_rate),
-        div_netprofit_prop_coef = as.numeric(input$div_netprofit_prop_coef),
-        carbon_price_model = input$carbon_price_model,
-        market_passthrough = as.numeric(input$market_passthrough)
-      )
-    })
-    trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500)
 
     # Search for existing run, if not, run TRISK
     observeEvent(trisk_run_params_r(), {

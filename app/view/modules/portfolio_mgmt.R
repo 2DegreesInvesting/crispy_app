@@ -5,38 +5,32 @@ box::use(
 )
 
 box::use(
-  app/logic/constant[max_trisk_granularity],
-  app/logic/renamings[rename_tibble_columns]
+  app / logic / constant[max_trisk_granularity],
+  app / logic / renamings[rename_tibble_columns]
 )
-
-
-
 
 
 ####### UI
 
-ui <- function(id) {
+ui <- function(id, title="") {
   ns <- NS(id)
-  # First row with 3 taking the entire page width
-  box(title="Equities portfolio", width = 16, DTOutput(outputId = ns("portfolio_table")), collapsible=FALSE)
+  box(title = title, width = 16, DTOutput(outputId = ns("portfolio_table")), collapsible = FALSE)
 }
 
 ####### Server
 
 
-server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity) {
+server <- function(
+    id, 
+    crispy_data_r, 
+    trisk_granularity_r, 
+    max_trisk_granularity, display_columns, editable_columns_names, colored_columns_names) {
   moduleServer(id, function(input, output, session) {
+    
     # PORTFOLIO DATA =========================
-    display_columns <- c(
-      names(max_trisk_granularity),
-      "exposure_value_usd",
-      "crispy_perc_value_change",
-      "crispy_value_loss"
-    )
-
-
 
     # Create a reactiveValues object to store the portfolio states
+    # is used to keep track of the portfolio data for each granularity
     portfolio_states <- reactiveValues()
 
     # Initial portfolio data structure
@@ -45,7 +39,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity
     observe({
       trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
 
-      # If the portfolio state for the current granularity doesn't exist, create it@
+      # If the portfolio state for the current granularity doesn't exist, create it
       if (!(trisk_granularity_names %in% names(portfolio_states))) {
         dynamic_cols <- stats::setNames(lapply(trisk_granularity_r(), function(x) character()), trisk_granularity_r())
         dynamic_cols <- dplyr::as_tibble(dynamic_cols)
@@ -69,7 +63,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity
       }
     })
 
-    # PREPARE ANALYSIS DATA ===================================
+    # ANALYSIS DATA ===================================
 
     analysis_data_r <- reactiveVal()
 
@@ -107,7 +101,7 @@ server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity
     })
 
 
-    # TABLE DISPLAY ===================================
+    # ANALYSIS DISPLAY ===================================
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
@@ -115,23 +109,24 @@ server <- function(id, crispy_data_r, trisk_granularity_r, max_trisk_granularity
           dplyr::any_of(display_columns)
         )
 
-      table_to_display <- rename_tibble_columns(table_to_display, words_class = "analysis_columns")
+      disabled_columns <- which(!colnames(table_to_display) %in% editable_columns_names)
+      colored_columns <- which(colnames(table_to_display) %in% colored_columns_names)
 
-      
+      table_to_display <- rename_tibble_columns(table_to_display, words_class = "analysis_columns")
 
       n_granul_cols <- length(trisk_granularity_r())
       # Render the editable table
       output$portfolio_table <- DT::renderDT(
         {
           DT::datatable(table_to_display,
-            editable = list(target = "cell", disable = list(columns = c(1:n_granul_cols, n_granul_cols + 2, n_granul_cols + 3))),
+            editable = list(target = "cell", disable = list(columns = disabled_columns)),
             options = list(
               lengthChange = FALSE, # Remove "Show XXX entries" option
               paging = FALSE, # Remove pagination
               searching = FALSE, # Remove search input
               info = FALSE, # Remove "Showing N of X entries"
               columnDefs = list( # Change colors of text in cells
-                list(targets = (n_granul_cols + 2):(n_granul_cols + 3), createdCell = JS(
+                list(targets = colored_columns, createdCell = JS(
                   "function(cell, cellData, rowData) {
               $(cell).css('color', cellData < 0 ? 'red' : 'green');
             }"
