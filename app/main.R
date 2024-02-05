@@ -45,14 +45,14 @@ ui <- function(id) {
       ns("sidebar_parameters"),
       max_trisk_granularity = max_trisk_granularity,
       available_vars = available_vars
-    )    ,
+    ),
     size = "wide"
   ),
     # dashboardBody
     dashboardBody(
       tags$div(
         class = "ui top attached tabular menu",
-        tags$a(class = "item active", `data-tab` = "first", "Home"),
+        tags$a(class = "item active", `data-tab` = "first", "Home", tags$i(class="close icon")),
         tags$a(class = "item", `data-tab` = "second", "Equities"),
         tags$a(class = "item", `data-tab` = "third", "Loans")
       ),
@@ -76,12 +76,29 @@ ui <- function(id) {
           )
         )
       ),
-      tags$script(
-        "$(document).ready(function() {
-      // Initialize tabs
-      $('.menu .item').tab();
-    });"
-      )
+              tags$script(
+            "$(document).ready(function() {
+                // Initialize tabs (if not already initialized)
+                $('.menu .item').tab();
+
+                // Handle click event on close icon
+                $('.menu .item .close.icon').on('click', function() {
+                    // Prevents the tab from opening while closing
+                    event.stopPropagation();
+
+                    // Get the data-tab attribute value
+                    var tabName = $(this).closest('.item').attr('data-tab');
+
+                    // Remove the tab item
+                    $(this).closest('.item').remove();
+
+                    // Remove the tab content
+                    $('.tab.segment[data-tab=\"' + tabName + '\"]').remove();
+
+                    // If you want to open another tab after closing, you can do so here
+                });
+            });"
+        )
     )
   )
 }

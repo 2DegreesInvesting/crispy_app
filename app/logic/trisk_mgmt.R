@@ -6,45 +6,6 @@ box::use(
   app / logic / data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
 )
 
-# fetch or create a trisk run
-trisk_generator <- function(backend_trisk_run_folder, trisk_input_path, trisk_run_params, max_trisk_granularity) {
-  run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-
-  if (is.null(run_id)) {
-    shinyjs::runjs("$('#mymodal').modal({closable: false}).modal('show');")
-    st_results_wrangled_and_checked <- tryCatch(
-      {
-        run_trisk_with_params(
-          trisk_run_params,
-          trisk_input_path
-        )
-      },
-      error = function(e) {
-        cat(e$message)
-        format_error_message(trisk_run_params)
-        NULL
-      }
-    )
-
-    if (!is.null(st_results_wrangled_and_checked)) {
-      # Close the modal dialog and re-enable UI
-      append_st_results_to_backend_data(
-        st_results_wrangled_and_checked,
-        backend_trisk_run_folder,
-        max_trisk_granularity
-      )
-    }
-    shinyjs::runjs("$('#mymodal').modal('hide');")
-    run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-  }
-
-
-  return(run_id)
-}
-
-
-
-
 
 # Function to run the trisk model with given parameters and input path
 # Returns the wrangled and checked results
