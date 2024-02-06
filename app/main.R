@@ -57,7 +57,8 @@ ui <- function(id) {
             margin-top: 10px;
             margin-bottom: 10px;"
       )),
-      size = "wide"
+      size = "wide",
+      visible=FALSE
     ),
     # dashboardBody
     dashboardBody(

@@ -45,11 +45,14 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           tags$p("Please wait...")
         )
       ),
-  card(
+  
+
+                tags$div(class = "ui fluid container",
+            
   # Fomantic UI styled action button with custom class
   tags$button(
     id = ns("run_trisk"),
-    class = "ui button flat-edgy-btn",  # Add custom class here
+    class = "ui fluid button",  # Add custom class here
     "Run Trisk"
   )),
   
@@ -69,20 +72,25 @@ ui <- function(id, max_trisk_granularity, available_vars) {
 
 server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-shiny::observeEvent(input$run_trisk, ignoreInit = TRUE,{
-    browser()
+
     # SELECT PARAMETERS =========================
     trisk_granularity_r <- perimeter$trisk_granularity_r
 trisk_run_params_r <- perimeter$trisk_run_params_r
     # TRISK COMPUTATION =========================
 
     # fetch or compute trisk
-    run_id_r <- get_run_id(
-      trisk_run_params_r = trisk_run_params_r,
-      backend_trisk_run_folder = backend_trisk_run_folder,
-      trisk_input_path = trisk_input_path,
-      max_trisk_granularity = max_trisk_granularity
-    )
+    run_id_r <- 
+      shiny::eventReactive(input$run_trisk, {
+        if (!is.null(trisk_run_params_r())){
+        trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
+        get_run_id(
+          trisk_run_params = trisk_run_params,
+          backend_trisk_run_folder = backend_trisk_run_folder,
+          trisk_input_path = trisk_input_path,
+          max_trisk_granularity = max_trisk_granularity
+        )}
+
+      })
 
     # load trisk outputs
     trisk_outputs <- fetch_crispy_and_trajectories_data(
@@ -134,23 +142,17 @@ trisk_run_params_r <- perimeter$trisk_run_params_r
     )
 
     })
-      })
+      
 }
 
 
 
 # Function to collect run parameters from the UI,
 # and then generate or fetch a trisk run
-get_run_id <- function(trisk_run_params_r,
+get_run_id <- function(trisk_run_params,
                        backend_trisk_run_folder,
                        trisk_input_path,
                        max_trisk_granularity) {
-  run_id_r <- reactiveVal(NULL)
-
-  # Search for existing run, if not, run TRISK
-  observeEvent(trisk_run_params_r(), {
-    trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
-
 
     all_input_params_initialized <- !any(sapply(trisk_run_params, function(x) {
       is.null(x)
@@ -167,10 +169,9 @@ get_run_id <- function(trisk_run_params_r,
         trisk_run_params = trisk_run_params,
         max_trisk_granularity = max_trisk_granularity
       )
-      run_id_r(run_id)
+      
     }
-  })
-  return(run_id_r)
+  return(run_id)
 }
 
 # fetch or create a trisk run
