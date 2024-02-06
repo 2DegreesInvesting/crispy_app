@@ -1,8 +1,9 @@
 # Load required packages
 box::use(
-  shiny[moduleServer, NS, div, h1, tags],
+  shiny[moduleServer, NS, div, h1, tags, HTML, observe],
   shiny.semantic[semanticPage],
-  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader]
+  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader],
+  shinyjs[useShinyjs]
 )
 
 ####### UI
@@ -10,51 +11,79 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
 
-div(class="fluid container", 
+tags$div(
+useShinyjs(),
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css"),
     tags$script(src = "https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js"),
-    tags$script(src = "https://code.jquery.com/jquery-3.6.0.min.js"),
-    tags$script(src = "https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.js")
   ),
   tags$div(style = "width: 300px; margin: 20px auto;",
       tags$div(class = "ui fluid search selection dropdown", id = ns("search-dropdown"),
           tags$input(type = "hidden", name = "company"),
           tags$i(class = "dropdown icon"),
-          tags$div(class = "default text", "Select a company"),
+          tags$div(class = "default text", paste0("Select a ",id,"")),
           tags$div(class = "menu")
       )
   ),
   tags$script(HTML(paste0("
-     Shiny.addCustomMessageHandler('updateDropdown', function(message) {
-      const newChoices = message.map(choice => ({ name: choice, value: choice }));
-      const dropdownId = '#",ns("search-dropdown"),"'; // Construct the ID using the namespace
-      const dropdown = $(dropdownId).dropdown({
-        values: newChoices,
-        forceSelection: false,
-        minCharacters: 1,
-        onLabelCreate: function(value, text) {
-          return $(this);
+      $(document).ready(function() {
+        var allChoices = [
+          { name: 'Apple', value: 'Apple' },
+          { name: 'Banana', value: 'Banana' },
+          // ... other initial choices
+        ];
+
+        function initializeDropdown(choices) {
+          $('#", ns("search-dropdown"), "').dropdown({
+            values: choices,
+            forceSelection: false,
+            minCharacters: 1,
+            onLabelCreate: function(value, text) {
+              return $(this);
+            },
+            apiSettings: {
+              responseAsync: function(settings, callback) {
+                setTimeout(function() {
+                  const searchTerm = settings.urlData.query;
+                  const options = {
+                    includeScore: false,
+                    keys: ['name']
+                  };
+                  const fuse = new Fuse(choices, options);
+                  const result = fuse.search(searchTerm).slice(0, 5);
+
+                  const response = {
+                    success: true,
+                    results: result.map(match => ({ name: match.item.name, value: match.item.name }))
+                  };
+                  callback(response);
+                }, 300);
+              }
+            }
+          });
         }
+
+        initializeDropdown(allChoices); // Initial dropdown initialization
+
+        Shiny.addCustomMessageHandler('", ns("updateDropdown"), "', function(newChoices) {
+          allChoices = [...allChoices, ...newChoices.map(choice => ({ name: choice, value: choice }))];
+          initializeDropdown(allChoices); // Reinitialize dropdown with new choices
+        });
       });
-      
-      // Initialize or update the dropdown with new choices
-      dropdown.dropdown('change values', newChoices);
-    });
-  "
+    "
   ))))
 
 }
 
 
 server <- function(id, variable_choices_r) {
-  moduleServer(id, function(input, output, session) {
-    
+    moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
     observe({
-      # Vector of new choices
       newChoices <- variable_choices_r()
       # Send new choices to the dropdown using the namespace
-      session$sendCustomMessage(type = 'updateDropdown', message = newChoices)
+      session$sendCustomMessage(ns("updateDropdown"), newChoices)
     })
   })
+
 }
