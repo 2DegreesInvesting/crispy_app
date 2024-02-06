@@ -3,8 +3,9 @@ box::use(
   arrow[read_parquet, write_parquet],
   dplyr[bind_rows],
   r2dii.climate.stress.test[run_trisk],
-  app/logic/data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
+  app / logic / data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
 )
+
 
 # Function to run the trisk model with given parameters and input path
 # Returns the wrangled and checked results
@@ -115,4 +116,29 @@ get_run_data_from_run_id <- function(run_id, backend_trisk_run_folder) {
     "crispy_output" = crispy_output,
     "company_trajectories" = company_trajectories
   ))
+}
+
+
+
+# function used to debug trisk_generator() , in the terminal.
+# It will display a copy/pastable error message with the parameters that caused the error
+format_error_message <- function(trisk_run_params) {
+  cat("Failed with parameters : ")
+
+  # Function to format each list element
+  format_element <- function(name, value) {
+    if (is.numeric(value)) {
+      return(paste(name, "=", value, sep = ""))
+    } else {
+      return(paste(name, "=", sprintf('"%s"', value), sep = ""))
+    }
+  }
+
+  # Apply the function to each element and concatenate them
+  formatted_list <- sapply(names(trisk_run_params), function(name) {
+    format_element(name, trisk_run_params[[name]])
+  }, USE.NAMES = FALSE)
+
+  # Print the formatted string
+  cat(paste(formatted_list, collapse = ", "), "\n")
 }

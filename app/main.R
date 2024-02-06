@@ -2,23 +2,20 @@
 
 # Load required packages
 box::use(
-  shiny[moduleServer, NS, renderUI, tags, uiOutput, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
-  shiny.semantic[semanticPage, segment, slider_input, card],
-  semantic.dashboard[dashboardPage, dashboardHeader, dashboardSidebar, dashboardBody, icon, box],
+  shiny[moduleServer, NS, renderUI, tags, HTML, uiOutput, conditionalPanel, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
+  shiny.semantic[semanticPage],
+  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader, icon]
 )
 
 # Load required modules and logic files
 box::use(
-  app/view/trisk_generator,
-  app/view/portfolio_creator,
-  app/view/equity_change_plots,
-  app/view/trajectories_plots,
-  app/logic/data_load[
-    load_backend_trajectories_data,
-    load_backend_crispy_data
-  ],
-  app/logic/renamings[rename_string_vector],
-  app/logic/constant[
+  # modules
+  app / view / sidebar_parameters,
+  app / view / homepage,
+  app / view / crispy_equities,
+  app / view / crispy_loans,
+  # logic
+  app / logic / constant[
     trisk_input_path,
     backend_trisk_run_folder,
     max_trisk_granularity,
@@ -28,46 +25,108 @@ box::use(
   ]
 )
 
+
+
+
+
 # Define the UI function
 #' @export
 ui <- function(id) {
   ns <- NS(id)
+
+
+
   dashboardPage(
-    title = "CRISPY",
-    dashboardHeader(title = "Crispy Equities"),
+    title = "Homepage",
+    # dashboardHeader
+    dashboardHeader(title = "CRISPY"),
+    # dashboardSidebar
     dashboardSidebar(
-      div(
-      shiny.semantic::segment(
-                  div(class="content",
-         div(class="header", "Granularity")
+      tags$div(
+        sidebar_parameters$ui(
+          ns("sidebar_parameters"),
+          max_trisk_granularity = max_trisk_granularity,
+          available_vars = available_vars
         ),
-        div(class="content",
-          slider_input(
-            ns("granularity_switch"),
-            custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
-            value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
-          ))
-        ),
-        trisk_generator$ui(ns("trisk_generator"), available_vars),
         shiny::img(
           src = "static/logo_1in1000.png",
           height = "20%", width = "auto",
           style = "
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: 10px;
-      margin-bottom: 10px;"
-        ))
-      ,
-      size = "wide"
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;"
+        )
+      ),
+      size = "wide",
+      visible = FALSE
     ),
+    # dashboardBody
     dashboardBody(
-      # First row with the left (1/3 width) the right (2/3 width)
-      semanticPage(
-        portfolio_creator$ui(ns("portfolio_creator")),
-        equity_change_plots$ui(ns("equity_change_plots")),
-        trajectories_plots$ui(ns("trajectories_plots"))
+      shinyjs::useShinyjs(),
+      # Include custom CSS to display tabs as full width
+      tags$head(
+        tags$style(HTML("
+          .full-width-tabs {
+            width: 100% !important;
+            display: flex !important;
+          }
+          .full-width-tabs .item {
+            flex: 1 !important;
+            text-align: center !important;
+          }
+        "))
+      ),
+      # Fomantic UI tabs with custom CSS to display as full width
+      tags$div(
+        class = "ui top attached tabular menu full-width-tabs",
+        tags$a(class = "item active", `data-tab` = "first", "Home"),
+        tags$a(class = "item", `data-tab` = "second", "Equities"),
+        tags$a(class = "item", `data-tab` = "third", "Loans")
+      ),
+      # dynamic tabs content, the `data-tab` attribute must match the `data-tab` attribute
+      # of the corresponding tab in the tabular menu
+      tags$div(
+        class = "ui bottom attached active tab segment", `data-tab` = "first",
+        div(
+          class = "ui container",
+          # homepage tab
+          homepage$ui(
+            ns("homepage")
+          )
+        )
+      ),
+      tags$div(
+        class = "ui bottom attached tab segment", `data-tab` = "second",
+        div(
+          class = "ui container",
+          # equities tab
+          crispy_equities$ui(
+            ns("crispy_equities"),
+            max_trisk_granularity = max_trisk_granularity, # constant
+            available_vars = available_vars # constant
+          )
+        )
+      ),
+      tags$div(
+        class = "ui bottom attached tab segment", `data-tab` = "third",
+        div(
+          class = "ui container",
+          # equities tab
+          crispy_loans$ui(
+            ns("crispy_loans"),
+            max_trisk_granularity = max_trisk_granularity, # constant
+            available_vars = available_vars # constant
+          )
+        )
+      ),
+      # this javascript snippet initializes the tabs menu and makes the tabs clickable
+      tags$script(
+        "$(document).ready(function() {
+                // Initialize tabs (if not already initialized)
+                $('.menu .item').tab();
+            });"
       )
     )
   )
@@ -77,65 +136,34 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    # get granularity columns
-    trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
-      granularity_picked <- input$granularity_switch |>
-        rename_string_vector(words_class = "analysis_columns", dev_to_ux = FALSE)
+    # the TRISK runs are generated In the sidebar module
+    perimeter <- sidebar_parameters$server(
+      "sidebar_parameters",
+      max_trisk_granularity = max_trisk_granularity, # constant
+      trisk_input_path = trisk_input_path, # constant
+      backend_trisk_run_folder = backend_trisk_run_folder, # constant
+      available_vars = available_vars, # constant
+      hide_vars = hide_vars, # constant
+      use_ald_sector = use_ald_sector # constant
+    )
 
-      granularity_level <- max_trisk_granularity[granularity_picked]
-      # Filter names based on values <= given_integer
-      granularity_columns <- names(max_trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
+    homepage$server("homepage")
 
-      return(granularity_columns)
-    })
-
-
-    # This section of code generates TRISK outputs and consumes them for analysis and visualization.
-
-    # Generate TRISK outputs
-    run_id_r <- trisk_generator$server(
-      "trisk_generator",
-      backend_trisk_run_folder = backend_trisk_run_folder,
-      trisk_input_path = trisk_input_path,
-      available_vars = available_vars,
-      hide_vars = hide_vars,
+    crispy_equities$server(
+      "crispy_equities",
+      trisk_input_path = trisk_input_path, # constant
+      backend_trisk_run_folder = backend_trisk_run_folder, # constant
       max_trisk_granularity = max_trisk_granularity,
-      use_ald_sector = use_ald_sector
+      perimeter = perimeter
     )
 
-    # Connect to the data sources, filter run perimter, and process to the appropriate granularity
-    crispy_data_r <- reactiveVal()
-    trajectories_data_r <- reactiveVal()
-
-    observeEvent(c(run_id_r(), trisk_granularity_r()), ignoreInit = TRUE, {
-      if (!is.null(run_id_r())){
-      crispy_data_r(
-        load_backend_crispy_data(backend_trisk_run_folder) |>
-          dplyr::filter(.data$run_id == run_id_r()) |>
-          stress.test.plot.report::main_load_multi_crispy_data(granularity = trisk_granularity_r())
-      )
-
-      trajectories_data_r(
-        load_backend_trajectories_data(backend_trisk_run_folder) |>
-          dplyr::filter(.data$run_id == run_id_r()) |>
-          stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
-      )
-    }}
+    crispy_loans$server(
+      "crispy_loans"
+      # ,
+      # trisk_input_path = trisk_input_path, # constant
+      # backend_trisk_run_folder = backend_trisk_run_folder, # constant
+      # max_trisk_granularity = max_trisk_granularity,
+      # perimeter = perimeter
     )
-
-    # Manages the porfolio creator module
-    # Create analysis data by merging crispy to portfolio
-    analysis_data_r <- portfolio_creator$server(
-      "portfolio_creator", crispy_data_r, trisk_granularity_r,
-      max_trisk_granularity
-    )
-
-    # Consume TRISK outputs
-
-    # Generate equity change plots
-    equity_change_plots$server("equity_change_plots", analysis_data_r, max_trisk_granularity)
-
-    # Generate trajectories plots
-    trajectories_plots$server("trajectories_plots", trajectories_data_r, max_trisk_granularity)
   })
 }

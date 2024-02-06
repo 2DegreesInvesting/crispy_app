@@ -5,63 +5,96 @@ box::use(
   ],
   shiny.semantic[slider_input, dropdown_input, segment, update_dropdown_input, update_slider],
   shinyjs[useShinyjs],
-  shiny.semantic[card, cards]
+  semantic.dashboard[dashboardSidebar]
 )
 
 box::use(
-  app/logic/renamings[rename_string_vector],
-  app/logic/trisk_mgmt[run_trisk_with_params, append_st_results_to_backend_data, check_if_run_exists, get_run_data_from_run_id]
+  app / logic / renamings[rename_string_vector]
 )
 
 
 ####### UI
 
-ui <- function(id, available_vars) {
+ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
-  list(
-    useShinyjs(), # Initialize shinyjs
-    # Custom Semantic UI Modal
-    tags$div(
-      id = "mymodal",
-      class = "ui modal",
-      tags$div(class = "header", "Processing"),
-      tags$div(
+
+
+  tagList(
+    # First segment in the left half // Granularity
+    shiny.semantic::segment(
+      div(
         class = "content",
-        tags$p("Please wait...")
+        div(class = "header", "Granularity")
+      ),
+      div(
+        class = "content",
+        slider_input(
+          ns("granularity_switch"),
+          custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
+          value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
+        )
       )
     ),
-    # First segment in the left half
+    # Second segment in the left half // Scenario Choice
     segment(
-        div(class="content",
-         div(class="header", "Scenario Choice"),
-        div(class="description", 
-        div(class="content",
-        div(class="header", "Baseline Scenario"),
-        div(class="description", dropdown_input(ns("baseline_scenario"),
-          choices = NULL
-        ))),
-        div(class="content",
-        div(class="header", "Target Scenario"),
-        div(class="description", dropdown_input(ns("shock_scenario"),
-          choices = NULL
-        ))),
-        div(class="content",
-        div(class="header", "Scenario Geography"),
-        div(class="description", dropdown_input(ns("scenario_geography"),
-          choices = NULL
-        )))
-      ))),
-      segment(
-         div(class="content",
-         div(class="header", "TRISK params"),
-        div(class="description", 
-        div(class="content",
-        div(class="header",  "Shock Year"),
-        div(class="description", slider_input(
-          ns("shock_year"),
-          custom_ticks = available_vars$available_shock_year,
-          value = NULL
-        )))),
+      div(
+        class = "content",
+        div(class = "header", "Scenario Choice"),
+        div(
+          class = "description",
+          div(
+            class = "content",
+            div(class = "header", "Baseline Scenario"),
+            div(
+              class = "description",
+              dropdown_input(ns("baseline_scenario"),
+                choices = NULL
+              )
+            )
+          ),
+          div(
+            class = "content",
+            div(class = "header", "Target Scenario"),
+            div(
+              class = "description",
+              dropdown_input(ns("shock_scenario"),
+                choices = NULL
+              )
+            )
+          ),
+          div(
+            class = "content",
+            div(class = "header", "Scenario Geography"),
+            div(
+              class = "description",
+              dropdown_input(ns("scenario_geography"),
+                choices = NULL
+              )
+            )
+          )
+        )
+      )
+    ),
+    # Third segment in the left half // TRISK params
+    segment(
+      div(
+        class = "content",
+        div(class = "header", "TRISK params"),
+        div(
+          class = "description",
+          div(
+            class = "content",
+            div(class = "header", "Shock Year"),
+            div(
+              class = "description",
+              slider_input(
+                ns("shock_year"),
+                custom_ticks = available_vars$available_shock_year,
+                value = NULL
+              )
+            )
+          )
+        ),
         p("Risk-Free Rate"),
         slider_input(
           ns("risk_free_rate"),
@@ -112,7 +145,6 @@ ui <- function(id, available_vars) {
 
 
 
-
 server <- function(id, backend_trisk_run_folder,
                    trisk_input_path,
                    available_vars,
@@ -120,14 +152,30 @@ server <- function(id, backend_trisk_run_folder,
                    max_trisk_granularity,
                    use_ald_sector) {
   moduleServer(id, function(input, output, session) {
-    update_dropdowns(
-      input, session, trisk_input_path, hide_vars, use_ald_sector
+    # Update UI elements =========================
+
+    update_scenarios_dropdowns(
+      input,
+      session,
+      trisk_input_path,
+      hide_vars,
+      use_ald_sector
     )
 
-    sync_discount_and_growth(input, session, available_vars)
+    sync_discount_and_growth(
+      input,
+      session,
+      available_vars
+    )
 
-    run_id_r <- reactiveVal(NULL)
+    # Collect UI elements (and compute trisks if necessary) =========================
 
+    trisk_granularity_r <- get_granularity_columns(
+      input,
+      max_trisk_granularity
+    )
+
+    # reactive variable containing trisk run parameters
     trisk_run_params_r <- shiny::reactive({
       reactiveValues(
         baseline_scenario = rename_string_vector(input$baseline_scenario, words_class = "scenarios", dev_to_ux = FALSE),
@@ -142,65 +190,28 @@ server <- function(id, backend_trisk_run_folder,
         market_passthrough = as.numeric(input$market_passthrough)
       )
     })
-
+    # prevent the UI modal from updating too often (ie. blinking)
     trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500)
-    observeEvent(trisk_run_params_r(), {
-      trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
 
+    perimeter <- list(
+      "trisk_granularity_r" = trisk_granularity_r,
+      "trisk_run_params_r" = trisk_run_params_r
+    )
 
-      all_input_params_initialized <- !any(sapply(trisk_run_params, function(x) {
-        is.null(x)
-      }))
-
-      if (all_input_params_initialized) {
-        if (trisk_run_params$carbon_price_model == "no_carbon_tax") {
-          trisk_run_params$market_passthrough <- 0
-        }
-
-
-        run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-        if (is.null(run_id)) {
-          shinyjs::runjs("$('#mymodal').modal({closable: false}).modal('show');")
-          st_results_wrangled_and_checked <- tryCatch(
-            {
-              run_trisk_with_params(
-                trisk_run_params,
-                trisk_input_path
-              )
-            },
-            error = function(e) {
-              cat(e$message)
-              format_error_message(trisk_run_params)
-              NULL
-            }
-          )
-
-          if (!is.null(st_results_wrangled_and_checked)) {
-            # Close the modal dialog and re-enable UI
-            append_st_results_to_backend_data(
-              st_results_wrangled_and_checked,
-              backend_trisk_run_folder,
-              max_trisk_granularity
-            )
-          }
-          shinyjs::runjs("$('#mymodal').modal('hide');")
-        }
-        run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-        run_id_r(run_id)
-      }
-    })
-
-    return(run_id_r)
+    return(
+      perimeter
+    )
   })
 }
 
 
+####### Logic
 
-
-update_dropdowns <- function(input, session,
-                             trisk_input_path,
-                             hide_vars,
-                             use_ald_sector) {
+# Synchronise the scenarios available depending on user scenario choice
+update_scenarios_dropdowns <- function(input, session,
+                                       trisk_input_path,
+                                       hide_vars,
+                                       use_ald_sector) {
   possible_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
   # Observe changes in possible_combinations and update baseline_scenario dropdown
   observe({
@@ -262,6 +273,8 @@ update_dropdowns <- function(input, session,
   })
 }
 
+# synchronise discount and growth rates sliders,
+# to always keep growth rate < discount rate
 sync_discount_and_growth <- function(input, session, available_vars) {
   # When growth rate changes, check if growth rate is higher and adjust if necessary
   observeEvent(c(input$growth_rate, input$discount_rate), {
@@ -277,24 +290,18 @@ sync_discount_and_growth <- function(input, session, available_vars) {
   })
 }
 
+# get the column names defining the displayed data granularity
+get_granularity_columns <- function(input, max_trisk_granularity) {
+  # get granularity columns
+  trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
+    granularity_picked <- input$granularity_switch |>
+      rename_string_vector(words_class = "analysis_columns", dev_to_ux = FALSE)
 
-format_error_message <- function(trisk_run_params) {
-  cat("Failed with parameters : ")
+    granularity_level <- max_trisk_granularity[granularity_picked]
+    # Filter names based on values <= given_integer
+    trisk_granularity <- names(max_trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
 
-  # Function to format each list element
-  format_element <- function(name, value) {
-    if (is.numeric(value)) {
-      return(paste(name, "=", value, sep = ""))
-    } else {
-      return(paste(name, "=", sprintf('"%s"', value), sep = ""))
-    }
-  }
-
-  # Apply the function to each element and concatenate them
-  formatted_list <- sapply(names(trisk_run_params), function(name) {
-    format_element(name, trisk_run_params[[name]])
-  }, USE.NAMES = FALSE)
-
-  # Print the formatted string
-  cat(paste(formatted_list, collapse = ", "), "\n")
+    return(trisk_granularity)
+  })
+  return(trisk_granularity_r)
 }

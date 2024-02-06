@@ -12,3 +12,6 @@ private_repos/
 workspace/
 app/data
 node_modules/
+package.json
+cypress.config.js
+package-lock.json

@@ -1,10 +1,10 @@
 box::use(
-  shiny[moduleServer, NS, req, div, plotOutput, uiOutput, eventReactive, observeEvent, renderUI, renderPlot, reactive],
+  shiny[moduleServer, NS, req, tagList, div, plotOutput, uiOutput, eventReactive, observeEvent, renderUI, renderPlot, reactive],
   semantic.dashboard[box]
 )
 
 box::use(
-  app/logic/plots/scenario_time_plot[pipeline_scenario_time_plot]
+  app / logic / plots / scenario_time_plot[pipeline_scenario_time_plot]
 )
 
 
@@ -12,12 +12,12 @@ box::use(
 
 ui <- function(id) {
   ns <- NS(id)
-  list(
+  tagList(
     # Third row with 1 taking the entire page width
-    box(title="Baseline Trajectories", width = 16, plotOutput(ns("baseline_scenario_plot"), height = "900px")),
+    box(title = "Baseline Trajectories", width = 16, plotOutput(ns("baseline_scenario_plot"), height = "900px")),
 
     # Fourth row with 2 taking the entire page width
-    box(title="Shock Trajectories", width = 16, plotOutput(ns("shock_scenario_plot"), height = "900px"))
+    box(title = "Shock Trajectories", width = 16, plotOutput(ns("shock_scenario_plot"), height = "900px"))
   )
 }
 

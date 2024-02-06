@@ -37,8 +37,7 @@ draw_crispy_npv_change_plot <- function(
     data_crispy_npv_change_plot,
     x_var,
     y_var) {
-
-  # HARDCODED PARAMETERS    
+  # HARDCODED PARAMETERS
   plot_color_gradient <- c(
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "red") |> dplyr::pull(.data$hex),
     r2dii.colours::palette_1in1000_plot |> dplyr::filter(.data$label == "grey") |> dplyr::pull(.data$hex),

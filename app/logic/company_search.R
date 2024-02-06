@@ -2,7 +2,7 @@ match_company_input_to_backend <- function() {
 
 }
 
-fuzzy_match.top_five_matches <- function(
+fuzzy_top_five_matches <- function(
     input_string,
     reference_list) {
   # Source the Python script
