@@ -2,7 +2,7 @@
 
 # Load required packages
 box::use(
-  shiny[moduleServer, NS, renderUI, tags, uiOutput, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
+  shiny[moduleServer, NS, renderUI, tags, HTML, uiOutput,conditionalPanel, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
   shiny.semantic[semanticPage],
   semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader]
 )
@@ -41,6 +41,7 @@ ui <- function(id) {
     dashboardHeader(title = "CRISPY"),
     # dashboardSidebar
     dashboardSidebar(
+    # Placeholder for dynamic sidebar content based on active tab
     sidebar_parameters$ui(
       ns("sidebar_parameters"),
       max_trisk_granularity = max_trisk_granularity,
@@ -50,9 +51,22 @@ ui <- function(id) {
   ),
     # dashboardBody
     dashboardBody(
+            # Include custom CSS
+            tags$head(
+        tags$style(HTML("
+          .full-width-tabs {
+            width: 100% !important;
+            display: flex !important;
+          }
+          .full-width-tabs .item {
+            flex: 1 !important;
+            text-align: center !important;
+          }
+        "))
+      ),
       tags$div(
-        class = "ui top attached tabular menu",
-        tags$a(class = "item active", `data-tab` = "first", "Home", tags$i(class="close icon")),
+        class = "ui top attached tabular menu full-width-tabs",
+        tags$a(class = "item active", `data-tab` = "first", "Home"),
         tags$a(class = "item", `data-tab` = "second", "Equities"),
         tags$a(class = "item", `data-tab` = "third", "Loans")
       ),
@@ -80,23 +94,6 @@ ui <- function(id) {
             "$(document).ready(function() {
                 // Initialize tabs (if not already initialized)
                 $('.menu .item').tab();
-
-                // Handle click event on close icon
-                $('.menu .item .close.icon').on('click', function() {
-                    // Prevents the tab from opening while closing
-                    event.stopPropagation();
-
-                    // Get the data-tab attribute value
-                    var tabName = $(this).closest('.item').attr('data-tab');
-
-                    // Remove the tab item
-                    $(this).closest('.item').remove();
-
-                    // Remove the tab content
-                    $('.tab.segment[data-tab=\"' + tabName + '\"]').remove();
-
-                    // If you want to open another tab after closing, you can do so here
-                });
             });"
         )
     )
@@ -107,6 +104,7 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
+
     # the TRISK runs are generated In the sidebar module
     perimeter <- sidebar_parameters$server(
       "sidebar_parameters",
