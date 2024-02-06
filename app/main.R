@@ -2,7 +2,7 @@
 
 # Load required packages
 box::use(
-  shiny[moduleServer, NS, renderUI, tags, HTML, uiOutput,conditionalPanel, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
+  shiny[moduleServer, NS, renderUI, tags, HTML, uiOutput, conditionalPanel, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
   shiny.semantic[semanticPage],
   semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader]
 )
@@ -41,18 +41,33 @@ ui <- function(id) {
     dashboardHeader(title = "CRISPY"),
     # dashboardSidebar
     dashboardSidebar(
-    # Placeholder for dynamic sidebar content based on active tab
-    sidebar_parameters$ui(
-      ns("sidebar_parameters"),
-      max_trisk_granularity = max_trisk_granularity,
-      available_vars = available_vars
+      tags$div(
+      sidebar_parameters$ui(
+        ns("sidebar_parameters"),
+        max_trisk_granularity = max_trisk_granularity,
+        available_vars = available_vars
+      ),
+      shiny.semantic::action_button(
+        input_id = "run_trisk",
+        label = "Run TRISK",
+        icon = "play"
+      ),
+      shiny::img(
+        src = "static/logo_1in1000.png",
+        height = "20%", width = "auto",
+        style = "
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;"
+      )),
+      size = "wide"
     ),
-    size = "wide"
-  ),
     # dashboardBody
     dashboardBody(
-            # Include custom CSS
-            tags$head(
+      # Include custom CSS to display tabs as full width
+      tags$head(
         tags$style(HTML("
           .full-width-tabs {
             width: 100% !important;
@@ -64,12 +79,16 @@ ui <- function(id) {
           }
         "))
       ),
+      # Fomantic UI tabs with custom CSS to display as full width
       tags$div(
         class = "ui top attached tabular menu full-width-tabs",
         tags$a(class = "item active", `data-tab` = "first", "Home"),
         tags$a(class = "item", `data-tab` = "second", "Equities"),
         tags$a(class = "item", `data-tab` = "third", "Loans")
       ),
+      # dynamic tabs content, the `data-tab` attribute must match the `data-tab` attribute 
+      # of the corresponding tab in the tabular menu
+      # homepage tab
       tags$div(
         class = "ui bottom attached active tab segment", `data-tab` = "first",
         div(
@@ -79,6 +98,7 @@ ui <- function(id) {
           )
         )
       ),
+      # equities tab
       tags$div(
         class = "ui bottom attached tab segment", `data-tab` = "second",
         div(
@@ -90,12 +110,13 @@ ui <- function(id) {
           )
         )
       ),
-              tags$script(
-            "$(document).ready(function() {
+      # this javascript snippet initializes the tabs menu and makes the tabs clickable
+      tags$script(
+        "$(document).ready(function() {
                 // Initialize tabs (if not already initialized)
                 $('.menu .item').tab();
             });"
-        )
+      )
     )
   )
 }
@@ -104,7 +125,6 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-
     # the TRISK runs are generated In the sidebar module
     perimeter <- sidebar_parameters$server(
       "sidebar_parameters",
