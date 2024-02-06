@@ -4,7 +4,7 @@
 box::use(
   shiny[moduleServer, NS, renderUI, tags, HTML, uiOutput, conditionalPanel, observe, observeEvent, div, a, reactiveVal, p, eventReactive],
   shiny.semantic[semanticPage],
-  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader]
+  semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader, icon]
 )
 
 # Load required modules and logic files
@@ -47,11 +47,6 @@ ui <- function(id) {
         max_trisk_granularity = max_trisk_granularity,
         available_vars = available_vars
       ),
-      shiny.semantic::action_button(
-        input_id = "run_trisk",
-        label = "Run TRISK",
-        icon = "play"
-      ),
       shiny::img(
         src = "static/logo_1in1000.png",
         height = "20%", width = "auto",
@@ -66,6 +61,7 @@ ui <- function(id) {
     ),
     # dashboardBody
     dashboardBody(
+       shinyjs::useShinyjs(), 
       # Include custom CSS to display tabs as full width
       tags$head(
         tags$style(HTML("
@@ -88,21 +84,21 @@ ui <- function(id) {
       ),
       # dynamic tabs content, the `data-tab` attribute must match the `data-tab` attribute 
       # of the corresponding tab in the tabular menu
-      # homepage tab
       tags$div(
         class = "ui bottom attached active tab segment", `data-tab` = "first",
         div(
           class = "ui container",
+          # homepage tab
           homepage$ui(
             ns("homepage")
           )
         )
       ),
-      # equities tab
       tags$div(
         class = "ui bottom attached tab segment", `data-tab` = "second",
         div(
           class = "ui container",
+          # equities tab
           crispy_equities$ui(
             ns("crispy_equities"),
             max_trisk_granularity = max_trisk_granularity, # constant
@@ -125,6 +121,8 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
+
+
     # the TRISK runs are generated In the sidebar module
     perimeter <- sidebar_parameters$server(
       "sidebar_parameters",
@@ -136,12 +134,12 @@ server <- function(id) {
       use_ald_sector = use_ald_sector # constant
     )
 
-
-
     homepage$server("homepage")
 
     crispy_equities$server(
       "crispy_equities",
+            trisk_input_path = trisk_input_path, # constant
+      backend_trisk_run_folder = backend_trisk_run_folder, # constant
       max_trisk_granularity = max_trisk_granularity,
       perimeter = perimeter
     )
