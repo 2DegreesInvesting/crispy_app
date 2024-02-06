@@ -79,7 +79,8 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       portfolio_asset_type = "equity",
       display_columns = display_columns_equities,
       editable_columns_names = editable_columns_names_equities,
-      colored_columns_names = colored_columns_names_equities
+      colored_columns_names = colored_columns_names_equities,
+      trisk_input_path=trisk_input_path
     )
 
     # CONSUME TRISK OUTPUTS =========================

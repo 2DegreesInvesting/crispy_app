@@ -73,6 +73,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       editable_columns_names = editable_columns_names_loans,
       colored_columns_names = colored_columns_names_loans,
       editable_rows = TRUE # Allow adding and deleting rows, and gives access to the company granularity
+      ,trisk_input_path=trisk_input_path
     )
   })
 }

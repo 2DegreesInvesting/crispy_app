@@ -6,7 +6,7 @@ box::use(
 )
 
 box::use(
-  app / view / modules / company_rows,
+  app / view / modules / rows_edition,
   app / logic / constant[max_trisk_granularity],
   app / logic / renamings[rename_tibble_columns]
 )
@@ -20,7 +20,7 @@ ui <- function(id, title = "") {
     title = title, width = 16, collapsible = FALSE,
     DTOutput(outputId = ns("portfolio_table")),
     if (title == "Loans Portfolio") {
-      company_rows$ui(ns("company_rows"))
+      rows_edition$ui(ns("rows_edition"))
     }
   )
 }
@@ -34,7 +34,7 @@ server <- function(
     crispy_data_r,
     trisk_granularity_r,
     max_trisk_granularity,
-    portfolio_asset_type, display_columns, editable_columns_names, colored_columns_names,
+    portfolio_asset_type, display_columns, editable_columns_names, colored_columns_names, trisk_input_path,
     editable_rows = FALSE) {
   moduleServer(id, function(input, output, session) {
     # PORTFOLIO DATA =========================
@@ -46,7 +46,12 @@ server <- function(
     # Initial portfolio data structure
     portfolio_data_r <- reactiveVal()
 
-    company_rows$server("company_rows", portfolio_data_r = portfolio_data_r)
+    rows_edition$server(
+      "rows_edition", 
+      portfolio_data_r = portfolio_data_r, 
+      crispy_data_r=crispy_data_r,
+      trisk_input_path=trisk_input_path
+      )
 
     observe({
       trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
