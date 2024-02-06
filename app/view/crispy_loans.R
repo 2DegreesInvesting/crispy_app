@@ -9,12 +9,13 @@ box::use(
 
 ####### UI
 
-ui <- function(id) {
+ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
 
   shiny::tagList(
 
   )
+
 
 }
 

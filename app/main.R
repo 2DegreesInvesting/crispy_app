@@ -13,6 +13,7 @@ box::use(
   app / view / sidebar_parameters,
   app / view / homepage,
   app / view / crispy_equities,
+  app / view / crispy_loans,
   # logic
   app / logic / constant[
     trisk_input_path,
@@ -107,6 +108,18 @@ ui <- function(id) {
           )
         )
       ),
+      tags$div(
+        class = "ui bottom attached tab segment", `data-tab` = "third",
+        div(
+          class = "ui container",
+          # equities tab
+          crispy_loans$ui(
+            ns("crispy_loans"),
+            max_trisk_granularity = max_trisk_granularity, # constant
+            available_vars = available_vars # constant
+          )
+        )
+      ),
       # this javascript snippet initializes the tabs menu and makes the tabs clickable
       tags$script(
         "$(document).ready(function() {
@@ -144,5 +157,15 @@ server <- function(id) {
       max_trisk_granularity = max_trisk_granularity,
       perimeter = perimeter
     )
+
+    crispy_loans$server(
+      "crispy_loans"
+      # ,
+      # trisk_input_path = trisk_input_path, # constant
+      # backend_trisk_run_folder = backend_trisk_run_folder, # constant
+      # max_trisk_granularity = max_trisk_granularity,
+      # perimeter = perimeter
+    )
+
   })
 }
