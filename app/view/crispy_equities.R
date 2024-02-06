@@ -8,42 +8,37 @@ box::use(
 )
 
 box::use(
-
   app / view / modules / trisk_mgmt,
   app / view / modules / portfolio_mgmt,
   app / view / modules / equity_change_plots,
   app / view / modules / trajectories_plots,
-
 )
 
 ####### UI
 
 ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
-  
+
   # dashboardBody
-    shiny::div(
+  shiny::div(
     class = "pusher container", style = "min-height: 100vh;",
     shiny::div(
       class = "ui segment", style = "min-height: 100vh;",
-      shiny::tags$div(class = "ui stackable grid", 
-            trisk_mgmt$ui(ns("trisk_mgmt")),
-      portfolio_mgmt$ui(ns("portfolio_mgmt"), title = "Equities portfolio"),
-      equity_change_plots$ui(ns("equity_change_plots")),
-      trajectories_plots$ui(ns("trajectories_plots"))
+      shiny::tags$div(
+        class = "ui stackable grid",
+        trisk_mgmt$ui(ns("trisk_mgmt")),
+        portfolio_mgmt$ui(ns("portfolio_mgmt"), title = "Equities portfolio"),
+        equity_change_plots$ui(ns("equity_change_plots")),
+        trajectories_plots$ui(ns("trajectories_plots"))
       )
     )
-    )
-      
-    
-  
+  )
 }
 
 ####### Server
 
 server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-
     # SELECT PARAMETERS =========================
     trisk_granularity_r <- perimeter$trisk_granularity_r
     trisk_run_params_r <- perimeter$trisk_run_params_r
@@ -61,19 +56,19 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
 
     results <- trisk_mgmt$server(
       "trisk_mgmt",
-      crispy_data_r=crispy_data_r,
-      trisk_granularity_r=trisk_granularity_r,
-      trisk_run_params_r=trisk_run_params_r,
-      backend_trisk_run_folder=backend_trisk_run_folder,
-      trisk_input_path=trisk_input_path,
-      max_trisk_granularity=max_trisk_granularity
+      crispy_data_r = crispy_data_r,
+      trisk_granularity_r = trisk_granularity_r,
+      trisk_run_params_r = trisk_run_params_r,
+      backend_trisk_run_folder = backend_trisk_run_folder,
+      trisk_input_path = trisk_input_path,
+      max_trisk_granularity = max_trisk_granularity
     )
 
     crispy_data_r <- results$crispy_data_r
     trajectories_data_r <- results$trajectories_data_r
 
     # MANAGE PORTFOLIO =========================
-    
+
     # Manages the porfolio creator module
     # Create analysis data by merging crispy to portfolio, and aggrgating to the appropriate granularity
     analysis_data_r <- portfolio_mgmt$server(
@@ -101,8 +96,5 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       trajectories_data_r = trajectories_data_r,
       max_trisk_granularity = max_trisk_granularity
     )
-
-    })
-      
+  })
 }
-

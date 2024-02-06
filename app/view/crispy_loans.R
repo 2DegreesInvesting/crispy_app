@@ -12,11 +12,7 @@ box::use(
 ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
 
-  shiny::tagList(
-
-  )
-
-
+  shiny::tagList()
 }
 
 ####### Server

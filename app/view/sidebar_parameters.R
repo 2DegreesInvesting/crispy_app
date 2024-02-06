@@ -18,126 +18,125 @@ box::use(
 ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
 
-  
-    tagList(
-      # First segment in the left half // Granularity
-      shiny.semantic::segment(
-        div(
-          class = "content",
-          div(class = "header", "Granularity")
-        ),
-        div(
-          class = "content",
-          slider_input(
-            ns("granularity_switch"),
-            custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
-            value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
-          )
-        )
+
+  tagList(
+    # First segment in the left half // Granularity
+    shiny.semantic::segment(
+      div(
+        class = "content",
+        div(class = "header", "Granularity")
       ),
-      # Second segment in the left half // Scenario Choice
-      segment(
-        div(
-          class = "content",
-          div(class = "header", "Scenario Choice"),
-          div(
-            class = "description",
-            div(
-              class = "content",
-              div(class = "header", "Baseline Scenario"),
-              div(
-                class = "description",
-                dropdown_input(ns("baseline_scenario"),
-                  choices = NULL
-                )
-              )
-            ),
-            div(
-              class = "content",
-              div(class = "header", "Target Scenario"),
-              div(
-                class = "description",
-                dropdown_input(ns("shock_scenario"),
-                  choices = NULL
-                )
-              )
-            ),
-            div(
-              class = "content",
-              div(class = "header", "Scenario Geography"),
-              div(
-                class = "description",
-                dropdown_input(ns("scenario_geography"),
-                  choices = NULL
-                )
-              )
-            )
-          )
+      div(
+        class = "content",
+        slider_input(
+          ns("granularity_switch"),
+          custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
+          value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
         )
-      ),
-      # Third segment in the left half // TRISK params
-      segment(
+      )
+    ),
+    # Second segment in the left half // Scenario Choice
+    segment(
+      div(
+        class = "content",
+        div(class = "header", "Scenario Choice"),
         div(
-          class = "content",
-          div(class = "header", "TRISK params"),
+          class = "description",
           div(
-            class = "description",
+            class = "content",
+            div(class = "header", "Baseline Scenario"),
             div(
-              class = "content",
-              div(class = "header", "Shock Year"),
-              div(
-                class = "description",
-                slider_input(
-                  ns("shock_year"),
-                  custom_ticks = available_vars$available_shock_year,
-                  value = NULL
-                )
+              class = "description",
+              dropdown_input(ns("baseline_scenario"),
+                choices = NULL
               )
             )
           ),
-          p("Risk-Free Rate"),
-          slider_input(
-            ns("risk_free_rate"),
-            custom_ticks = available_vars$available_risk_free_rate,
-            value = NULL
+          div(
+            class = "content",
+            div(class = "header", "Target Scenario"),
+            div(
+              class = "description",
+              dropdown_input(ns("shock_scenario"),
+                choices = NULL
+              )
+            )
           ),
-          p("Discount Rate"),
-          slider_input(
-            ns("discount_rate"),
-            custom_ticks = available_vars$available_discount_rate,
-            value = NULL
-          ),
-          p("Growth Rate"),
-          slider_input(
-            ns("growth_rate"),
-            custom_ticks = available_vars$available_growth_rate,
-            value = NULL
-          ),
-          p("Dividend Rate"),
-          slider_input(
-            ns("div_netprofit_prop_coef"),
-            custom_ticks = available_vars$available_dividend_rate,
-            value = NULL
-          ),
-          p("Carbon Price Model"),
-          dropdown_input(ns("carbon_price_model"),
-            choices = available_vars$available_carbon_price_model,
-            value = "no_carbon_tax"
-          ),
-          conditionalPanel(
-            condition = "input.carbon_price_model != 'no_carbon_tax'",
-            p("Market Passthrough"),
-            slider_input(
-              ns("market_passthrough"),
-              custom_ticks = available_vars$available_market_passthrough,
-              value = NULL
-            ),
-            ns = ns
+          div(
+            class = "content",
+            div(class = "header", "Scenario Geography"),
+            div(
+              class = "description",
+              dropdown_input(ns("scenario_geography"),
+                choices = NULL
+              )
+            )
           )
         )
       )
+    ),
+    # Third segment in the left half // TRISK params
+    segment(
+      div(
+        class = "content",
+        div(class = "header", "TRISK params"),
+        div(
+          class = "description",
+          div(
+            class = "content",
+            div(class = "header", "Shock Year"),
+            div(
+              class = "description",
+              slider_input(
+                ns("shock_year"),
+                custom_ticks = available_vars$available_shock_year,
+                value = NULL
+              )
+            )
+          )
+        ),
+        p("Risk-Free Rate"),
+        slider_input(
+          ns("risk_free_rate"),
+          custom_ticks = available_vars$available_risk_free_rate,
+          value = NULL
+        ),
+        p("Discount Rate"),
+        slider_input(
+          ns("discount_rate"),
+          custom_ticks = available_vars$available_discount_rate,
+          value = NULL
+        ),
+        p("Growth Rate"),
+        slider_input(
+          ns("growth_rate"),
+          custom_ticks = available_vars$available_growth_rate,
+          value = NULL
+        ),
+        p("Dividend Rate"),
+        slider_input(
+          ns("div_netprofit_prop_coef"),
+          custom_ticks = available_vars$available_dividend_rate,
+          value = NULL
+        ),
+        p("Carbon Price Model"),
+        dropdown_input(ns("carbon_price_model"),
+          choices = available_vars$available_carbon_price_model,
+          value = "no_carbon_tax"
+        ),
+        conditionalPanel(
+          condition = "input.carbon_price_model != 'no_carbon_tax'",
+          p("Market Passthrough"),
+          slider_input(
+            ns("market_passthrough"),
+            custom_ticks = available_vars$available_market_passthrough,
+            value = NULL
+          ),
+          ns = ns
+        )
+      )
     )
-  
+  )
 }
 
 

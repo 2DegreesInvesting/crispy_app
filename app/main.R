@@ -43,27 +43,28 @@ ui <- function(id) {
     # dashboardSidebar
     dashboardSidebar(
       tags$div(
-      sidebar_parameters$ui(
-        ns("sidebar_parameters"),
-        max_trisk_granularity = max_trisk_granularity,
-        available_vars = available_vars
-      ),
-      shiny::img(
-        src = "static/logo_1in1000.png",
-        height = "20%", width = "auto",
-        style = "
+        sidebar_parameters$ui(
+          ns("sidebar_parameters"),
+          max_trisk_granularity = max_trisk_granularity,
+          available_vars = available_vars
+        ),
+        shiny::img(
+          src = "static/logo_1in1000.png",
+          height = "20%", width = "auto",
+          style = "
             display: block;
             margin-left: auto;
             margin-right: auto;
             margin-top: 10px;
             margin-bottom: 10px;"
-      )),
+        )
+      ),
       size = "wide",
-      visible=FALSE
+      visible = FALSE
     ),
     # dashboardBody
     dashboardBody(
-       shinyjs::useShinyjs(), 
+      shinyjs::useShinyjs(),
       # Include custom CSS to display tabs as full width
       tags$head(
         tags$style(HTML("
@@ -84,7 +85,7 @@ ui <- function(id) {
         tags$a(class = "item", `data-tab` = "second", "Equities"),
         tags$a(class = "item", `data-tab` = "third", "Loans")
       ),
-      # dynamic tabs content, the `data-tab` attribute must match the `data-tab` attribute 
+      # dynamic tabs content, the `data-tab` attribute must match the `data-tab` attribute
       # of the corresponding tab in the tabular menu
       tags$div(
         class = "ui bottom attached active tab segment", `data-tab` = "first",
@@ -135,8 +136,6 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-
-
     # the TRISK runs are generated In the sidebar module
     perimeter <- sidebar_parameters$server(
       "sidebar_parameters",
@@ -152,7 +151,7 @@ server <- function(id) {
 
     crispy_equities$server(
       "crispy_equities",
-            trisk_input_path = trisk_input_path, # constant
+      trisk_input_path = trisk_input_path, # constant
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
       max_trisk_granularity = max_trisk_granularity,
       perimeter = perimeter
@@ -166,6 +165,5 @@ server <- function(id) {
       # max_trisk_granularity = max_trisk_granularity,
       # perimeter = perimeter
     )
-
   })
 }

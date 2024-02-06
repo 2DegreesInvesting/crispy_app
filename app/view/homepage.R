@@ -12,10 +12,7 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
 
-  shiny::tagList(
-
-  )
-
+  shiny::tagList()
 }
 
 ####### Server
