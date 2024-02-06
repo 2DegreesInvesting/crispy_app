@@ -76,7 +76,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,
       max_trisk_granularity = max_trisk_granularity,
-      portfolio_asset_type="equity",
+      portfolio_asset_type = "equity",
       display_columns = display_columns_equities,
       editable_columns_names = editable_columns_names_equities,
       colored_columns_names = colored_columns_names_equities

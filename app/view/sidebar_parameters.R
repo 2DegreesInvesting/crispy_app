@@ -22,29 +22,31 @@ ui <- function(id, max_trisk_granularity, available_vars) {
   tagList(
     # First segment in the left half // Granularity
     shiny.semantic::segment(
+      div(class = "header", "Dashboard", style="font-size: 150%;"),
+      tags$hr(),
+      div(
+        class = "description",
       div(
         class = "content",
-        div(class = "header", "Granularity")
-      ),
-      div(
-        class = "content",
+        p("Granularity"),
         slider_input(
           ns("granularity_switch"),
           custom_ticks = rename_string_vector(names(max_trisk_granularity), words_class = "analysis_columns"),
           value = rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns")
         )
       )
-    ),
+    )),
     # Second segment in the left half // Scenario Choice
     segment(
       div(
         class = "content",
-        div(class = "header", "Scenario Choice"),
+        div(class = "header", "Scenario Choice", style="font-size: 150%;"),
+        tags$hr(),
         div(
           class = "description",
           div(
             class = "content",
-            div(class = "header", "Baseline Scenario"),
+            p("Baseline Scenario"),
             div(
               class = "description",
               dropdown_input(ns("baseline_scenario"),
@@ -54,7 +56,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           ),
           div(
             class = "content",
-            div(class = "header", "Target Scenario"),
+            p("Target Scenario"),
             div(
               class = "description",
               dropdown_input(ns("shock_scenario"),
@@ -64,7 +66,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           ),
           div(
             class = "content",
-            div(class = "header", "Scenario Geography"),
+            p("Scenario Geography"),
             div(
               class = "description",
               dropdown_input(ns("scenario_geography"),
@@ -79,22 +81,20 @@ ui <- function(id, max_trisk_granularity, available_vars) {
     segment(
       div(
         class = "content",
-        div(class = "header", "TRISK params"),
+        div(class = "header", "TRISK parameters", style="font-size: 150%;"),
+        tags$hr(), # esthetic separation
         div(
           class = "description",
           div(
             class = "content",
-            div(class = "header", "Shock Year"),
-            div(
-              class = "description",
-              slider_input(
-                ns("shock_year"),
-                custom_ticks = available_vars$available_shock_year,
-                value = NULL
-              )
+            p("Shock Year"),
+            slider_input(
+              ns("shock_year"),
+              custom_ticks = available_vars$available_shock_year,
+              value = NULL
             )
-          )
-        ),
+            )
+          ),
         p("Risk-Free Rate"),
         slider_input(
           ns("risk_free_rate"),

@@ -7,7 +7,6 @@ box::use(
 )
 
 box::use(
-
   app / logic / trisk_mgmt[
     run_trisk_with_params,
     append_st_results_to_backend_data,
@@ -27,9 +26,10 @@ box::use(
 
 ui <- function(id) {
   ns <- NS(id)
-  semantic.dashboard::box(width=16, 
+  semantic.dashboard::box(
+    width = 16,
     useShinyjs(), # Initialize shinyjs
-          # Custom Semantic UI Modal
+    # Custom Semantic UI Modal
     tags$div(
       id = ns("mymodal"),
       class = "ui modal",
@@ -48,7 +48,6 @@ ui <- function(id) {
         "Run Trisk"
       )
     )
-  
   )
 }
 
@@ -173,11 +172,11 @@ trisk_generator <- function(backend_trisk_run_folder, trisk_input_path, trisk_ru
       error = function(e) {
         cat(e$message)
         format_error_message(trisk_run_params)
-              shinyjs::runjs(
-        paste0(
-          "$('#", session$ns("mymodal"), "').modal('hide');"
+        shinyjs::runjs(
+          paste0(
+            "$('#", session$ns("mymodal"), "').modal('hide');"
+          )
         )
-      )
         NULL
       }
     )

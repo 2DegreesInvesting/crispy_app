@@ -150,7 +150,7 @@ server <- function(id) {
       "crispy_equities",
       trisk_input_path = trisk_input_path, # constant
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      max_trisk_granularity = max_trisk_granularity,# constant
+      max_trisk_granularity = max_trisk_granularity, # constant
       perimeter = perimeter
     )
 
@@ -158,7 +158,7 @@ server <- function(id) {
       "crispy_loans",
       trisk_input_path = trisk_input_path, # constant
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      max_trisk_granularity = max_trisk_granularity,# constant
+      max_trisk_granularity = max_trisk_granularity, # constant
       perimeter = perimeter
     )
   })

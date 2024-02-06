@@ -6,6 +6,7 @@ box::use(
 )
 
 box::use(
+  app / view / modules / company_rows,
   app / logic / constant[max_trisk_granularity],
   app / logic / renamings[rename_tibble_columns]
 )
@@ -15,43 +16,15 @@ box::use(
 
 ui <- function(id, title = "") {
   ns <- NS(id)
-  box(title = title, width = 16, collapsible = FALSE,
-  DTOutput(outputId = ns("portfolio_table")), 
-  if (title == "Loans Portfolio") {
-  tags$div(
-    style = "display: flex; flex-wrap: nowrap; width: 100%; align-items: center;", # Flex container
-      selectizeInput(ns("pick_company_name"), 
-        label=NULL,
-        choices = NULL,
-        selected = NULL, 
-        options = list(
-          placeholder = "Search companies...",
-          onInitialize = I("function() { this.setValue(''); }")
-        )
-      ),
-      selectizeInput(ns("pick_business_unit"), 
-        label=NULL,
-        choices = NULL,
-        selected = NULL, 
-        options = list(
-          placeholder = "Pick a business unit",
-          onInitialize = I("function() { this.setValue(''); }")
-        )
-      ),
-      selectizeInput(ns("pick_country"), 
-        label=NULL,
-        choices = NULL,
-        selected = NULL, 
-        options = list(
-          placeholder = "Pick country",
-          onInitialize = I("function() { this.setValue(''); }")
-        )
-      ),
-      button(ns("add_row_btn"), "Add new row", class = "ui button"),
-      button(ns("delete_row_btn"), "Delete Selected Rows", class = "ui button")
-    )}
-    )
+  box(
+    title = title, width = 16, collapsible = FALSE,
+    DTOutput(outputId = ns("portfolio_table")),
+    if (title == "Loans Portfolio") {
+      company_rows$ui(ns("company_rows"))
+    }
+  )
 }
+
 
 ####### Server
 
@@ -60,9 +33,9 @@ server <- function(
     id,
     crispy_data_r,
     trisk_granularity_r,
-    max_trisk_granularity, 
+    max_trisk_granularity,
     portfolio_asset_type, display_columns, editable_columns_names, colored_columns_names,
-    editable_rows=FALSE) {
+    editable_rows = FALSE) {
   moduleServer(id, function(input, output, session) {
     # PORTFOLIO DATA =========================
 
@@ -72,6 +45,8 @@ server <- function(
 
     # Initial portfolio data structure
     portfolio_data_r <- reactiveVal()
+
+    company_rows$server("company_rows", portfolio_data_r = portfolio_data_r)
 
     observe({
       trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
@@ -114,19 +89,19 @@ server <- function(
 
         if (nrow(portfolio_data_r()) == 0) {
           # initialize the portfolio with a unique portfolio id (and it will always be unique in CRISPY)
-            portfolio_data <- portfolio_data_r()
+          portfolio_data <- portfolio_data_r()
 
-            portfolio_data <- portfolio_data |>
-              dplyr::right_join(
-                crispy_data_r() |> dplyr::distinct_at(granularity)
-              ) |>
-              dplyr::mutate(
-                portfolio_id = "1",
-                asset_type = portfolio_asset_type
-              )
-            portfolio_data_r(portfolio_data)
+          portfolio_data <- portfolio_data |>
+            dplyr::right_join(
+              crispy_data_r() |> dplyr::distinct_at(granularity)
+            ) |>
+            dplyr::mutate(
+              portfolio_id = "1",
+              asset_type = portfolio_asset_type
+            )
+          portfolio_data_r(portfolio_data)
         }
-        
+
         analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
           portfolio_data = portfolio_data_r(),
           multi_crispy_data = crispy_data_r(),
