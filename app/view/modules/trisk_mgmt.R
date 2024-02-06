@@ -7,9 +7,7 @@ box::use(
 )
 
 box::use(
-  # modules
-  app / view / modules / portfolio_mgmt,
-  # logic
+
   app / logic / trisk_mgmt[
     run_trisk_with_params,
     append_st_results_to_backend_data,
@@ -29,9 +27,9 @@ box::use(
 
 ui <- function(id) {
   ns <- NS(id)
-  shiny::tagList(
+  semantic.dashboard::box(width=16, 
     useShinyjs(), # Initialize shinyjs
-    # Custom Semantic UI Modal
+          # Custom Semantic UI Modal
     tags$div(
       id = ns("mymodal"),
       class = "ui modal",
@@ -43,7 +41,6 @@ ui <- function(id) {
     ),
     tags$div(
       class = "ui fluid container",
-
       # Fomantic UI styled action button with custom class
       tags$button(
         id = ns("run_trisk"),
@@ -51,6 +48,7 @@ ui <- function(id) {
         "Run Trisk"
       )
     )
+  
   )
 }
 
@@ -86,30 +84,26 @@ server <- function(
     shiny::observeEvent(input$run_trisk, {
       shinyjs::runjs(
         paste0(
-          "$('#", session$ns("mymodal"), "').modal({closable: false}).modal('show');"
+          "$('#", session$ns("mymodal"), "').modal({closable: true}).modal('show');"
         )
       )
 
       if (!is.null(trisk_run_params_r())) {
         trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
-        run_id <- NULL
-        while (is.null(run_id)) {
-          run_id <- get_run_id(
-            trisk_run_params = trisk_run_params,
-            backend_trisk_run_folder = backend_trisk_run_folder,
-            trisk_input_path = trisk_input_path,
-            max_trisk_granularity = max_trisk_granularity
-          )
 
-          if (is.null(run_id)) {
-            Sys.sleep(5)
-          }
-        }
+        run_id <- get_run_id(
+          trisk_run_params = trisk_run_params,
+          backend_trisk_run_folder = backend_trisk_run_folder,
+          trisk_input_path = trisk_input_path,
+          max_trisk_granularity = max_trisk_granularity
+        )
       }
 
-      shinyjs::runjs(paste0(
-        "$('#", session$ns("mymodal"), "').modal('hide');"
-      ))
+      shinyjs::runjs(
+        paste0(
+          "$('#", session$ns("mymodal"), "').modal('hide');"
+        )
+      )
       run_id_r(run_id)
     })
 
@@ -179,6 +173,11 @@ trisk_generator <- function(backend_trisk_run_folder, trisk_input_path, trisk_ru
       error = function(e) {
         cat(e$message)
         format_error_message(trisk_run_params)
+              shinyjs::runjs(
+        paste0(
+          "$('#", session$ns("mymodal"), "').modal('hide');"
+        )
+      )
         NULL
       }
     )

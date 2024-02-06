@@ -1,7 +1,8 @@
 box::use(
-  shiny[moduleServer, NS, reactiveVal, reactive, observeEvent, observe, eventReactive, div, reactiveValues],
+  shiny[moduleServer, NS, reactiveVal, reactive, observeEvent, observe, selectizeInput, eventReactive, div, tags, reactiveValues],
   semantic.dashboard[box],
-  DT[DTOutput, renderDT, datatable, JS]
+  DT[DTOutput, renderDT, datatable, JS],
+  shiny.semantic[semanticPage, button, segment]
 )
 
 box::use(
@@ -14,7 +15,42 @@ box::use(
 
 ui <- function(id, title = "") {
   ns <- NS(id)
-  box(title = title, width = 16, DTOutput(outputId = ns("portfolio_table")), collapsible = FALSE)
+  box(title = title, width = 16, collapsible = FALSE,
+  DTOutput(outputId = ns("portfolio_table")), 
+  if (title == "Loans Portfolio") {
+  tags$div(
+    style = "display: flex; flex-wrap: nowrap; width: 100%; align-items: center;", # Flex container
+      selectizeInput(ns("pick_company_name"), 
+        label=NULL,
+        choices = NULL,
+        selected = NULL, 
+        options = list(
+          placeholder = "Search companies...",
+          onInitialize = I("function() { this.setValue(''); }")
+        )
+      ),
+      selectizeInput(ns("pick_business_unit"), 
+        label=NULL,
+        choices = NULL,
+        selected = NULL, 
+        options = list(
+          placeholder = "Pick a business unit",
+          onInitialize = I("function() { this.setValue(''); }")
+        )
+      ),
+      selectizeInput(ns("pick_country"), 
+        label=NULL,
+        choices = NULL,
+        selected = NULL, 
+        options = list(
+          placeholder = "Pick country",
+          onInitialize = I("function() { this.setValue(''); }")
+        )
+      ),
+      button(ns("add_row_btn"), "Add new row", class = "ui button"),
+      button(ns("delete_row_btn"), "Delete Selected Rows", class = "ui button")
+    )}
+    )
 }
 
 ####### Server
@@ -24,7 +60,9 @@ server <- function(
     id,
     crispy_data_r,
     trisk_granularity_r,
-    max_trisk_granularity, display_columns, editable_columns_names, colored_columns_names) {
+    max_trisk_granularity, 
+    portfolio_asset_type, display_columns, editable_columns_names, colored_columns_names,
+    editable_rows=FALSE) {
   moduleServer(id, function(input, output, session) {
     # PORTFOLIO DATA =========================
 
@@ -40,9 +78,12 @@ server <- function(
 
       # If the portfolio state for the current granularity doesn't exist, create it
       if (!(trisk_granularity_names %in% names(portfolio_states))) {
+        # Create the portfolio dynamic columns data structure
+        # all dynamic columns will be character type
         dynamic_cols <- stats::setNames(lapply(trisk_granularity_r(), function(x) character()), trisk_granularity_r())
         dynamic_cols <- dplyr::as_tibble(dynamic_cols)
 
+        # define static columns that are required at all times (for functional or computational purposes)
         static_cols <- tibble::tibble(
           portfolio_id = character(), # is always 1 for App Crispy Equities
           asset_type = character(), # is always fixed_income for App Crispy Equities
@@ -51,6 +92,7 @@ server <- function(
           expiration_date = character(), # is always NA
           pd_portfolio = numeric() # is always NA
         )
+        # creates the port
         portfolio_data <- dplyr::bind_cols(dynamic_cols, static_cols)
         portfolio_data_r(portfolio_data)
 
@@ -71,35 +113,20 @@ server <- function(
         granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
 
         if (nrow(portfolio_data_r()) == 0) {
-          # initialise the porfolio sector column
-          if (!("loss_given_default" %in% display_columns && "expiration_date" %in% display_columns)) {
-          portfolio_data <- portfolio_data_r()
+          # initialize the portfolio with a unique portfolio id (and it will always be unique in CRISPY)
+            portfolio_data <- portfolio_data_r()
 
-          portfolio_data <- portfolio_data |>
-            dplyr::right_join(
-              crispy_data_r() |> dplyr::distinct_at(granularity)
-            ) |>
-            dplyr::mutate(
-              portfolio_id = "1",
-              asset_type = "equity"
-            )
-          portfolio_data_r(portfolio_data)
-          } else if ("expiration_date" %in% display_columns && "loss_given_default" %in% display_columns) {
-                    portfolio_data <- portfolio_data_r()
-
-          portfolio_data <- portfolio_data |>
-            dplyr::right_join(
-              crispy_data_r() |> dplyr::distinct_at(granularity)
-            ) |>
-            dplyr::mutate(
-              portfolio_id = "1",
-              asset_type = "fixed_income"
-            )
-          portfolio_data_r(portfolio_data)
-          }
-
+            portfolio_data <- portfolio_data |>
+              dplyr::right_join(
+                crispy_data_r() |> dplyr::distinct_at(granularity)
+              ) |>
+              dplyr::mutate(
+                portfolio_id = "1",
+                asset_type = portfolio_asset_type
+              )
+            portfolio_data_r(portfolio_data)
         }
-
+        
         analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
           portfolio_data = portfolio_data_r(),
           multi_crispy_data = crispy_data_r(),
@@ -110,7 +137,6 @@ server <- function(
             crispy_value_loss = round(crispy_value_loss, digits = 2),
             crispy_pd_diff = round(pd_difference, digits = 4)
           )
-
         analysis_data_r(analysis_data)
       }
     })
@@ -170,10 +196,12 @@ server <- function(
           portfolio_data_r(portfolio_data)
         }
       }
-      # Save the new portfolio state in the reactiveValues object
-      # Update the portfolio data to the state corresponding to the current granularity
+
+      # build name of portfolio in the reactiveValues object portfolio_states
       trisk_granularity_names <- dplyr::intersect(names(max_trisk_granularity), colnames(portfolio_data_r()))
       trisk_granularity_names <- paste0(trisk_granularity_names, collapse = "-") # Convert to character vector
+      # Save the new portfolio state in portfolio_states
+      # Update the portfolio data to the state corresponding to the current granularity
       portfolio_states[[trisk_granularity_names]] <- portfolio_data_r()
     })
 

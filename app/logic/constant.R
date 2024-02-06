@@ -11,7 +11,8 @@ backend_trisk_run_folder <- Sys.getenv("BACKEND_TRISK_RUN_FOLDER")
 
 max_trisk_granularity <- list(
   "ald_sector" = 1,
-  "ald_business_unit" = 2
+  "ald_business_unit" = 2,
+  "company_id" = 3
 )
 
 

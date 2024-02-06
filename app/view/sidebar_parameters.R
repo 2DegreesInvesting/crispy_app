@@ -190,7 +190,7 @@ server <- function(id, backend_trisk_run_folder,
       )
     })
     # prevent the UI modal from updating too often (ie. blinking)
-    trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 500)
+    # trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 200)
 
     perimeter <- list(
       "trisk_granularity_r" = trisk_granularity_r,
