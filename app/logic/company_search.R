@@ -13,7 +13,7 @@ fuzzy_top_five_matches <- function(
   # Source the Python script
   use_virtualenv(fs::path(getwd(),".venv"))
   source_python(file.path("scripts", "python", "fuzzy_match.py"))
-
+browser()
   input_string <- tolower(input_string)
   reference_list <- sapply(reference_list, tolower)
   # Call the Python function

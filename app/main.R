@@ -42,8 +42,8 @@ ui <- function(id) {
       tags$div(
         sidebar_parameters$ui(
           ns("sidebar_parameters"),
-          max_trisk_granularity = max_trisk_granularity,
-          available_vars = available_vars
+          max_trisk_granularity = max_trisk_granularity,# constant
+          available_vars = available_vars# constant
         ),
         shiny::img(
           src = "static/logo_1in1000.png",

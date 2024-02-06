@@ -1,3 +1,8 @@
+# Contains the portfolio display functions
+# Is extended by rows_edition module
+# merge the portfolio with crispy data, and aggregate to the 
+# granularity defined in the sidebar_parameter module, creating the analysis_data to feed plots
+
 box::use(
   shiny[moduleServer, NS, reactiveVal, reactive, observeEvent, observe, selectizeInput, eventReactive, div, tags, reactiveValues],
   semantic.dashboard[box],
@@ -20,7 +25,7 @@ ui <- function(id, title = "") {
     title = title, width = 16, collapsible = FALSE,
     DTOutput(outputId = ns("portfolio_table")),
     if (title == "Loans Portfolio") {
-      rows_edition$ui(ns("rows_edition"))
+      rows_edition$ui(ns("portfolio_table"))
     }
   )
 }
@@ -45,13 +50,6 @@ server <- function(
 
     # Initial portfolio data structure
     portfolio_data_r <- reactiveVal()
-
-    rows_edition$server(
-      "rows_edition", 
-      portfolio_data_r = portfolio_data_r, 
-      crispy_data_r=crispy_data_r,
-      trisk_input_path=trisk_input_path
-      )
 
     observe({
       trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
@@ -83,6 +81,15 @@ server <- function(
         portfolio_data_r(portfolio_states[[trisk_granularity_names]])
       }
     })
+
+    # ATTACH ROWS EDITION MODULE =========================
+
+    rows_edition$server(
+      "portfolio_table", 
+      portfolio_data_r = portfolio_data_r, 
+      crispy_data_r=crispy_data_r,
+      trisk_input_path=trisk_input_path
+      )
 
     # ANALYSIS DATA ===================================
 
@@ -122,7 +129,7 @@ server <- function(
     })
 
 
-    # ANALYSIS DISPLAY ===================================
+    # TABLE DISPLAY IN UI ===================================
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
