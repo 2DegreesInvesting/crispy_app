@@ -10,7 +10,6 @@ pipeline_crispy_npv_change_plot <- function(
     analysis_data,
     x_var = "ald_sector",
     y_var = "crispy_perc_value_change") {
-
   x_var <- dplyr::intersect(colnames(analysis_data), x_var)
 
   data_crispy_npv_change_plot <- prepare_for_crispy_npv_change_plot(analysis_data, x_var, y_var)

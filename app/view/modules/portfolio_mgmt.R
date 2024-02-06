@@ -72,7 +72,20 @@ server <- function(
 
         if (nrow(portfolio_data_r()) == 0) {
           # initialise the porfolio sector column
+          if (!("loss_given_default" %in% display_columns && "expiration_date" %in% display_columns)) {
           portfolio_data <- portfolio_data_r()
+
+          portfolio_data <- portfolio_data |>
+            dplyr::right_join(
+              crispy_data_r() |> dplyr::distinct_at(granularity)
+            ) |>
+            dplyr::mutate(
+              portfolio_id = "1",
+              asset_type = "equity"
+            )
+          portfolio_data_r(portfolio_data)
+          } else if ("expiration_date" %in% display_columns && "loss_given_default" %in% display_columns) {
+                    portfolio_data <- portfolio_data_r()
 
           portfolio_data <- portfolio_data |>
             dplyr::right_join(
@@ -83,6 +96,8 @@ server <- function(
               asset_type = "fixed_income"
             )
           portfolio_data_r(portfolio_data)
+          }
+
         }
 
         analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
@@ -92,7 +107,8 @@ server <- function(
         ) |>
           dplyr::mutate(
             crispy_perc_value_change = round(crispy_perc_value_change, digits = 4),
-            crispy_value_loss = round(crispy_value_loss, digits = 2)
+            crispy_value_loss = round(crispy_value_loss, digits = 2),
+            crispy_pd_diff = round(pd_difference, digits = 4)
           )
 
         analysis_data_r(analysis_data)

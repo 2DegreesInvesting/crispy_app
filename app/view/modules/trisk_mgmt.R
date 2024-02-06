@@ -84,13 +84,12 @@ server <- function(
     # fetch or compute trisk on button click
 
     shiny::observeEvent(input$run_trisk, {
-      
       shinyjs::runjs(
         paste0(
-        "$('#", session$ns("mymodal"), "').modal({closable: false}).modal('show');"
+          "$('#", session$ns("mymodal"), "').modal({closable: false}).modal('show');"
         )
       )
-      
+
       if (!is.null(trisk_run_params_r())) {
         trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
         run_id <- NULL
@@ -110,7 +109,7 @@ server <- function(
 
       shinyjs::runjs(paste0(
         "$('#", session$ns("mymodal"), "').modal('hide');"
-        ))
+      ))
       run_id_r(run_id)
     })
 

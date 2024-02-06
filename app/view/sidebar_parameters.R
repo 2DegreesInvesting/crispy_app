@@ -134,9 +134,8 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           ),
           ns = ns
         )
-        )
       )
-    
+    )
   )
 }
 

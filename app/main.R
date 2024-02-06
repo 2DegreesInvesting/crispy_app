@@ -33,9 +33,6 @@ box::use(
 #' @export
 ui <- function(id) {
   ns <- NS(id)
-
-
-
   dashboardPage(
     title = "Homepage",
     # dashboardHeader
@@ -158,12 +155,11 @@ server <- function(id) {
     )
 
     crispy_loans$server(
-      "crispy_loans"
-      # ,
-      # trisk_input_path = trisk_input_path, # constant
-      # backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      # max_trisk_granularity = max_trisk_granularity,
-      # perimeter = perimeter
+      "crispy_loans",
+      trisk_input_path = trisk_input_path, # constant
+      backend_trisk_run_folder = backend_trisk_run_folder, # constant
+      max_trisk_granularity = max_trisk_granularity,
+      perimeter = perimeter
     )
   })
 }
