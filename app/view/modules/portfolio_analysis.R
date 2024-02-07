@@ -1,5 +1,5 @@
 # Contains the portfolio display functions
-# Is extended by rows_edition module
+# Is extended by portfolio_edition module
 # merge the portfolio with crispy data, and aggregate to the 
 # granularity defined in the sidebar_parameter module, creating the analysis_data to feed plots
 
@@ -11,13 +11,13 @@ box::use(
 )
 
 box::use(
-  app / view / modules / rows_edition,
+  app / view / modules / portfolio_edition,
   app / logic / constant[max_trisk_granularity],
   app / logic / renamings[rename_tibble_columns]
 )
 
 
-####### UI
+##################### UI
 
 ui <- function(id, title = "") {
   ns <- NS(id)
@@ -26,13 +26,13 @@ ui <- function(id, title = "") {
     DTOutput(outputId = ns("portfolio_table")),
     if (title == "Loans Portfolio") {
       # show the row editing only on the Loans tab
-      rows_edition$ui(ns("portfolio_table"))
+      portfolio_edition$ui(ns("portfolio_table"))
     }
   )
 }
 
 
-####### Server
+##################### Server
 
 
 server <- function(
@@ -40,19 +40,55 @@ server <- function(
     crispy_data_r,
     trisk_granularity_r,
     max_trisk_granularity,
-    portfolio_asset_type, display_columns, editable_columns_names, colored_columns_names, trisk_input_path,
+    portfolio_asset_type, display_columns, editable_columns_names, colored_columns_names, 
+    possible_trisk_combinations = NULL,
     editable_rows = FALSE) {
   moduleServer(id, function(input, output, session) {
+    
     # PORTFOLIO DATA =========================
-
+    
     # Create a reactiveValues object to store the portfolio states
     # is used to keep track of the portfolio data for each granularity
     portfolio_states <- reactiveValues()
 
-    # Initial portfolio data structure
+    portfolio_data_r <- initialize_portfolio(trisk_granularity_r=trisk_granularity_r, portfolio_states=portfolio_states)
+
+    # ATTACH ROWS EDITION MODULE =========================
+
+    # possible_trisk_combinations is not null for the Loans tab
+    if (!is.null(possible_trisk_combinations)){
+        portfolio_edition$server(
+          "portfolio_table", 
+          portfolio_data_r = portfolio_data_r, 
+          crispy_data_r=crispy_data_r,
+          possible_trisk_combinations=possible_trisk_combinations      )}
+
+    # ANALYSIS DATA ===================================
+
+    analysis_data_r <- generate_analysis_data(portfolio_data_r=portfolio_data_r, crispy_data_r=crispy_data_r, portfolio_asset_type=portfolio_asset_type)
+
+    # TABLE DISPLAY IN UI ===================================
+
+    display_analysis_data(analysis_data_r=analysis_data_r, display_columns=display_columns, editable_columns_names=editable_columns_names, colored_columns_names=colored_columns_names)
+
+    # TABLE INPUTS MGMT ===================================
+
+    update_portfolio_with_user_input()
+
+    return(analysis_data_r)
+  })
+}
+
+
+##################### Modules
+
+
+initialize_portfolio <- function( trisk_granularity_r, portfolio_states){
+      # Initial portfolio data structure
     portfolio_data_r <- reactiveVal()
 
     observe({
+      browser()
       trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
 
       # If the portfolio state for the current granularity doesn't exist, create it
@@ -83,18 +119,11 @@ server <- function(
       }
     })
 
-    # ATTACH ROWS EDITION MODULE =========================
+  return(portfolio_data_r)
+}
 
-    rows_edition$server(
-      "portfolio_table", 
-      portfolio_data_r = portfolio_data_r, 
-      crispy_data_r=crispy_data_r,
-      trisk_input_path=trisk_input_path
-      )
-
-    # ANALYSIS DATA ===================================
-
-    analysis_data_r <- reactiveVal()
+generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_asset_type){
+      analysis_data_r <- reactiveVal()
 
     observe({
       if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r())) {
@@ -131,8 +160,10 @@ server <- function(
       }
     })
 
+return(analysis_data_r)
+}
 
-    # TABLE DISPLAY IN UI ===================================
+display_analysis_data <- function(analysis_data_r, display_columns, editable_columns_names, colored_columns_names){
 
     observeEvent(analysis_data_r(), ignoreInit = TRUE, {
       table_to_display <- analysis_data_r() |>
@@ -170,7 +201,9 @@ server <- function(
       )
     })
 
-    # TABLE INPUTS MGMT ===================================
+}
+
+update_portfolio_with_user_input <- function(input, portfolio_data_r, trisk_granularity_r, display_columns, portfolio_states, max_trisk_granularity){
 
     # Update data structure on cell edit
     observeEvent(input$portfolio_table_cell_edit, {
@@ -195,6 +228,4 @@ server <- function(
       portfolio_states[[trisk_granularity_names]] <- portfolio_data_r()
     })
 
-    return(analysis_data_r)
-  })
 }

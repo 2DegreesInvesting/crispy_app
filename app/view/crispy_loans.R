@@ -30,7 +30,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
 
 ####### Server
 
-server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, max_trisk_granularity) {
+server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, possible_trisk_combinations, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
     # SELECT PARAMETERS =========================
     trisk_granularity_r <- perimeter$trisk_granularity_r
@@ -72,8 +72,8 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       display_columns = display_columns_loans,
       editable_columns_names = editable_columns_names_loans,
       colored_columns_names = colored_columns_names_loans,
-      editable_rows = TRUE # Allow adding and deleting rows, and gives access to the company granularity
-      ,trisk_input_path=trisk_input_path
+      editable_rows = TRUE, # Allow adding and deleting rows, and gives access to the company granularity
+      possible_trisk_combinations=possible_trisk_combinations
     )
   })
 }

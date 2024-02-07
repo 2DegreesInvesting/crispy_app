@@ -17,14 +17,13 @@ useShinyjs(),
   tags$head(
     tags$script(src = "https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js"),
   ),
-  tags$div(style = "width: 300px; margin: 20px auto;",
+  
       tags$div(class = "ui fluid search selection dropdown", id = ns("search-dropdown"),
           tags$input(type = "hidden", name = ns("picked_choice")),
           tags$div(class = "default text", paste0("Select a ",id,"")),
           tags$i(class = "dropdown icon"),
           tags$div(class = "menu")
-      )
-  ),
+      ),
 
   # TODO js scripts shouldn't be in the html source code, to move to js folder
   # TODO FIX THE ifelse DOESNT WORK

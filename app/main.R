@@ -151,7 +151,7 @@ ui <- function(id) {
       )
     )
   )
-  )
+)
 }
 
 # Define the server function
@@ -179,10 +179,12 @@ server <- function(id) {
       perimeter = perimeter
     )
 
+    possible_trisk_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
     crispy_loans$server(
       "crispy_loans",
       trisk_input_path = trisk_input_path, # constant
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
+      possible_trisk_combinations = possible_trisk_combinations, # computed constant
       max_trisk_granularity = max_trisk_granularity, # constant
       perimeter = perimeter
     )

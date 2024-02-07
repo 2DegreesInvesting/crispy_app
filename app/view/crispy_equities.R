@@ -10,8 +10,8 @@ box::use(
 box::use(
   app / view / modules / trisk_mgmt,
   app / view / modules / portfolio_analysis,
-  app / view / modules / equity_change_plots,
-  app / view / modules / trajectories_plots,
+  app / view / modules / plots_equity_change,
+  app / view / modules / plots_trajectories,
 )
 
 ####### UI
@@ -28,8 +28,8 @@ ui <- function(id, max_trisk_granularity, available_vars) {
         class = "ui stackable grid",
         trisk_mgmt$ui(ns("trisk_mgmt")),
         portfolio_analysis$ui(ns("portfolio_analysis"), title = "Equities portfolio"),
-        equity_change_plots$ui(ns("equity_change_plots")),
-        trajectories_plots$ui(ns("trajectories_plots"))
+        plots_equity_change$ui(ns("plots_equity_change")),
+        plots_trajectories$ui(ns("plots_trajectories"))
       )
     )
   )
@@ -39,9 +39,11 @@ ui <- function(id, max_trisk_granularity, available_vars) {
 
 server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-    # SELECT PARAMETERS =========================
+
     trisk_granularity_r <- perimeter$trisk_granularity_r
     trisk_run_params_r <- perimeter$trisk_run_params_r
+
+    # GET RESULTS FROM CONFIG =========================
 
     display_columns_equities <- c(
       names(max_trisk_granularity),
@@ -49,9 +51,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       "crispy_perc_value_change",
       "crispy_value_loss"
     )
-
     editable_columns_names_equities <- c("exposure_value_usd")
-
     colored_columns_names_equities <- c("crispy_perc_value_change", "crispy_value_loss")
 
     results <- trisk_mgmt$server(
@@ -60,7 +60,6 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       trisk_granularity_r = trisk_granularity_r,
       trisk_run_params_r = trisk_run_params_r,
       backend_trisk_run_folder = backend_trisk_run_folder,
-      trisk_input_path = trisk_input_path,
       max_trisk_granularity = max_trisk_granularity
     )
 
@@ -79,22 +78,21 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       portfolio_asset_type = "equity",
       display_columns = display_columns_equities,
       editable_columns_names = editable_columns_names_equities,
-      colored_columns_names = colored_columns_names_equities,
-      trisk_input_path=trisk_input_path
-    )
+      colored_columns_names = colored_columns_names_equities
+  )
 
     # CONSUME TRISK OUTPUTS =========================
 
     # Generate equity change plots
-    equity_change_plots$server(
-      "equity_change_plots",
+    plots_equity_change$server(
+      "plots_equity_change",
       analysis_data_r = analysis_data_r,
       max_trisk_granularity = max_trisk_granularity
     )
 
     # Generate trajectories plots
-    trajectories_plots$server(
-      "trajectories_plots",
+    plots_trajectories$server(
+      "plots_trajectories",
       trajectories_data_r = trajectories_data_r,
       max_trisk_granularity = max_trisk_granularity
     )
