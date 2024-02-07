@@ -80,7 +80,7 @@ server <- function(
 
     # fetch or compute trisk on button click
 
-    shiny::observeEvent(input$run_trisk, {
+    shiny::observeEvent(input$run_trisk, ignoreNULL = T, {
       shinyjs::runjs(
         paste0(
           "$('#", session$ns("mymodal"), "').modal({closable: true}).modal('show');"

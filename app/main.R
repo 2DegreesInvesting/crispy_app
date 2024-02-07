@@ -33,6 +33,30 @@ box::use(
 #' @export
 ui <- function(id) {
   ns <- NS(id)
+  
+
+  shiny.semantic::semanticPage(
+  tags$div(class="header",       # Add a loading overlay
+      shinyjs::useShinyjs(),  # Initialize shinyjs
+      tags$head(
+        tags$style(HTML("
+          #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+          }
+        "))
+      ),
+      div(id = "loading-overlay", "Initializing...")),
+
   dashboardPage(
     title = "Homepage",
     # dashboardHeader
@@ -127,6 +151,7 @@ ui <- function(id) {
       )
     )
   )
+  )
 }
 
 # Define the server function
@@ -162,4 +187,9 @@ server <- function(id) {
       perimeter = perimeter
     )
   })
+  
+
+  shinyjs::runjs('$("#loading-overlay").hide();')
+
+
 }

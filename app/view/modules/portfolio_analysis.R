@@ -25,6 +25,7 @@ ui <- function(id, title = "") {
     title = title, width = 16, collapsible = FALSE,
     DTOutput(outputId = ns("portfolio_table")),
     if (title == "Loans Portfolio") {
+      # show the row editing only on the Loans tab
       rows_edition$ui(ns("portfolio_table"))
     }
   )
@@ -108,7 +109,9 @@ server <- function(
               crispy_data_r() |> dplyr::distinct_at(granularity)
             ) |>
             dplyr::mutate(
-              portfolio_id = "1",
+              # we don't compare portfolios in the app so it's always same id
+              portfolio_id = "1", 
+              # portfolio_asset_type : equities or fixed_income
               asset_type = portfolio_asset_type
             )
           portfolio_data_r(portfolio_data)

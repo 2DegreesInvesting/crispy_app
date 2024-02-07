@@ -21,8 +21,8 @@ ui <- function(id) {
 
   tags$div(
     style = "display: flex; flex-wrap: nowrap; width: 100%; align-items: center;", # Flex container
-    search_module$ui(ns("company_search_module")),
-    search_module$ui(ns("business_unit_search_module")),
+    search_module$ui(ns("company_name_search_module"), offer_options = FALSE),
+    search_module$ui(ns("ald_business_unit_search_module"), offer_options = TRUE),
     button(ns("add_row_btn"), "Add new row", class = "ui button"),
     button(ns("delete_row_btn"), "Delete Selected Rows", class = "ui button")
   )
@@ -45,23 +45,27 @@ server <- function(id, parent_portfolio_id, portfolio_data_r, crispy_data_r, tri
       unique(crispy_data_r()$ald_business_unit)
     })
 
-    search_module$server("company_search_module", variable_choices_r=company_choices_r)
-    search_module$server("business_unit_search_module", variable_choices_r=bu_choices_r)
 
+    picked_company_name = search_module$server("company_name_search_module", variable_choices_r=company_choices_r)
+    picked_ald_business_unit <- search_module$server("ald_business_unit_search_module", variable_choices_r=bu_choices_r)
     # EDIT ROWS =================
 
 
     # BUTTONS ADD ROWS
     # add a new row by creating it in the portfolio
     observeEvent(input$add_btn, {
-      portfolio_data_r(
-        dplyr::bind_rows(
-          portfolio_data_r(),
-          tibble::as_tibble(list(ald_sector = input$category_input))
-        )
+      browser()
+      user_defined_row <- tibble::as_tibble(list(
+          company_name = picked_company_name(),
+          ald_business_unit = picked_ald_business_unit()
+          )) |>
+          dplyr::select_at(dplyr::intersect(names(.data), names(portfolio_data_r())))
+      
+      updated_portfolio_data <- dplyr::bind_rows(
+            portfolio_data_r(),
+            user_defined_row()
       )
-      updateTextInput(session, "category_input", value = "") # Clear the input
-      current_input("") # Reset the current input tracker
+      portfolio_data_r(updated_portfolio_data)
     })
 
 

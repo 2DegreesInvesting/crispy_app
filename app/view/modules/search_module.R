@@ -1,6 +1,6 @@
 # Load required packages
 box::use(
-  shiny[moduleServer, NS, div, h1, tags, HTML, observe],
+  shiny[moduleServer, NS, div, h1, tags, HTML, observe, reactive],
   shiny.semantic[semanticPage],
   semantic.dashboard[dashboardPage, dashboardBody, dashboardSidebar, dashboardHeader],
   shinyjs[useShinyjs]
@@ -8,7 +8,8 @@ box::use(
 
 ####### UI
 
-ui <- function(id) {
+# offer_option : don't wait for first keystroke to show dropdown
+ui <- function(id, offer_options=FALSE) {
   ns <- NS(id)
 
 tags$div(
@@ -18,25 +19,23 @@ useShinyjs(),
   ),
   tags$div(style = "width: 300px; margin: 20px auto;",
       tags$div(class = "ui fluid search selection dropdown", id = ns("search-dropdown"),
-          tags$input(type = "hidden", name = "company"),
+          tags$input(type = "hidden", name = ns("picked_choice")),
           tags$i(class = "dropdown icon"),
-          tags$div(class = "default text", paste0("Select a ",id,"")),
           tags$div(class = "menu")
       )
   ),
+
+  # TODO js scripts shouldn't be in the html source code, to move to js folder
+  # TODO FIX THE ifelse DOESNT WORK
   tags$script(HTML(paste0("
       $(document).ready(function() {
-        var allChoices = [
-          { name: 'Apple', value: 'Apple' },
-          { name: 'Banana', value: 'Banana' },
-          // ... other initial choices
-        ];
+        var allChoices = [];
 
         function initializeDropdown(choices) {
           $('#", ns("search-dropdown"), "').dropdown({
             values: choices,
             forceSelection: false,
-            minCharacters: 1,
+            minCharacters: ",ifelse(offer_options, "0", "1"),",
             onLabelCreate: function(value, text) {
               return $(this);
             },
@@ -77,13 +76,20 @@ useShinyjs(),
 
 server <- function(id, variable_choices_r) {
     moduleServer(id, function(input, output, session) {
-    ns <- session$ns
+    
+      
 
     observe({
       newChoices <- variable_choices_r()
+
+      ns <- session$ns
       # Send new choices to the dropdown using the namespace
       session$sendCustomMessage(ns("updateDropdown"), newChoices)
     })
+
+    # Accessing the selected value
+    picked_choice <- reactive({ input[[ns("picked_choice")]] })
+    return(picked_choice)
   })
 
 }
