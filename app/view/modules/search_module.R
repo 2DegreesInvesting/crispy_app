@@ -20,6 +20,7 @@ useShinyjs(),
   tags$div(style = "width: 300px; margin: 20px auto;",
       tags$div(class = "ui fluid search selection dropdown", id = ns("search-dropdown"),
           tags$input(type = "hidden", name = ns("picked_choice")),
+          tags$div(class = "default text", paste0("Select a ",id,"")),
           tags$i(class = "dropdown icon"),
           tags$div(class = "menu")
       )
@@ -77,12 +78,10 @@ useShinyjs(),
 server <- function(id, variable_choices_r) {
     moduleServer(id, function(input, output, session) {
     
-      
+      ns <- session$ns      
 
     observe({
       newChoices <- variable_choices_r()
-
-      ns <- session$ns
       # Send new choices to the dropdown using the namespace
       session$sendCustomMessage(ns("updateDropdown"), newChoices)
     })

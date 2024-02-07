@@ -19,13 +19,21 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
 
-  tags$div(
-    style = "display: flex; flex-wrap: nowrap; width: 100%; align-items: center;", # Flex container
+  
+    
+  div(style = "display: flex; flex-wrap: wrap;", # Flex container
     search_module$ui(ns("company_name_search_module"), offer_options = FALSE),
-    search_module$ui(ns("ald_business_unit_search_module"), offer_options = TRUE),
-    button(ns("add_row_btn"), "Add new row", class = "ui button"),
+        
+        
+    search_module$ui(ns("ald_business_unit_search_module"), offer_options = TRUE)
+        ,
+        
+    button(ns("add_row_btn"), "Add new row", class = "ui button")
+        ,
+        
     button(ns("delete_row_btn"), "Delete Selected Rows", class = "ui button")
-  )
+        )
+  
 }
 
 ####### Server
@@ -53,7 +61,7 @@ server <- function(id, parent_portfolio_id, portfolio_data_r, crispy_data_r, tri
 
     # BUTTONS ADD ROWS
     # add a new row by creating it in the portfolio
-    observeEvent(input$add_btn, {
+    observeEvent(input$add_row_btn, {
       browser()
       user_defined_row <- tibble::as_tibble(list(
           company_name = picked_company_name(),
@@ -63,7 +71,7 @@ server <- function(id, parent_portfolio_id, portfolio_data_r, crispy_data_r, tri
       
       updated_portfolio_data <- dplyr::bind_rows(
             portfolio_data_r(),
-            user_defined_row()
+            user_defined_row
       )
       portfolio_data_r(updated_portfolio_data)
     })
@@ -76,7 +84,7 @@ server <- function(id, parent_portfolio_id, portfolio_data_r, crispy_data_r, tri
     proxy <- dataTableProxy(id) 
     
     # Delete row
-    observeEvent(input$delete_btn, {
+    observeEvent(input$delete_row_btn, {
       selected_row <- input$portfolio_table_rows_selected
       if (length(selected_row)) {
         my_data_data <- portfolio_data_r()
