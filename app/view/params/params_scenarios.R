@@ -99,7 +99,8 @@ server <- function(id,
       possible_trisk_combinations = possible_trisk_combinations,
       hide_vars = hide_vars,
       selected_baseline_r = selected_baseline_r,
-      selected_shock_r = selected_shock_r
+      selected_shock_r = selected_shock_r,
+      use_ald_sector=use_ald_sector
     )
 
 
@@ -114,66 +115,6 @@ server <- function(id,
     })
     return(scenario_config_r)
   })
-}
-
-# MODULES =========================
-
-create_dropdown_input <- function(id) {
-  ns <- NS(id)
-  browser()
-  tags$div(
-    # this javascript udpates the dropdown with the new choices
-    tags$head(tags$script(HTML(paste0("
-      $(document).ready(function() {
-        var allChoices = [];
-
-        function initializeDropdown(choices) {
-          $('#", ns('choices_dropdown'), "').dropdown({
-            values: choices,
-            forceSelection: false,
-            onLabelCreate: function(value, text) {
-              return $(this);
-            }
-          });
-        }
-      initializeDropdown(allChoices); // Initial dropdown initialization
-
-        Shiny.addCustomMessageHandler('", ns("updateDropdown"), "', function(newChoices) {
-          // Format the choices as required by the dropdown
-          var formattedChoices = newChoices.choices.map(function(choice) {
-            return { name: choice, value: choice };
-          });
-          // Directly update dropdown values
-          initializeDropdown(formattedChoices);
-        });
-      });
-    ")))),
-    # selection dropdown
-    class = "ui fluid search selection dropdown", id = ns("choices_dropdown"),
-    tags$i(class = "dropdown icon"),
-    tags$div(class="input", type = "hidden", id = ns("dropdown_choice")), # This will hold the selected value
-    div(class = "default text", ""),
-        tags$div(class = "menu")
-
-  )
-  
-}
-
-update_dropdown_input <- function(session, id, choices) {
-
- session$sendCustomMessage(
-    session$ns(paste0(id, "-updateDropdown")), 
-    list(id = session$ns(paste0(id, "-choices_dropdown")), choices = choices)
-    )
-
-}
-
-get_dropdown_choice <- function(id, input, session) {
-  return(reactive({
-    browser()
-    pick_id <- session$ns(paste0(id, "-dropdown_choice"))
-    input[[pick_id]]
-  }))
 }
 
 
@@ -192,7 +133,7 @@ update_baseline_dropdown <- function(
     new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")
 
     # Update shock_scenario dropdown with unique values from the filtered data
-    update_dropdown_input(session, "baseline_scenario", choices = new_choices)
+    update_dropdown_input(id="baseline_scenario", session=session,choices = new_choices)
   })
 }
 
@@ -215,7 +156,7 @@ update_shock_dropdown <- function(
     new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")
 
     # Update shock_scenario dropdown with unique values from the filtered data
-    update_dropdown_input(session, "shock_scenario", choices = new_choices)
+    update_dropdown_input(id="shock_scenario", session=session, choices = new_choices)
   })
 }
 
@@ -225,7 +166,8 @@ update_geography_dropdown <- function(
     possible_trisk_combinations,
     hide_vars,
     selected_baseline_r,
-    selected_shock_r) {
+    selected_shock_r,
+    use_ald_sector) {
   observeEvent(c(selected_baseline_r(), selected_shock_r()), ignoreInit = TRUE, {
     selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
     selected_shock <- rename_string_vector(selected_shock_r(), words_class = "scenarios", dev_to_ux = FALSE)
@@ -246,6 +188,72 @@ update_geography_dropdown <- function(
 
     new_choices <- possible_geographies
     # Update scenario_geography dropdown with unique values from the filtered data
-    update_dropdown_input(session, "scenario_geography", choices = new_choices)
+    update_dropdown_input(id="scenario_geography", session=session,choices = new_choices)
   })
 }
+
+
+
+
+# MODULES =========================
+
+
+
+
+create_dropdown_input <- function(id) {
+  ns <- NS(id)
+  tags$div(
+    # this javascript udpates the dropdown with the new choices
+    tags$head(tags$script(HTML(paste0("
+      $(document).ready(function() {
+        var allChoices = [];
+
+        function initializeDropdown(choices) {
+          $('#", ns('choices_dropdown'), "').dropdown({
+            values: choices,
+            forceSelection: false,
+            onChange: function(value, text, $choice) {
+              // This line sends the selected value to Shiny server
+              Shiny.setInputValue('", ns('dropdown_choice'),"', value);
+            }
+          });
+        }
+        initializeDropdown(allChoices); // Initial dropdown initialization
+
+        Shiny.addCustomMessageHandler('", ns("updateDropdown"), "', function(newChoices) {
+          // Format the choices as required by the dropdown
+          var formattedChoices = newChoices.choices.map(function(choice) {
+            return { name: choice, value: choice };
+          });
+          // Update dropdown values
+          $('#", ns('choices_dropdown'), "').dropdown('change values', formattedChoices);
+        });
+      });
+    ")))),
+    # selection dropdown
+    class = "ui fluid search selection dropdown", id = ns("choices_dropdown"),
+    tags$i(class = "dropdown icon"),
+    tags$input(type = "hidden", id = ns("dropdown_choice")), # This will hold the selected value
+    div(class = "default text", ""),
+    tags$div(class = "menu")
+  )
+
+}
+
+update_dropdown_input <- function(id, session, choices) {
+
+ session$sendCustomMessage(
+    session$ns(paste0(id, "-updateDropdown")), 
+    list(choices = choices)
+    )
+
+}
+
+get_dropdown_choice <- function(id, input, session) {
+  return(reactive({
+    # browser()
+    pick_id <- paste0(id, "-dropdown_choice")
+    input[[pick_id]]
+  }))
+}
+
