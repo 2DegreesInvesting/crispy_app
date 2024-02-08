@@ -172,7 +172,7 @@ update_geography_dropdown <- function(
     selected_baseline_r,
     selected_shock_r,
     use_ald_sector) {
-  observeEvent(c(selected_baseline_r(), selected_shock_r()), ignoreInit = TRUE, {
+  observeEvent(selected_shock_r(), ignoreInit = TRUE, {
     # selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
     # selected_shock <- rename_string_vector(selected_shock_r(), words_class = "scenarios", dev_to_ux = FALSE)
 
