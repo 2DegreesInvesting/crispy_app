@@ -58,7 +58,7 @@ server <- function(id,
   moduleServer(id, function(input, output, session) {
     # Synchronise the scenarios available depending on user scenario choice
     selected_baseline_r <- reactive({
-      browser()
+      # browser()
       choice_r <- get_dropdown_choice(
         id = "baseline_scenario", input = input, session = session
       )
@@ -146,7 +146,7 @@ update_shock_dropdown <- function(
     hide_vars,
     selected_baseline_r) {
   observeEvent(selected_baseline_r(), ignoreInit = TRUE, {
-    browser()
+    # browser()
     # selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
     selected_baseline <- selected_baseline_r()
     possible_shocks <- possible_trisk_combinations |>
@@ -213,7 +213,6 @@ create_dropdown_input <- function(id) {
     # this javascript udpates the dropdown with the new choices
     tags$head(tags$script(HTML(paste0("
       $(document).ready(function() {
-        var allChoices = [];
 
         function initializeDropdown(choices) {
           $('#", ns("choices_dropdown"), "').dropdown({
@@ -222,9 +221,14 @@ create_dropdown_input <- function(id) {
             onChange: function(value, text, $choice) {
               // This line sends the selected value to Shiny server
               Shiny.setInputValue('", ns("dropdown_choice"), "', value);
+            },
+            onLabelCreate: function(value, text) {
+              return $(this);
             }
           });
         }
+
+        var allChoices = [];
         initializeDropdown(allChoices); // Initial dropdown initialization
 
         Shiny.addCustomMessageHandler('", ns("updateDropdown"), "', function(newChoices) {
@@ -233,12 +237,14 @@ create_dropdown_input <- function(id) {
             return { name: choice, value: choice };
           });
           // Update dropdown values
-          $('#", ns("choices_dropdown"), "').dropdown('change values', formattedChoices);
+          // Update dropdown values
+          $('#", ns("choices_dropdown"), "').dropdown('clear');
+          $('#", ns("choices_dropdown"), "').dropdown('setup menu', {values: formattedChoices});
         });
       });
     ")))),
     # selection dropdown
-    class = "ui fluid search selection dropdown", id = ns("choices_dropdown"),
+    class = "ui fluid selection dropdown", id = ns("choices_dropdown"),
     tags$i(class = "dropdown icon"),
     tags$input(type = "hidden", id = ns("dropdown_choice")), # This will hold the selected value
     div(class = "default text", ""),
