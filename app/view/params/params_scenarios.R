@@ -59,17 +59,18 @@ server <- function(id,
     # Synchronise the scenarios available depending on user scenario choice
     selected_baseline_r <- reactive({
       choice_r <- get_dropdown_choice(
-        id="baseline_scenario", input=input, session=session)
+        id = "baseline_scenario", input = input, session = session
+      )
       renamed_choice <- rename_string_vector(choice_r(), words_class = "scenarios", dev_to_ux = FALSE)
       return(renamed_choice)
     })
     selected_shock_r <- reactive({
-      choice_r <- get_dropdown_choice(id="shock_scenario", input=input, session=session)
+      choice_r <- get_dropdown_choice(id = "shock_scenario", input = input, session = session)
       renamed_choice <- rename_string_vector(choice_r(), words_class = "scenarios", dev_to_ux = FALSE)
       return(renamed_choice)
     })
     selected_geography_r <- reactive({
-      choice_r <- get_dropdown_choice(id="scenario_geography", input=input, session=session)
+      choice_r <- get_dropdown_choice(id = "scenario_geography", input = input, session = session)
       clean_choice <- ifelse(is.null(choice_r()), "", choice_r())
       return(clean_choice)
     })
@@ -100,7 +101,7 @@ server <- function(id,
       hide_vars = hide_vars,
       selected_baseline_r = selected_baseline_r,
       selected_shock_r = selected_shock_r,
-      use_ald_sector=use_ald_sector
+      use_ald_sector = use_ald_sector
     )
 
 
@@ -133,7 +134,7 @@ update_baseline_dropdown <- function(
     new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")
 
     # Update shock_scenario dropdown with unique values from the filtered data
-    update_dropdown_input(id="baseline_scenario", session=session,choices = new_choices)
+    update_dropdown_input(id = "baseline_scenario", session = session, choices = new_choices)
   })
 }
 
@@ -144,7 +145,9 @@ update_shock_dropdown <- function(
     hide_vars,
     selected_baseline_r) {
   observeEvent(selected_baseline_r(), ignoreInit = TRUE, {
-    selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
+    
+    # selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
+    selected_baseline <- selected_baseline_r()
     possible_shocks <- possible_trisk_combinations |>
       dplyr::filter(.data$baseline_scenario == selected_baseline) |>
       dplyr::distinct(.data$shock_scenario) |>
@@ -156,7 +159,7 @@ update_shock_dropdown <- function(
     new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")
 
     # Update shock_scenario dropdown with unique values from the filtered data
-    update_dropdown_input(id="shock_scenario", session=session, choices = new_choices)
+    update_dropdown_input(id = "shock_scenario", session = session, choices = new_choices)
   })
 }
 
@@ -169,8 +172,11 @@ update_geography_dropdown <- function(
     selected_shock_r,
     use_ald_sector) {
   observeEvent(c(selected_baseline_r(), selected_shock_r()), ignoreInit = TRUE, {
-    selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
-    selected_shock <- rename_string_vector(selected_shock_r(), words_class = "scenarios", dev_to_ux = FALSE)
+    # selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
+    # selected_shock <- rename_string_vector(selected_shock_r(), words_class = "scenarios", dev_to_ux = FALSE)
+
+    selected_baseline <- selected_baseline_r()
+    selected_shock <- selected_shock_r()
 
     # Filter the data based on selected baseline and shock scenarios
     possible_geographies <- possible_trisk_combinations |>
@@ -188,7 +194,7 @@ update_geography_dropdown <- function(
 
     new_choices <- possible_geographies
     # Update scenario_geography dropdown with unique values from the filtered data
-    update_dropdown_input(id="scenario_geography", session=session,choices = new_choices)
+    update_dropdown_input(id = "scenario_geography", session = session, choices = new_choices)
   })
 }
 
@@ -209,12 +215,12 @@ create_dropdown_input <- function(id) {
         var allChoices = [];
 
         function initializeDropdown(choices) {
-          $('#", ns('choices_dropdown'), "').dropdown({
+          $('#", ns("choices_dropdown"), "').dropdown({
             values: choices,
             forceSelection: false,
             onChange: function(value, text, $choice) {
               // This line sends the selected value to Shiny server
-              Shiny.setInputValue('", ns('dropdown_choice'),"', value);
+              Shiny.setInputValue('", ns("dropdown_choice"), "', value);
             }
           });
         }
@@ -226,7 +232,7 @@ create_dropdown_input <- function(id) {
             return { name: choice, value: choice };
           });
           // Update dropdown values
-          $('#", ns('choices_dropdown'), "').dropdown('change values', formattedChoices);
+          $('#", ns("choices_dropdown"), "').dropdown('change values', formattedChoices);
         });
       });
     ")))),
@@ -237,16 +243,13 @@ create_dropdown_input <- function(id) {
     div(class = "default text", ""),
     tags$div(class = "menu")
   )
-
 }
 
 update_dropdown_input <- function(id, session, choices) {
-
- session$sendCustomMessage(
-    session$ns(paste0(id, "-updateDropdown")), 
+  session$sendCustomMessage(
+    session$ns(paste0(id, "-updateDropdown")),
     list(choices = choices)
-    )
-
+  )
 }
 
 get_dropdown_choice <- function(id, input, session) {
@@ -256,4 +259,3 @@ get_dropdown_choice <- function(id, input, session) {
     input[[pick_id]]
   }))
 }
-
