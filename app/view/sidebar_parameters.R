@@ -58,7 +58,7 @@ server <- function(id, backend_trisk_run_folder,
       possible_trisk_combinations = possible_trisk_combinations
     )
 
-        trisk_config_r <- params_trisk$server("trisk_params", available_vars)
+    trisk_config_r <- params_trisk$server("trisk_params", available_vars)
 
 
     # reactive variable containing trisk run parameters
@@ -73,7 +73,8 @@ server <- function(id, backend_trisk_run_folder,
         growth_rate = trisk_config_r()$discount_and_growth$growth_rate,
         div_netprofit_prop_coef = trisk_config_r()$div_netprofit_prop_coef,
         carbon_price_model = trisk_config_r()$carbon_price_model,
-        market_passthrough = trisk_config_r()$market_passthrough)
+        market_passthrough = trisk_config_r()$market_passthrough
+      )
     })
     # prevent the UI modal from updating too often (ie. blinking)
     # trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 200)

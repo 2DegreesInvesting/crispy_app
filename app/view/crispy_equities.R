@@ -59,7 +59,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       trisk_granularity_r = trisk_granularity_r,
       trisk_run_params_r = trisk_run_params_r,
       backend_trisk_run_folder = backend_trisk_run_folder,
-      trisk_input_path=trisk_input_path,
+      trisk_input_path = trisk_input_path,
       max_trisk_granularity = max_trisk_granularity
     )
 
