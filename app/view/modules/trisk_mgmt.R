@@ -140,7 +140,6 @@ get_run_id <- function(trisk_run_params,
   all_input_params_initialized <- !any(sapply(trisk_run_params, function(x) {
     is.null(x)
   }))
-
   if (all_input_params_initialized) {
     if (trisk_run_params$carbon_price_model == "no_carbon_tax") {
       trisk_run_params$market_passthrough <- 0
@@ -152,8 +151,9 @@ get_run_id <- function(trisk_run_params,
       trisk_run_params = trisk_run_params,
       max_trisk_granularity = max_trisk_granularity
     )
+    return(run_id)
   }
-  return(run_id)
+  
 }
 
 # fetch or create a trisk run

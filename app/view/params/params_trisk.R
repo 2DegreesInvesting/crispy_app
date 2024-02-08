@@ -84,12 +84,13 @@ server <- function(id, available_vars) {
         update_slider(session, "growth_rate", value = as.character(closest_smaller_value))
       }
     })
+    
     trisk_config_r <- reactive({
       reactiveValues(
         shock_year = as.numeric(input$shock_year),
-        discount_rate = as.numeric(input$discount_and_growth$discount_rate),
+        discount_rate = as.numeric(input$discount_rate),
         risk_free_rate = as.numeric(input$risk_free_rate),
-        growth_rate = as.numeric(input$discount_and_growth$growth_rate),
+        growth_rate = as.numeric(input$growth_rate),
         div_netprofit_prop_coef = as.numeric(input$div_netprofit_prop_coef),
         carbon_price_model = input$carbon_price_model,
         market_passthrough = as.numeric(input$market_passthrough)

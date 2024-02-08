@@ -58,6 +58,7 @@ server <- function(id,
   moduleServer(id, function(input, output, session) {
     # Synchronise the scenarios available depending on user scenario choice
     selected_baseline_r <- reactive({
+      browser()
       choice_r <- get_dropdown_choice(
         id = "baseline_scenario", input = input, session = session
       )
@@ -145,7 +146,7 @@ update_shock_dropdown <- function(
     hide_vars,
     selected_baseline_r) {
   observeEvent(selected_baseline_r(), ignoreInit = TRUE, {
-    
+    browser()
     # selected_baseline <- rename_string_vector(selected_baseline_r(), words_class = "scenarios", dev_to_ux = FALSE)
     selected_baseline <- selected_baseline_r()
     possible_shocks <- possible_trisk_combinations |>
@@ -254,7 +255,6 @@ update_dropdown_input <- function(id, session, choices) {
 
 get_dropdown_choice <- function(id, input, session) {
   return(reactive({
-    # browser()
     pick_id <- paste0(id, "-dropdown_choice")
     input[[pick_id]]
   }))

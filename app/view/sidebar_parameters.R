@@ -58,7 +58,7 @@ server <- function(id, backend_trisk_run_folder,
       possible_trisk_combinations = possible_trisk_combinations
     )
 
-    trisk_config_r <- params_trisk$server("trisk_params", available_vars)
+    trisk_config_r <- params_trisk$server("params_trisk", available_vars)
 
 
     # reactive variable containing trisk run parameters
