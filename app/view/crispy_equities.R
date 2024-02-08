@@ -9,7 +9,7 @@ box::use(
 
 box::use(
   app / view / modules / trisk_mgmt,
-  app / view / modules / portfolio_analysis,
+  app / view / portfolio / portfolio_analysis,
   app / view / modules / plots_equity_change,
   app / view / modules / plots_trajectories,
 )
@@ -39,7 +39,6 @@ ui <- function(id, max_trisk_granularity, available_vars) {
 
 server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-
     trisk_granularity_r <- perimeter$trisk_granularity_r
     trisk_run_params_r <- perimeter$trisk_run_params_r
 
@@ -60,6 +59,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       trisk_granularity_r = trisk_granularity_r,
       trisk_run_params_r = trisk_run_params_r,
       backend_trisk_run_folder = backend_trisk_run_folder,
+      trisk_input_path=trisk_input_path,
       max_trisk_granularity = max_trisk_granularity
     )
 
@@ -79,7 +79,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
       display_columns = display_columns_equities,
       editable_columns_names = editable_columns_names_equities,
       colored_columns_names = colored_columns_names_equities
-  )
+    )
 
     # CONSUME TRISK OUTPUTS =========================
 

@@ -21,6 +21,7 @@ ui <- function(id) {
   )
 }
 
+
 ####### Server
 
 
@@ -29,7 +30,6 @@ server <- function(id, trajectories_data_r, max_trisk_granularity) {
     observeEvent(trajectories_data_r(), ignoreInit = TRUE, {
       granul_levels <- dplyr::intersect(colnames(trajectories_data_r()), names(max_trisk_granularity))
       granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
-
 
       ### BASELINE SCENARIO
 

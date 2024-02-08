@@ -8,7 +8,7 @@ box::use(
 
 box::use(
   app / view / modules / trisk_mgmt,
-  app / view / modules / portfolio_analysis
+  app / view / portfolio / portfolio_analysis
 )
 
 
@@ -73,7 +73,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, po
       editable_columns_names = editable_columns_names_loans,
       colored_columns_names = colored_columns_names_loans,
       editable_rows = TRUE, # Allow adding and deleting rows, and gives access to the company granularity
-      possible_trisk_combinations=possible_trisk_combinations
+      possible_trisk_combinations = possible_trisk_combinations
     )
   })
 }

@@ -9,9 +9,9 @@ box::use(
 )
 
 box::use(
-  app/view/modules/params_scenarios,
-  app/view/modules/params_dimensions,
-  app/view/modules/params_trisk,
+  app / view / params / params_scenarios,
+  app / view / params / params_dimensions,
+  app / view / params / params_trisk,
   app / logic / renamings[rename_string_vector]
 )
 
@@ -36,7 +36,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
 
 
 server <- function(id, backend_trisk_run_folder,
-                   trisk_input_path,
+                   possible_trisk_combinations,
                    available_vars,
                    hide_vars,
                    max_trisk_granularity,
@@ -45,33 +45,35 @@ server <- function(id, backend_trisk_run_folder,
     # Update UI elements =========================
 
     # Collect UI elements (and compute trisks if necessary) =========================
-    trisk_granularity_r <- params_dimensions$server("granularity_switch", max_trisk_granularity)
+    trisk_granularity_r <- params_dimensions$server(
+      "granularity_switch",
+      max_trisk_granularity = max_trisk_granularity
+    )
 
 
-    
     scenario_config_r <- params_scenarios$server(
-      "scenario_choice",
-      trisk_input_path,
-      hide_vars,
-      use_ald_sector,
-      possible_trisk_combinations)
+      "params_scenarios",
+      hide_vars = hide_vars,
+      use_ald_sector = use_ald_sector,
+      possible_trisk_combinations = possible_trisk_combinations
+    )
 
-    trisk_config_r <- params_trisk$server("trisk_params", available_vars)
+        trisk_config_r <- params_trisk$server("trisk_params", available_vars)
+
 
     # reactive variable containing trisk run parameters
     trisk_run_params_r <- shiny::reactive({
       reactiveValues(
-        baseline_scenario = rename_string_vector(scenario_config_r()$baseline_scenario, words_class = "scenarios", dev_to_ux = FALSE),
-        shock_scenario = rename_string_vector(scenario_config_r()$shock_scenario, words_class = "scenarios", dev_to_ux = FALSE),
+        baseline_scenario = scenario_config_r()$baseline_scenario,
+        shock_scenario = scenario_config_r()$shock_scenario,
         scenario_geography = scenario_config_r()$scenario_geography,
-        shock_year = as.numeric(trisk_config_r()$shock_year),
-        discount_rate = as.numeric(trisk_config_r()$discount_and_growth$discount_rate),
-        risk_free_rate = as.numeric(trisk_config_r()$risk_free_rate),
-        growth_rate = as.numeric(trisk_config_r()$discount_and_growth$growth_rate),
-        div_netprofit_prop_coef = as.numeric(trisk_config_r()$div_netprofit_prop_coef),
+        shock_year = trisk_config_r()$shock_year,
+        discount_rate = trisk_config_r()$discount_and_growth$discount_rate,
+        risk_free_rate = trisk_config_r()$risk_free_rate,
+        growth_rate = trisk_config_r()$discount_and_growth$growth_rate,
+        div_netprofit_prop_coef = trisk_config_r()$div_netprofit_prop_coef,
         carbon_price_model = trisk_config_r()$carbon_price_model,
-        market_passthrough = as.numeric(trisk_config_r()$market_passthrough)
-      )
+        market_passthrough = trisk_config_r()$market_passthrough)
     })
     # prevent the UI modal from updating too often (ie. blinking)
     # trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 200)
@@ -86,4 +88,3 @@ server <- function(id, backend_trisk_run_folder,
     )
   })
 }
-
