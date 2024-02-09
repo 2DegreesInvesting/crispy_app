@@ -22,11 +22,9 @@ server <- function(id, variable_choices_r) {
     observe({
       newChoices <- variable_choices_r()
       # Send new choices to the dropdown using the namespace
-      browser()
-      session$sendCustomMessage(
-        session$ns("updateDropdown"),
-        list(choices = newChoices)
-      )
+      # browser()
+
+      update_dropdown_input(session, newChoices)
     })
 
     # Accessing the selected value
@@ -48,68 +46,59 @@ create_dropdown_input <- function(id){
       tags$script(src = "https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js"),
     ),
     tags$div(
-      class = "ui fluid search selection dropdown", id = ns("search_dropdown"),
+        class = "ui fluid search selection dropdown", id = ns("search_dropdown"),
+        tags$div(class = "default text", paste0("Select a ", id, "")),
+        tags$i(class = "dropdown icon"),
+        tags$div(class = "menu")
+      ),
       tags$input(type = "hidden", name = ns("dropdown_choice")),
-      tags$div(class = "default text", paste0("Select a ", id, "")),
-      tags$i(class = "dropdown icon"),
-      tags$div(class = "menu")
-    ),
 
     # TODO js scripts shouldn't be in the html source code, to move to js folder
     # TODO FIX THE ifelse DOESNT WORK
     tags$script(HTML(paste0("
-      $(document).ready(function() {
+   $(document).ready(function() {
+      var fuse; // Initialize Fuse.js later
+      var allChoices = []; // Placeholder for dropdown choices
 
-        function initializeDropdown(choices) {
-          $('#", ns("search_dropdown"), "').dropdown({
-            values: choices,
-            forceSelection: false,
-            minCharacters: 1,
-            onChange: function(value, text, $choice) {
-              // This line sends the selected value to Shiny server
-              Shiny.setInputValue('", ns("dropdown_choice"), "', value);
-            },
-            onLabelCreate: function(value, text) {
-              return $(this);
-            },
-            // The API settings is where is defined the fuzzy search
-            apiSettings: {
-              responseAsync: function(settings, callback) {
-                setTimeout(function() {
-                  const searchTerm = settings.urlData.query;
-                  const options = {
-                    includeScore: false,
-                    keys: ['name']
-                  };
-                  const fuse = new Fuse(choices, options);
-                  const result = fuse.search(searchTerm).slice(0, 5);
+      // Function to initialize or update the dropdown and Fuse.js
+      function updateDropdown(choices) {
+        allChoices = choices.map(choice => ({ name: choice, value: choice }));
+        fuse = new Fuse(allChoices, { keys: ['name'], includeScore: false });
 
-                  const response = {
-                    success: true,
-                    results: result.map(match => ({ name: match.item.name, value: match.item.name }))
-                  };
-                  callback(response);
-                }, 300);
-              }
+        $('#",ns("search_dropdown"),"').dropdown({
+          values: allChoices,
+          forceSelection: false,
+          minCharacters: 0,
+          fullTextSearch: 'exact',
+          onChange: function(value, text, $selectedItem) {
+            Shiny.setInputValue('",ns("selected_value"),"', value); // Send the selected value to server
+          },
+          apiSettings: {
+            responseAsync: function(settings, callback) {
+              const searchTerm = settings.urlData.query;
+              const results = fuse.search(searchTerm).slice(0, 5);
+              callback({
+                success: true,
+                results: results.map(match => match.item)
+              });
             }
-          });
-        }
-        
-        var allChoices = [];
-        initializeDropdown(allChoices); // Initial dropdown initialization
-
-       Shiny.addCustomMessageHandler('", ns("updateDropdown"), "', function(newChoices) {
-          // Format the choices as required by the dropdown
-          var formattedChoices = newChoices.choices.map(function(choice) {
-            return { name: choice, value: choice };
-          });
-          // Update dropdown values
-          // Update dropdown values
-          $('#", ns("choices_dropdown"), "').dropdown('clear');
-          $('#", ns("choices_dropdown"), "').dropdown('setup menu', {values: formattedChoices});
+          }
         });
+      }
+
+      // Listen for updates from Shiny to update dropdown choices
+      Shiny.addCustomMessageHandler('",ns("updateChoices"),"', function(message) {
+        updateDropdown(message.choices);
       });
+
+      // Initialize the dropdown with empty choices
+      updateDropdown([]);
+    });
     ")))
   )
 }
 
+    update_dropdown_input <- function(session, choices) {
+      # Send choices to UI for dropdown update
+    session$sendCustomMessage(session$ns("updateChoices"), list(choices = choices))
+    }

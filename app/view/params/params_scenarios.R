@@ -27,7 +27,7 @@ ui <- function(id) {
           p("Baseline Scenario"),
           div(
             class = "description",
-            dropdown_input(ns("baseline_scenario"),
+            shiny.semantic::dropdown_input(ns("baseline_scenario"),
                 choices = NULL)
           )
         ),
@@ -36,7 +36,7 @@ ui <- function(id) {
           p("Target Scenario"),
           div(
             class = "description",
-            dropdown_input(ns("shock_scenario"),
+            shiny.semantic::dropdown_input(ns("shock_scenario"),
                 choices = NULL)
           )
         ),
@@ -45,7 +45,7 @@ ui <- function(id) {
           p("Scenario Geography"),
           div(
             class = "description",
-            dropdown_input(ns("scenario_geography"),
+            shiny.semantic::dropdown_input(ns("scenario_geography"),
                 choices = NULL)
           )
         )

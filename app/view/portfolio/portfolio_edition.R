@@ -26,7 +26,7 @@ ui <- function(id) {
     div(class = "ui grid",
       div(class = "sixteen wide column",
 
-          shiny.semantic::dropdown_input(ns("ald_business_unit_dropdown"), 
+          shiny.semantic::dropdown_input(ns("ald_sector_dropdown"), 
             choices = NULL,
             default_text = "Sector"),
           shiny.semantic::dropdown_input(ns("ald_business_unit_dropdown"), 
@@ -84,7 +84,7 @@ server <- function(id, trisk_granularity_r, portfolio_data_r, crispy_data_r, pos
     # BUTTONS ADD ROWS
     # add a new row by creating it in the portfolio
     observeEvent(input$add_row_btn, {
-      browser()
+      # browser()
       if (!is.null(selected_ald_business_unit_r()) && !is.null(selected_ald_business_unit_r())) {
         user_defined_row <- tibble::as_tibble(list(
           company_name = ifelse(is.null(picked_company_name()), NA, picked_company_name()),
@@ -130,9 +130,7 @@ update_ald_dropdowns <- function(input, session,
   
   # Observe changes in possible_trisk_combinations and update baseline_scenario dropdown
   observeEvent(crispy_data_r(), ignoreInit = TRUE, {
-    possible_sectors <- crispy_data_r() |>
-      dplyr::distinct(.data$ald_sector) |>
-      dplyr::pull()
+    possible_sectors <- unique(crispy_data_r()$ald_sector)
 
       # rename the scenarios to front end appropriate name
     # new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")
@@ -143,29 +141,28 @@ update_ald_dropdowns <- function(input, session,
 
   # Observe changes in baseline_scenario dropdown and update shock_scenario dropdown
   observeEvent(input$ald_sector_dropdown, ignoreInit = TRUE, {
-    possible_ald_business_units <- crispy_data_r() |>
-      dplyr::filter(,
-        ald_sector == input$ald_sector_dropdown) |>
-      dplyr::distinct(.data$ald_business_unit) |>
-      dplyr::pull()
-    
-    shiny.semantic::update_dropdown_input(session, "ald_business_unit_dropdown", choices = possible_ald_business_units)
+    possible_ald_business_units <- crispy_data_r() |> dplyr::filter(ald_sector == input$ald_sector_dropdown) 
+    possible_ald_business_units <- unique(possible_ald_business_units$ald_business_unit)
+    shiny.semantic::update_dropdown_input(
+      session, 
+      "ald_business_unit_dropdown", 
+      choices = possible_ald_business_units
+      )
   })
 
   # Observe changes in both baseline_scenario and shock_scenario dropdowns to update scenario_geography dropdown
-  observeEvent(input$shock_scenario, ignoreInit = TRUE, {
+  observeEvent(input$ald_business_unit_dropdown, ignoreInit = TRUE, {
     
     company_choices_r <- reactive({
       if (!is.null(crispy_data_r())){
         filtered_crispy <- crispy_data_r() |>
           dplyr::filter(
-            .data$ald_sector == ifelse(!is.null(selected_ald_sector()), selected_ald_sector(), NA),
+            .data$ald_sector == ifelse(!is.null(input$ald_sector_dropdown), input$ald_sector_dropdown, NA),
             .data$ald_business_unit == ifelse(!is.null(
-              selected_ald_business_unit_r()), 
-              selected_ald_business_unit_r(), 
+              input$ald_business_unit_dropdown), 
+              input$ald_business_unit_dropdown, 
               NA)
           ) 
-          browser()
           return(unique(filtered_crispy$company_id))
         }
     })
