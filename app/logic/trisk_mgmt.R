@@ -52,8 +52,7 @@ append_st_results_to_backend_data <- function(
     if (fname == "crispy_output") {
       new_data <- new_data |>
         dplyr::mutate(company_id=as.character(company_id)) |>
-        stress.test.plot.report::main_load_multi_crispy_data(granularity = names(max_trisk_granularity)) |>
-        dplyr::filter(.data$term == 1)
+        stress.test.plot.report::main_load_multi_crispy_data(granularity = names(max_trisk_granularity)) 
     } else if (fname == "company_trajectories") {
       new_data <- new_data |>
         stress.test.plot.report::main_data_load_trajectories_data(granularity = names(max_trisk_granularity))

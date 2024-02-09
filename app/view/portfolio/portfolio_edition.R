@@ -70,11 +70,12 @@ server <- function(id, trisk_granularity_r, portfolio_data_r, crispy_data_r, pos
       return(choice)
     })
 
+    
     # synchronise dropdown choices  with the possible combinations
-    update_ald_dropdowns(
+    # at the same time get the company query return value to update selected_company_name_r
+    selected_company_name_r <- update_ald_dropdowns(
       input=input,
       session=session,
-      selected_company_name_r=selected_company_name_r,
       use_ald_sector=use_ald_sector, # TODO INTEGRATE USE_ALD_SECTOR INTO HIDE_VARS
       crispy_data_r=crispy_data_r
     )
@@ -84,14 +85,22 @@ server <- function(id, trisk_granularity_r, portfolio_data_r, crispy_data_r, pos
     # BUTTONS ADD ROWS
     # add a new row by creating it in the portfolio
     observeEvent(input$add_row_btn, {
-      # browser()
-      if (!is.null(selected_ald_business_unit_r()) && !is.null(selected_ald_business_unit_r())) {
+      
+      if (
+        !is.null(selected_ald_sector()) && 
+        !is.null(selected_ald_business_unit_r()) &&
+        !is.null(selected_company_name_r())) {
+        
         user_defined_row <- tibble::as_tibble(list(
-          company_name = ifelse(is.null(picked_company_name()), NA, picked_company_name()),
-          ald_business_unit = ifelse(is.null(picked_ald_business_unit()), NA, picked_ald_business_unit())
-        )) |>
-          dplyr::select_at(dplyr::intersect(names(.data), names(portfolio_data_r())))
+          company_id = ifelse(is.null(selected_company_name_r()), NA, selected_company_name_r()),
+          ald_business_unit = ifelse(is.null(selected_ald_business_unit_r()), NA, selected_ald_business_unit_r()),
+          ald_sector = ifelse(is.null(selected_ald_sector()), NA, selected_ald_sector())
+        ))
 
+        use_rows <- dplyr::intersect(names(user_defined_row), names(portfolio_data_r()))
+        user_defined_row <- user_defined_row |>
+            dplyr::select_at(use_rows)
+            
         updated_portfolio_data <- dplyr::bind_rows(
           portfolio_data_r(),
           user_defined_row
@@ -117,6 +126,8 @@ server <- function(id, trisk_granularity_r, portfolio_data_r, crispy_data_r, pos
         replaceData(proxy, my_data_data, resetPaging = FALSE)
       }
     })
+
+    return(portfolio_data_r)
   })
 }
 
@@ -124,8 +135,7 @@ server <- function(id, trisk_granularity_r, portfolio_data_r, crispy_data_r, pos
 # Synchronise the scenarios available depending on user scenario choice
 update_ald_dropdowns <- function(input, session,
                                        crispy_data_r,
-                                       use_ald_sector,
-                                        selected_company_name_r
+                                       use_ald_sector
                                        ) {
   
   # Observe changes in possible_trisk_combinations and update baseline_scenario dropdown
@@ -151,10 +161,8 @@ update_ald_dropdowns <- function(input, session,
   })
 
   # Observe changes in both baseline_scenario and shock_scenario dropdowns to update scenario_geography dropdown
-  observeEvent(input$ald_business_unit_dropdown, ignoreInit = TRUE, {
-    
-    company_choices_r <- reactive({
-      if (!is.null(crispy_data_r())){
+  company_choices_r <- eventReactive(input$ald_business_unit_dropdown, ignoreInit = TRUE, {
+      if (!is.null(crispy_data_r())){ # TODO remove redundant check ?
         filtered_crispy <- crispy_data_r() |>
           dplyr::filter(
             .data$ald_sector == ifelse(!is.null(input$ald_sector_dropdown), input$ald_sector_dropdown, NA),
@@ -171,8 +179,7 @@ update_ald_dropdowns <- function(input, session,
       "company_name_simple_search_dropdown", 
       variable_choices_r = company_choices_r
       )
-
-  })
+    return(selected_company_name_r)
 }
 
 

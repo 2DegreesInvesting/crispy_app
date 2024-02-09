@@ -36,7 +36,8 @@ RENAMING_SCENARIOS <- c(
 
 RENAMING_ANALYSIS_COLUMNS <- c(
   "expiration_date" = "Expiration Date",
-  "company_id" = "Company",
+  "company_name" = "Company Name",
+  "company_id" = "Company ID",
   "ald_sector" = "Sector",
   "ald_business_unit" = "Business Unit",
   "exposure_value_usd" = "Exposure (USD)",

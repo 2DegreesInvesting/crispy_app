@@ -13,7 +13,6 @@ ui <- function(id) {
   create_dropdown_input(id)
 }
 
-
 server <- function(id, variable_choices_r) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -21,18 +20,16 @@ server <- function(id, variable_choices_r) {
     # Update the dropdown choices
     observe({
       newChoices <- variable_choices_r()
+      
       # Send new choices to the dropdown using the namespace
-      # browser()
-
       update_dropdown_input(session, newChoices)
     })
 
     # Accessing the selected value
-    dropdown_choice <- reactive({
-      pick_id <- session$ns("dropdown_choice")
-      input[[pick_id]]
+    dropdown_choice_r <- reactive({
+      input$dropdown_choice
     })
-    return(dropdown_choice)
+    return(dropdown_choice_r)
   })
 }
 
@@ -71,7 +68,9 @@ create_dropdown_input <- function(id){
           minCharacters: 0,
           fullTextSearch: 'exact',
           onChange: function(value, text, $selectedItem) {
-            Shiny.setInputValue('",ns("selected_value"),"', value); // Send the selected value to server
+            
+            Shiny.setInputValue('",ns("dropdown_choice"),"', value); // Send the selected value to server
+
           },
           apiSettings: {
             responseAsync: function(settings, callback) {
@@ -85,14 +84,15 @@ create_dropdown_input <- function(id){
           }
         });
       }
+    $(document).on('shiny:connected', function() {
+          // Listen for updates from Shiny to update dropdown choices
+          Shiny.addCustomMessageHandler('",ns("updateChoices"),"', function(message) {
+            updateDropdown(message.choices);
+          });
 
-      // Listen for updates from Shiny to update dropdown choices
-      Shiny.addCustomMessageHandler('",ns("updateChoices"),"', function(message) {
-        updateDropdown(message.choices);
-      });
-
-      // Initialize the dropdown with empty choices
-      updateDropdown([]);
+          // Initialize the dropdown with empty choices
+          updateDropdown([]);
+        });
     });
     ")))
   )
