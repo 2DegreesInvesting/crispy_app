@@ -36,13 +36,13 @@ ui <- function(id, max_trisk_granularity) {
 # get the column names defining the displayed data granularity
 server <- function(id, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-    trisk_granularity_r <- eventReactive(input$granularity_switch, ignoreNULL = TRUE, {
+    trisk_granularity_r <- eventReactive(input$granularity_switch, {
       granularity_picked <- input$granularity_switch |>
         rename_string_vector(words_class = "analysis_columns", dev_to_ux = FALSE)
 
       granularity_level <- max_trisk_granularity[granularity_picked]
       # Filter names based on values <= given_integer
-      trisk_granularity <- names(trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
+      trisk_granularity <- names(max_trisk_granularity)[sapply(max_trisk_granularity, function(value) value <= granularity_level)]
 
       return(trisk_granularity)
     })

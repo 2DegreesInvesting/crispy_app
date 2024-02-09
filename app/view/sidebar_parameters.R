@@ -46,7 +46,7 @@ server <- function(id, backend_trisk_run_folder,
 
     # Collect UI elements (and compute trisks if necessary) =========================
     trisk_granularity_r <- params_dimensions$server(
-      "granularity_switch",
+      "params_dimensions",
       max_trisk_granularity = max_trisk_granularity
     )
 
@@ -68,9 +68,9 @@ server <- function(id, backend_trisk_run_folder,
         shock_scenario = scenario_config_r()$shock_scenario,
         scenario_geography = scenario_config_r()$scenario_geography,
         shock_year = trisk_config_r()$shock_year,
-        discount_rate = trisk_config_r()$discount_and_growth$discount_rate,
+        discount_rate = trisk_config_r()$discount_rate,
         risk_free_rate = trisk_config_r()$risk_free_rate,
-        growth_rate = trisk_config_r()$discount_and_growth$growth_rate,
+        growth_rate = trisk_config_r()$growth_rate,
         div_netprofit_prop_coef = trisk_config_r()$div_netprofit_prop_coef,
         carbon_price_model = trisk_config_r()$carbon_price_model,
         market_passthrough = trisk_config_r()$market_passthrough

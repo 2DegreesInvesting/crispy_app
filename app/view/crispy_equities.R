@@ -20,9 +20,9 @@ ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
 
   # dashboardBody
-  shiny::div(
+  shiny::tags$div(
     class = "pusher container", style = "min-height: 100vh;",
-    shiny::div(
+    shiny::tags$div(
       class = "ui segment", style = "min-height: 100vh;",
       shiny::tags$div(
         class = "ui stackable grid",

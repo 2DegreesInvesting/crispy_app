@@ -66,19 +66,39 @@ server <- function(
 
     # ANALYSIS DATA ===================================
 
-    analysis_data_r <- generate_analysis_data(portfolio_data_r = portfolio_data_r, crispy_data_r = crispy_data_r, portfolio_asset_type = portfolio_asset_type)
+    analysis_data_r <- generate_analysis_data(
+      portfolio_data_r = portfolio_data_r, 
+      crispy_data_r = crispy_data_r, 
+      portfolio_asset_type = portfolio_asset_type
+      )
 
     # TABLE DISPLAY IN UI ===================================
 
-    display_analysis_data(analysis_data_r = analysis_data_r, display_columns = display_columns, editable_columns_names = editable_columns_names, colored_columns_names = colored_columns_names)
+    display_analysis_data(
+      output=output,
+      analysis_data_r = analysis_data_r, 
+      display_columns = display_columns, 
+      editable_columns_names = editable_columns_names, 
+      colored_columns_names = colored_columns_names, 
+      trisk_granularity_r=trisk_granularity_r
+      )
 
     # TABLE INPUTS MGMT ===================================
 
-    update_portfolio_with_user_input(input)
+    update_portfolio_with_user_input(input, portfolio_data_r, trisk_granularity_r, display_columns, portfolio_states, max_trisk_granularity)
 
     return(analysis_data_r)
   })
 }
+
+
+
+
+
+
+
+
+
 
 
 ##################### Modules
@@ -127,6 +147,7 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
 
   observe({
     if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r())) {
+      
       granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
 
       if (nrow(portfolio_data_r()) == 0) {
@@ -163,7 +184,7 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
   return(analysis_data_r)
 }
 
-display_analysis_data <- function(analysis_data_r, display_columns, editable_columns_names, colored_columns_names) {
+display_analysis_data <- function(output, analysis_data_r, display_columns, editable_columns_names, colored_columns_names, trisk_granularity_r) {
   observeEvent(analysis_data_r(), ignoreInit = TRUE, {
     table_to_display <- analysis_data_r() |>
       dplyr::select(

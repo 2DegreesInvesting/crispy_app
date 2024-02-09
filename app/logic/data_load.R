@@ -7,6 +7,7 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
   } else {
     backend_crispy_data <- tibble::tibble(
       run_id = character(),
+      company_id = character(),
       ald_sector = character(),
       ald_business_unit = character(),
       term = numeric(),
@@ -27,6 +28,7 @@ load_backend_trajectories_data <- function(backend_trisk_run_folder) {
     backend_trajectories_data <- tibble::tibble(
       run_id = character(),
       year = numeric(),
+      company_id = character(),
       ald_sector = character(),
       ald_business_unit = character(),
       production_baseline_scenario = character(),

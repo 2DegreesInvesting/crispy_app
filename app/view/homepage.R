@@ -17,7 +17,6 @@ ui <- function(id) {
     ),
     tags$div(
       class = "ui raised very padded text container segment",
-      tags$div(class = "ui huge header", "CRISPY"),
       tags$div(
         class = "ui two cards",
         tags$div(

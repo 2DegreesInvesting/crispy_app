@@ -26,9 +26,6 @@ box::use(
 )
 
 
-
-
-
 # Define the UI function
 #' @export
 ui <- function(id) {
@@ -58,6 +55,7 @@ ui <- function(id) {
       ),
       div(id = "loading-overlay", "Initializing...")
     ),
+
     dashboardPage(
       title = "Homepage",
       # dashboardHeader
@@ -65,10 +63,12 @@ ui <- function(id) {
       # dashboardSidebar
       dashboardSidebar(
         tags$div(
+
           sidebar_parameters$ui(
             ns("sidebar_parameters"),
             max_trisk_granularity = max_trisk_granularity, # constant
             available_vars = available_vars # constant
+          
           ),
           shiny::img(
             src = "static/logo_1in1000.png",
@@ -80,13 +80,16 @@ ui <- function(id) {
             margin-top: 10px;
             margin-bottom: 10px;"
           )
+
         ),
         size = "wide",
         visible = TRUE
       ),
+
       # dashboardBody
       dashboardBody(
         shinyjs::useShinyjs(),
+
         # Include custom CSS to display tabs as full width
         tags$head(
           tags$style(HTML("
@@ -119,6 +122,7 @@ ui <- function(id) {
             )
           )
         ),
+
         tags$div(
           class = "ui bottom attached tab segment", `data-tab` = "second",
           div(
@@ -131,6 +135,7 @@ ui <- function(id) {
             )
           )
         ),
+        
         tags$div(
           class = "ui bottom attached tab segment", `data-tab` = "third",
           div(
