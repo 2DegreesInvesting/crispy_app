@@ -59,6 +59,7 @@ server <- function(id,
                    use_ald_sector,
                    possible_trisk_combinations) {
   moduleServer(id, function(input, output, session) {
+    
     # Synchronise the scenarios available depending on user scenario choice
     selected_baseline_r <- reactive({
       choice <- input$baseline_scenario
@@ -79,7 +80,6 @@ server <- function(id,
     update_scenarios_dropdowns(
       input=input,
       session=session,
-      trisk_input_path=trisk_input_path,
       hide_vars=hide_vars,
       use_ald_sector=use_ald_sector,
       possible_trisk_combinations=possible_trisk_combinations
@@ -104,7 +104,6 @@ server <- function(id,
 
 # Synchronise the scenarios available depending on user scenario choice
 update_scenarios_dropdowns <- function(input, session,
-                                       trisk_input_path,
                                        hide_vars,
                                        use_ald_sector,
                                        possible_trisk_combinations) {
@@ -144,7 +143,7 @@ update_scenarios_dropdowns <- function(input, session,
   })
 
   # Observe changes in both baseline_scenario and shock_scenario dropdowns to update scenario_geography dropdown
-  observeEvent(c(input$baseline_scenario, input$shock_scenario), ignoreInit = TRUE, {
+  observeEvent(input$shock_scenario, ignoreInit = TRUE, {
     selected_baseline <- rename_string_vector(input$baseline_scenario, words_class = "scenarios", dev_to_ux = FALSE)
     selected_shock <- rename_string_vector(input$shock_scenario, words_class = "scenarios", dev_to_ux = FALSE)
 
