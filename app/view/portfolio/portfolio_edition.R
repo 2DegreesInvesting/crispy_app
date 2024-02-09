@@ -94,7 +94,8 @@ server <- function(id, trisk_granularity_r, portfolio_data_r, crispy_data_r, pos
         user_defined_row <- tibble::as_tibble(list(
           company_id = ifelse(is.null(selected_company_name_r()), NA, selected_company_name_r()),
           ald_business_unit = ifelse(is.null(selected_ald_business_unit_r()), NA, selected_ald_business_unit_r()),
-          ald_sector = ifelse(is.null(selected_ald_sector()), NA, selected_ald_sector())
+          ald_sector = ifelse(is.null(selected_ald_sector()), NA, selected_ald_sector()),
+          expiration_date="2024-01-01" # TODO HARDCODED DATE , to allow analysis merge with crispy, can be updated in UI
         ))
 
         use_rows <- dplyr::intersect(names(user_defined_row), names(portfolio_data_r()))

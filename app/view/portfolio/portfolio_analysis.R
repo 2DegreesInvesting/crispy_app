@@ -147,7 +147,7 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
 
   observe({
     if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r())) {
-                  granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
+        granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
 
       
 
@@ -156,16 +156,20 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
         # unique per portfolio type and granularity
         portfolio_data <- portfolio_data_r()
 
-        # populate the empty portfolio if in equities
-        if (portfolio_asset_type == "equities") {
-          if (nrow(portfolio_data_r()) == 0) {
+        
+        if (portfolio_asset_type == "equity") {
+          
+          # in equities , populate the portfolio if empty, and not company granularity
+          if (
+            (nrow(portfolio_data_r()) == 0) && 
+            !("company_id" %in% colnames(portfolio_data))) {
 
             portfolio_data <- portfolio_data |>
               dplyr::right_join(
                 crispy_data_r() |> dplyr::distinct_at(granularity)
               ) |>
               dplyr::mutate(
-                term = 1
+                expiration_date="2024-01-01" # TODO HARDCODED DATE
               )
             }
         }
@@ -174,7 +178,7 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
           dplyr::mutate(
             # we don't compare portfolios in the app so it's always same id
             portfolio_id = "1",
-            # portfolio_asset_type : equities or fixed_income
+            # portfolio_asset_type : equity or fixed_income
             asset_type = portfolio_asset_type
           )
         
@@ -182,6 +186,7 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
       
 
 if (nrow(portfolio_data_r() > 0)){
+  
       analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
         portfolio_data = portfolio_data_r(),
         multi_crispy_data = crispy_data_r(),
@@ -197,7 +202,12 @@ if (nrow(portfolio_data_r() > 0)){
             portfolio_data_r(),
             crispy_data_r(),
             by=granularity
-          )
+          )|>
+        dplyr::mutate(
+          crispy_perc_value_change = NA,
+          crispy_value_loss = NA,
+          crispy_pd_diff = NA
+        )
         }
       analysis_data_r(analysis_data)
     }
