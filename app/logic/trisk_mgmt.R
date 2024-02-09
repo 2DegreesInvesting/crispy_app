@@ -35,6 +35,7 @@ run_trisk_with_params <- function(trisk_run_params, trisk_input_path) {
   return(st_results_wrangled_and_checked)
 }
 
+# TODO MOVE TO FILE WRITE DATA
 # Function to append stress test results to backend data
 # It iterates over the names of the results, processes the data accordingly and appends it to the existing data
 # The updated data is then written back to the file
@@ -50,6 +51,7 @@ append_st_results_to_backend_data <- function(
     # Process the new data based on its name
     if (fname == "crispy_output") {
       new_data <- new_data |>
+        dplyr::mutate(company_id=as.character(company_id)) |>
         stress.test.plot.report::main_load_multi_crispy_data(granularity = names(max_trisk_granularity)) |>
         dplyr::filter(.data$term == 1)
     } else if (fname == "company_trajectories") {
