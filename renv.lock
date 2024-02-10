@@ -143,6 +143,37 @@
       ],
       "Hash": "5ea2700d21e038ace58269ecdbeb9ec0"
     },
+    "STDataMGMT": {
+      "Package": "STDataMGMT",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "2DegreesInvesting",
+      "RemoteRepo": "STDataMGMT",
+      "RemoteRef": "master",
+      "RemoteSha": "d7ed2bd9b6e2debd72fac94f40879a44f5f72793",
+      "Requirements": [
+        "R",
+        "assertr",
+        "countrycode",
+        "crayon",
+        "dplyr",
+        "fastDummies",
+        "fs",
+        "glue",
+        "magrittr",
+        "purrr",
+        "readr",
+        "readxl",
+        "rlang",
+        "stringr",
+        "tibble",
+        "tidyr",
+        "zoo"
+      ],
+      "Hash": "ab6b764d48b2cf632c7c94604b96d0cf"
+    },
     "SnowballC": {
       "Package": "SnowballC",
       "Version": "0.7.1",
@@ -181,6 +212,22 @@
         "sys"
       ],
       "Hash": "cad6cf7f1d5f6e906700b9d3e718c796"
+    },
+    "assertr": {
+      "Package": "assertr",
+      "Version": "3.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "MASS",
+        "R",
+        "dplyr",
+        "methods",
+        "rlang",
+        "stats",
+        "utils"
+      ],
+      "Hash": "dd34511e88d11c95e80f8d9bb0606e79"
     },
     "assertthat": {
       "Package": "assertthat",
@@ -302,6 +349,18 @@
       ],
       "Hash": "9b2191ede20fa29828139b9900922e51"
     },
+    "cellranger": {
+      "Package": "cellranger",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "rematch",
+        "tibble"
+      ],
+      "Hash": "f61dbaec772ccd2e17705c1e872e9e7c"
+    },
     "checkmate": {
       "Package": "checkmate",
       "Version": "2.3.1",
@@ -376,6 +435,16 @@
       ],
       "Hash": "8b7222e9d9eb5178eea545c0c4d33fc2"
     },
+    "countrycode": {
+      "Package": "countrycode",
+      "Version": "1.5.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "bbc5ab5258e5ddf38f2cd2c5a7afa860"
+    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.4.7",
@@ -434,6 +503,17 @@
         "withr"
       ],
       "Hash": "cdc4a473222b0112d4df0bcfbed12d44"
+    },
+    "data.table": {
+      "Package": "data.table",
+      "Version": "1.15.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "methods"
+      ],
+      "Hash": "cfbbb4aed6e78cd45f17123a9ec9981a"
     },
     "desc": {
       "Package": "desc",
@@ -537,6 +617,19 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "8106d78941f34855c440ddb946b8f7a5"
+    },
+    "fastDummies": {
+      "Package": "fastDummies",
+      "Version": "1.7.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "data.table",
+        "stringr",
+        "tibble"
+      ],
+      "Hash": "e0f9c0c051e0e8d89996d7f0c400539f"
     },
     "fastmap": {
       "Package": "fastmap",
@@ -1165,10 +1258,12 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "r2dii.climate.stress.test",
-      "RemoteRef": "fix/speed_improvements",
-      "RemoteSha": "d4acd3253f0070cd1437375c092d79552f0b57a6",
+      "RemoteRef": "master",
+      "RemoteSha": "1497dbec053388c525ead3f4fb0e9a927e85f589",
+      "Remotes": "github::2DegreesInvesting/STDataMGMT",
       "Requirements": [
         "R",
+        "STDataMGMT",
         "dplyr",
         "fs",
         "ggplot2",
@@ -1183,7 +1278,7 @@
         "withr",
         "zoo"
       ],
-      "Hash": "8c451f6a32adfacb6bcbf7aa769ab52f"
+      "Hash": "890fb717d2d9df6b9c31bec0c60fef2c"
     },
     "r2dii.colours": {
       "Package": "r2dii.colours",
@@ -1275,6 +1370,28 @@
         "vroom"
       ],
       "Hash": "9de96463d2117f6ac49980577939dfb3"
+    },
+    "readxl": {
+      "Package": "readxl",
+      "Version": "1.4.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cellranger",
+        "cpp11",
+        "progress",
+        "tibble",
+        "utils"
+      ],
+      "Hash": "8cf9c239b96df1bbb133b74aef77ad0a"
+    },
+    "rematch": {
+      "Package": "rematch",
+      "Version": "2.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cbff1b666c6fa6d21202f07e2318d4f1"
     },
     "rematch2": {
       "Package": "rematch2",
@@ -1566,7 +1683,7 @@
       "RemoteUsername": "2DegreesInvesting",
       "RemoteRepo": "stress.test.plot.report",
       "RemoteRef": "master",
-      "RemoteSha": "aecdfa4f8349449ebae0448e956124678af09bbe",
+      "RemoteSha": "52125c9fc34b8034d253029471ad86168ef04fda",
       "Remotes": "2DegreesInvesting/r2dii.climate.stress.test, 2DegreesInvesting/STDataMGMT, RMI-PACTA/r2dii.colours",
       "Requirements": [
         "box",
@@ -1582,7 +1699,7 @@
         "tidytext",
         "withr"
       ],
-      "Hash": "b90075cd08f4578d56348be0552f37a1"
+      "Hash": "8f9e2bf158d3465e041df9bd7fbda48f"
     },
     "stringi": {
       "Package": "stringi",
