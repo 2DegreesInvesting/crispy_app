@@ -26,7 +26,6 @@ ui <- function(id) {
 server <- function(id, analysis_data_r, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
     observeEvent(analysis_data_r(), {
-
       granul_levels <- dplyr::intersect(colnames(analysis_data_r()), names(max_trisk_granularity))
       granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
 

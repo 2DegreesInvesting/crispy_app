@@ -84,7 +84,7 @@ server <- function(id, available_vars) {
         update_slider(session, "growth_rate", value = as.character(closest_smaller_value))
       }
     })
-    
+
     trisk_config_r <- reactive({
       reactiveValues(
         shock_year = as.numeric(input$shock_year),

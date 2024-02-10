@@ -67,21 +67,21 @@ server <- function(
     # ANALYSIS DATA ===================================
 
     analysis_data_r <- generate_analysis_data(
-      portfolio_data_r = portfolio_data_r, 
-      crispy_data_r = crispy_data_r, 
+      portfolio_data_r = portfolio_data_r,
+      crispy_data_r = crispy_data_r,
       portfolio_asset_type = portfolio_asset_type
-      )
+    )
 
     # TABLE DISPLAY IN UI ===================================
 
     display_analysis_data(
-      output=output,
-      analysis_data_r = analysis_data_r, 
-      display_columns = display_columns, 
-      editable_columns_names = editable_columns_names, 
-      colored_columns_names = colored_columns_names, 
-      trisk_granularity_r=trisk_granularity_r
-      )
+      output = output,
+      analysis_data_r = analysis_data_r,
+      display_columns = display_columns,
+      editable_columns_names = editable_columns_names,
+      colored_columns_names = colored_columns_names,
+      trisk_granularity_r = trisk_granularity_r
+    )
 
     # TABLE INPUTS MGMT ===================================
 
@@ -147,68 +147,65 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, portfolio_as
 
   observe({
     if (!is.null(portfolio_data_r()) & !is.null(crispy_data_r())) {
-        granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
+      granularity <- dplyr::intersect(colnames(portfolio_data_r()), colnames(crispy_data_r()))
 
-      
 
-      
-        # initialize the portfolio with a unique portfolio id (and it will always be unique in CRISPY)
-        # unique per portfolio type and granularity
-        portfolio_data <- portfolio_data_r()
 
-        
-        if (portfolio_asset_type == "equity") {
-          
-          # in equities , populate the portfolio if empty, and not company granularity
-          if (
-            (nrow(portfolio_data_r()) == 0) && 
+
+      # initialize the portfolio with a unique portfolio id (and it will always be unique in CRISPY)
+      # unique per portfolio type and granularity
+      portfolio_data <- portfolio_data_r()
+
+
+      if (portfolio_asset_type == "equity") {
+        # in equities , populate the portfolio if empty, and not company granularity
+        if (
+          (nrow(portfolio_data_r()) == 0) &&
             !("company_id" %in% colnames(portfolio_data))) {
-
-            portfolio_data <- portfolio_data |>
-              dplyr::right_join(
-                crispy_data_r() |> dplyr::distinct_at(granularity)
-              ) |>
-              dplyr::mutate(
-                expiration_date="2024-01-01" # TODO HARDCODED DATE
-              )
-            }
+          portfolio_data <- portfolio_data |>
+            dplyr::right_join(
+              crispy_data_r() |> dplyr::distinct_at(granularity)
+            ) |>
+            dplyr::mutate(
+              expiration_date = "2024-01-01" # TODO HARDCODED DATE
+            )
         }
-          
-        portfolio_data <- portfolio_data |>
-          dplyr::mutate(
-            # we don't compare portfolios in the app so it's always same id
-            portfolio_id = "1",
-            # portfolio_asset_type : equity or fixed_income
-            asset_type = portfolio_asset_type
-          )
-        
-        portfolio_data_r(portfolio_data)
-      
+      }
 
-if (nrow(portfolio_data_r() > 0)){
-  
-      analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
-        portfolio_data = portfolio_data_r(),
-        multi_crispy_data = crispy_data_r(),
-        granularity = granularity
-      ) |>
+      portfolio_data <- portfolio_data |>
         dplyr::mutate(
-          crispy_perc_value_change = round(crispy_perc_value_change, digits = 4),
-          crispy_value_loss = round(crispy_value_loss, digits = 2),
-          crispy_pd_diff = round(pd_difference, digits = 4)
-        )}
-        else{
-          analysis_data <- dplyr::inner_join(
-            portfolio_data_r(),
-            crispy_data_r(),
-            by=granularity
-          )|>
-        dplyr::mutate(
-          crispy_perc_value_change = NA,
-          crispy_value_loss = NA,
-          crispy_pd_diff = NA
+          # we don't compare portfolios in the app so it's always same id
+          portfolio_id = "1",
+          # portfolio_asset_type : equity or fixed_income
+          asset_type = portfolio_asset_type
         )
-        }
+
+      portfolio_data_r(portfolio_data)
+
+
+      if (nrow(portfolio_data_r() > 0)) {
+        analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
+          portfolio_data = portfolio_data_r(),
+          multi_crispy_data = crispy_data_r(),
+          granularity = granularity
+        ) |>
+          dplyr::mutate(
+            crispy_perc_value_change = round(crispy_perc_value_change, digits = 4),
+            crispy_value_loss = round(crispy_value_loss, digits = 2),
+            crispy_pd_diff = round(pd_difference, digits = 4)
+          )
+      } else {
+        analysis_data <- dplyr::inner_join(
+          portfolio_data_r(),
+          crispy_data_r(),
+          by = granularity
+        ) |>
+          dplyr::mutate(
+            crispy_perc_value_change = NA,
+            crispy_value_loss = NA,
+            crispy_pd_diff = NA
+          )
+      }
       analysis_data_r(analysis_data)
     }
   })

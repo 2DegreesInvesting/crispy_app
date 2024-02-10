@@ -2,7 +2,7 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
   backend_crispy_data_path <- fs::path(backend_trisk_run_folder, "crispy_output", ext = "parquet")
 
   if (file.exists(backend_crispy_data_path)) {
-    backend_crispy_data <- arrow::read_parquet(backend_crispy_data_path) 
+    backend_crispy_data <- arrow::read_parquet(backend_crispy_data_path)
   } else {
     backend_crispy_data <- tibble::tibble(
       run_id = character(),

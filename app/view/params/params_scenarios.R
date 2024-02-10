@@ -28,7 +28,8 @@ ui <- function(id) {
           div(
             class = "description",
             shiny.semantic::dropdown_input(ns("baseline_scenario"),
-                choices = NULL)
+              choices = NULL
+            )
           )
         ),
         div(
@@ -37,7 +38,8 @@ ui <- function(id) {
           div(
             class = "description",
             shiny.semantic::dropdown_input(ns("shock_scenario"),
-                choices = NULL)
+              choices = NULL
+            )
           )
         ),
         div(
@@ -46,7 +48,8 @@ ui <- function(id) {
           div(
             class = "description",
             shiny.semantic::dropdown_input(ns("scenario_geography"),
-                choices = NULL)
+              choices = NULL
+            )
           )
         )
       )
@@ -59,7 +62,6 @@ server <- function(id,
                    use_ald_sector,
                    possible_trisk_combinations) {
   moduleServer(id, function(input, output, session) {
-    
     # Synchronise the scenarios available depending on user scenario choice
     selected_baseline_r <- reactive({
       choice <- input$baseline_scenario
@@ -78,11 +80,11 @@ server <- function(id,
 
     # synchronise dropdown choices  with the possible combinations
     update_scenarios_dropdowns(
-      input=input,
-      session=session,
-      hide_vars=hide_vars,
-      use_ald_sector=use_ald_sector,
-      possible_trisk_combinations=possible_trisk_combinations
+      input = input,
+      session = session,
+      hide_vars = hide_vars,
+      use_ald_sector = use_ald_sector,
+      possible_trisk_combinations = possible_trisk_combinations
     )
 
     # RETURN THE SCENARIOS
@@ -107,7 +109,6 @@ update_scenarios_dropdowns <- function(input, session,
                                        hide_vars,
                                        use_ald_sector,
                                        possible_trisk_combinations) {
-  
   # Observe changes in possible_trisk_combinations and update baseline_scenario dropdown
   observe({
     possible_baselines <- possible_trisk_combinations |>
@@ -167,6 +168,3 @@ update_scenarios_dropdowns <- function(input, session,
     update_dropdown_input(session, "scenario_geography", choices = new_choices)
   })
 }
-
-
-

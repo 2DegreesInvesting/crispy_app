@@ -62,8 +62,6 @@ server <- function(
     trisk_input_path,
     max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
-
-
     # TRISK COMPUTATION =========================
     run_id_r <- reactiveVal(NULL)
 
@@ -79,7 +77,7 @@ server <- function(
         trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
 
         run_id <- get_run_id(
-          ns=session$ns,
+          ns = session$ns,
           trisk_run_params = trisk_run_params,
           backend_trisk_run_folder = backend_trisk_run_folder,
           trisk_input_path = trisk_input_path,
@@ -130,20 +128,19 @@ get_run_id <- function(ns, trisk_run_params,
     is.null(x)
   }))
   if (all_input_params_initialized) {
-
     # hardcoded market passthrough value for no carbon tax price model
     if (trisk_run_params$carbon_price_model == "no_carbon_tax") {
       trisk_run_params$market_passthrough <- 0
     }
 
     run_id <- trisk_generator(
-      ns=ns,
+      ns = ns,
       backend_trisk_run_folder = backend_trisk_run_folder,
       trisk_input_path = trisk_input_path,
       trisk_run_params = trisk_run_params,
       max_trisk_granularity = max_trisk_granularity
     )
-  } else{
+  } else {
     run_id <- NULL
   }
   return(run_id)
@@ -151,12 +148,11 @@ get_run_id <- function(ns, trisk_run_params,
 
 # fetch or create a trisk run
 trisk_generator <- function(
-  ns, 
-  backend_trisk_run_folder, 
-  trisk_input_path, 
-  trisk_run_params, 
-  max_trisk_granularity) {
-
+    ns,
+    backend_trisk_run_folder,
+    trisk_input_path,
+    trisk_run_params,
+    max_trisk_granularity) {
   run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
 
   if (is.null(run_id)) {
@@ -188,7 +184,7 @@ trisk_generator <- function(
   }
 
   run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-  
+
   return(run_id)
 }
 

@@ -16,11 +16,11 @@ ui <- function(id) {
 server <- function(id, variable_choices_r) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
+
     # Update the dropdown choices
     observe({
       newChoices <- variable_choices_r()
-      
+
       # Send new choices to the dropdown using the namespace
       update_dropdown_input(session, newChoices)
     })
@@ -34,7 +34,7 @@ server <- function(id, variable_choices_r) {
 }
 
 
-create_dropdown_input <- function(id){
+create_dropdown_input <- function(id) {
   ns <- NS(id)
 
   tags$div(
@@ -43,12 +43,12 @@ create_dropdown_input <- function(id){
       tags$script(src = "https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js"),
     ),
     tags$div(
-        class = "ui fluid search selection dropdown", id = ns("search_dropdown"),
-        tags$div(class = "default text", paste0("Select a ", id, "")),
-        tags$i(class = "dropdown icon"),
-        tags$div(class = "menu")
-      ),
-      tags$input(type = "hidden", name = ns("dropdown_choice")),
+      class = "ui fluid search selection dropdown", id = ns("search_dropdown"),
+      tags$div(class = "default text", paste0("Select a ", id, "")),
+      tags$i(class = "dropdown icon"),
+      tags$div(class = "menu")
+    ),
+    tags$input(type = "hidden", name = ns("dropdown_choice")),
 
     # TODO js scripts shouldn't be in the html source code, to move to js folder
     # TODO FIX THE ifelse DOESNT WORK
@@ -62,14 +62,14 @@ create_dropdown_input <- function(id){
         allChoices = choices.map(choice => ({ name: choice, value: choice }));
         fuse = new Fuse(allChoices, { keys: ['name'], includeScore: false });
 
-        $('#",ns("search_dropdown"),"').dropdown({
+        $('#", ns("search_dropdown"), "').dropdown({
           values: allChoices,
           forceSelection: false,
           minCharacters: 0,
           fullTextSearch: 'exact',
           onChange: function(value, text, $selectedItem) {
-            
-            Shiny.setInputValue('",ns("dropdown_choice"),"', value); // Send the selected value to server
+
+            Shiny.setInputValue('", ns("dropdown_choice"), "', value); // Send the selected value to server
 
           },
           apiSettings: {
@@ -86,7 +86,7 @@ create_dropdown_input <- function(id){
       }
     $(document).on('shiny:connected', function() {
           // Listen for updates from Shiny to update dropdown choices
-          Shiny.addCustomMessageHandler('",ns("updateChoices"),"', function(message) {
+          Shiny.addCustomMessageHandler('", ns("updateChoices"), "', function(message) {
             updateDropdown(message.choices);
           });
 
@@ -98,7 +98,7 @@ create_dropdown_input <- function(id){
   )
 }
 
-    update_dropdown_input <- function(session, choices) {
-      # Send choices to UI for dropdown update
-    session$sendCustomMessage(session$ns("updateChoices"), list(choices = choices))
-    }
+update_dropdown_input <- function(session, choices) {
+  # Send choices to UI for dropdown update
+  session$sendCustomMessage(session$ns("updateChoices"), list(choices = choices))
+}
