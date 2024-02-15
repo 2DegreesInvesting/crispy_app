@@ -7,7 +7,7 @@ box::use(
 )
 
 box::use(
-  app / view / modules / trisk_mgmt,
+  app / view / modules / trisk_button,
   app / view / portfolio / portfolio_analysis
 )
 
@@ -22,7 +22,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
     class = "pusher container", style = "min-height: 100vh;",
     shiny::div(
       class = "ui segment", style = "min-height: 100vh;",
-      trisk_mgmt$ui(ns("trisk_mgmt")),
+      trisk_button$ui(ns("trisk_button")),
       portfolio_analysis$ui(ns("portfolio_analysis"), "Loans Portfolio")
     )
   )
@@ -36,8 +36,8 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, po
     trisk_granularity_r <- perimeter$trisk_granularity_r
     trisk_run_params_r <- perimeter$trisk_run_params_r
 
-    results <- trisk_mgmt$server(
-      "trisk_mgmt",
+    results <- trisk_button$server(
+      "trisk_button",
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,
       trisk_run_params_r = trisk_run_params_r,
@@ -76,4 +76,24 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, po
       possible_trisk_combinations = possible_trisk_combinations
     )
   })
+}
+
+
+
+
+render_portfolio <- function(output, table_to_display) {
+  output$portfolio_table <- renderDT(
+    {
+      datatable(table_to_display,
+        editable = TRUE,
+        options = list(
+          lengthChange = FALSE, # Remove "Show XXX entries" option
+          paging = FALSE, # Remove pagination
+          searching = FALSE, # Remove search input
+          info = FALSE # Remove "Showing N of X entries"
+        )
+      )
+    },
+    server = FALSE
+  )
 }

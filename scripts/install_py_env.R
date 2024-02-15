@@ -1,3 +1,5 @@
+## Deprecated // For reference, how to navigate python versions in reticulate
+
 library(reticulate)
 
 python_version <- Sys.getenv("CRISPY_LOAN_PYTHON_VERSION")

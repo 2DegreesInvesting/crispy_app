@@ -1,10 +1,43 @@
-load_backend_crispy_data <- function(backend_trisk_run_folder) {
-  backend_crispy_data_path <- fs::path(backend_trisk_run_folder, "crispy_output", ext = "parquet")
+box::use(
+  app/logic/cloud_logic[
+    get_data_from_postgres
+  ]
+)
 
-  if (file.exists(backend_crispy_data_path)) {
-    backend_crispy_data <- arrow::read_parquet(backend_crispy_data_path)
+base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder = NULL, default_tibble = NULL) {
+  if (Sys.getenv("CRISPY_APP_ENV") == "dev") {
+    table_data_path <- fs::path(backend_trisk_run_folder, table_name, ext = "parquet")
+    if (file.exists(table_data_path)) {
+      table_data <- arrow::read_parquet(table_data_path) |>
+        dplyr::filter(.data$run_id == run_id) 
+    } else {
+      table_data <- default_tibble
+    }
+  } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
+    table_data <- get_data_from_postgres(
+      table_name = table_name,
+      dbname = Sys.getenv("ST_POSTGRES_DB"),
+      host_db = Sys.getenv("ST_POSTGRES_HOST"),
+      db_port = Sys.getenv("ST_POSTGRES_PORT"),
+      db_user = Sys.getenv("ST_POSTGRES_USERNAME"),
+      db_password = Sys.getenv("ST_POSTGRES_PASSWORD"),
+      query_filter=paste0("run_id = '", run_id, "'")
+    )
   } else {
-    backend_crispy_data <- tibble::tibble(
+    stop("must fill in a backend_trisk_run_folder")
+  }
+
+  return(table_data)
+}
+
+
+
+load_backend_crispy_data <- function(backend_trisk_run_folder, run_id = NULL) {
+  backend_crispy_data <- base_data_load(
+    table_name = "crispy_output",
+    run_id = run_id,
+    backend_trisk_run_folder = backend_trisk_run_folder,
+    default_tibble = tibble::tibble(
       run_id = character(),
       company_id = character(),
       ald_sector = character(),
@@ -15,16 +48,17 @@ load_backend_crispy_data <- function(backend_trisk_run_folder) {
       pd_baseline = numeric(),
       pd_shock = numeric()
     )
-  }
+  )
   return(backend_crispy_data)
 }
 
-load_backend_trajectories_data <- function(backend_trisk_run_folder) {
-  backend_trajectories_data_path <- fs::path(backend_trisk_run_folder, "company_trajectories", ext = "parquet")
-  if (file.exists(backend_trajectories_data_path)) {
-    backend_trajectories_data <- arrow::read_parquet(backend_trajectories_data_path)
-  } else {
-    backend_trajectories_data <- tibble::tibble(
+
+load_backend_trajectories_data <- function(backend_trisk_run_folder, run_id = NULL) {
+  backend_trajectories_data <- base_data_load(
+    table_name = "company_trajectories",
+    run_id = run_id,
+    backend_trisk_run_folder = backend_trisk_run_folder,
+    default_tibble = tibble::tibble(
       run_id = character(),
       year = numeric(),
       company_id = character(),
@@ -34,17 +68,17 @@ load_backend_trajectories_data <- function(backend_trisk_run_folder) {
       production_target_scenario = numeric(),
       production_shock_scenario = numeric()
     )
-  }
-
+  )
   return(backend_trajectories_data)
 }
 
-load_backend_trisk_run_metadata <- function(backend_trisk_run_folder) {
-  backend_trisk_run_metadata_path <- fs::path(backend_trisk_run_folder, "run_metadata", ext = "parquet")
-  if (file.exists(backend_trisk_run_metadata_path)) {
-    backend_trisk_run_metadata <- arrow::read_parquet(backend_trisk_run_metadata_path)
-  } else {
-    backend_trisk_run_metadata <- tibble::tibble(
+
+load_backend_trisk_run_metadata <- function(backend_trisk_run_folder, run_id = NULL) {
+  backend_trisk_run_metadata_path <- base_data_load(
+    table_name = "run_metadata",
+    run_id = run_id,
+    backend_trisk_run_folder = backend_trisk_run_folder,
+    default_tibble = tibble::tibble(
       run_id = character(),
       roll_up_type = character(),
       baseline_scenario = character(),
@@ -60,6 +94,8 @@ load_backend_trisk_run_metadata <- function(backend_trisk_run_folder) {
       carbon_price_model = character(),
       market_passthrough = numeric()
     )
-  }
+  )
+
   return(backend_trisk_run_metadata)
 }
+

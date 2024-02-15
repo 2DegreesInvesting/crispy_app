@@ -4,6 +4,7 @@
 
 trisk_input_path <- Sys.getenv("TRISK_INPUT_PATH")
 backend_trisk_run_folder <- Sys.getenv("BACKEND_TRISK_RUN_FOLDER")
+api_endpoint <- Sys.getenv("TRISK_API_ENDPOINT")
 
 
 # PROJECT CONSTANTS ====================================
@@ -82,9 +83,9 @@ hide_vars <- list(
     # "NGFS2023_REMIND_NZ2050",
     # "NGFS2023_MESSAGE_NZ2050",
     # "NGFS2023_GCAM_NZ2050",
-    # "NGFS2023_REMIND_DT",
-    # "NGFS2023_MESSAGE_DT",
-    # "NGFS2023_GCAM_DT",
+    "NGFS2023_REMIND_DT",
+    "NGFS2023_MESSAGE_DT",
+    "NGFS2023_GCAM_DT"
     # "NGFS2023_REMIND_DN0",
     # "NGFS2023_MESSAGE_DN0",
     # "NGFS2023_GCAM_DN0",

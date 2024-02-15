@@ -8,7 +8,7 @@ box::use(
 )
 
 box::use(
-  app / view / modules / trisk_mgmt,
+  app / view / modules / trisk_button,
   app / view / portfolio / portfolio_analysis,
   app / view / modules / plots_equity_change,
   app / view / modules / plots_trajectories,
@@ -26,7 +26,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
       class = "ui segment", style = "min-height: 100vh;",
       shiny::tags$div(
         class = "ui stackable grid",
-        trisk_mgmt$ui(ns("trisk_mgmt")),
+        trisk_button$ui(ns("trisk_button")),
         portfolio_analysis$ui(ns("portfolio_analysis"), title = "Equities portfolio"),
         plots_equity_change$ui(ns("plots_equity_change")),
         plots_trajectories$ui(ns("plots_trajectories"))
@@ -53,8 +53,8 @@ server <- function(id, perimeter, backend_trisk_run_folder, trisk_input_path, ma
     editable_columns_names_equities <- c("exposure_value_usd")
     colored_columns_names_equities <- c("crispy_perc_value_change", "crispy_value_loss")
 
-    results <- trisk_mgmt$server(
-      "trisk_mgmt",
+    results <- trisk_button$server(
+      "trisk_button",
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,
       trisk_run_params_r = trisk_run_params_r,
