@@ -48,3 +48,15 @@ renv::install() # Install added packages
 renv::snapshot() # Update the lockfile
 renv::restore(clean = TRUE) # Uninstall removed packages
 ```
+
+
+## Cloud Deployment
+
+The app can be deployed on kubernetes by following those instructions : 
+
+- First, deploy the TRISK api in the scripts/trisk_k8s_api folder
+- pull the crispy app dockerfile, and verify its tag url matches the one in crispy-app-deployment.yaml
+- run those commands : 
+
+kubectl apply -f crispy-app-deployment.yaml
+kubectl apply -f crispy-app-service.yaml

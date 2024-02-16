@@ -17,3 +17,4 @@ package.json
 cypress.config.js
 package-lock.json
 scripts/trisk_k8s_api/st_inputs/*
+

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crispy-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crispy-app
+  template:
+    metadata:
+      labels:
+        app: crispy-app
+    spec:
+      # nodeSelector:
+      #   nodepool: pool-shiny-crispy
+      containers:
+      - name: crispy-app
+        image: registry.digitalocean.com/theia-1in1000-shinyapps/crispy_app:latest
+        ports:
+        - containerPort: 3838  # Default Shiny Server port

@@ -1,6 +1,7 @@
 FROM rocker/shiny:4.1.0
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV CRISPY_APP_ENV="prod" 
 
 # Install system dependencies
 RUN apt-get update -qq \
@@ -11,7 +12,6 @@ RUN apt-get update -qq \
     libudunits2-dev \
   && rm -rf /var/lib/apt/lists/*
 
-
 WORKDIR /srv/shiny-server 
 RUN rm -rf *
 
@@ -20,10 +20,8 @@ COPY --chown=shiny:shiny .Rprofile renv.lock ./
 COPY --chown=shiny:shiny renv/activate.R renv/
 RUN sudo -u shiny Rscript -e 'renv::restore(clean = TRUE)'
 
-
-# set environment variables
-ENV TRISK_INPUT_PATH = "app/data/st_inputs"
-ENV BACKEND_TRISK_RUN_FOLDER = "app/data/backend_db"
+ENV CRISPY_APP_ENV="prod"
+ENV TRISK_API_ENDPOINT=NULL
 
 # Copy app
 COPY --chown=shiny:shiny app.R ./

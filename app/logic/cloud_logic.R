@@ -1,12 +1,36 @@
+
+
 trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint){
-    print("in api")
-    browser()
+      
+  # Define the URL
+  # trisk_api_service <- "trisk-api-service"
+  trisk_api_service <- Sys.getenv("TRISK_API_SERVICE")
+  url <- paste0("http://",trisk_api_service,":80/compute_trisk/")
+  # url <- "http://164.90.241.52:80/compute_trisk/"
 
+  # Define the body of the request
+  body <- list(
+    trisk_run_params = trisk_run_params
+  )
 
-    # curl -X 'POST' \
-    # 'http://188.166.192.175/compute_trisk/' \
-    # -H 'Content-Type: application/json' \
-    # -d '{"trisk_run_params": {...}}'
+  # Convert the body to JSON
+  body_json <- jsonlite::toJSON(body, auto_unbox = TRUE)
+
+  # Make the POST request with a 6-minute timeout
+  response <- httr::POST(url, body = body_json, httr::add_headers(`Content-Type` = "application/json"), httr::timeout(360))
+
+  # Check the response
+  status_code <- httr::status_code(response)
+
+  if(status_code!=200){
+    stop("The request failed with status code ", status_code)
+  } 
+  
+  content <- httr::content(response, "text", encoding = "UTF-8")  
+  run_id <- jsonlite::fromJSON(content)$trisk_run_id
+
+  return(run_id)
+
 }
 
 
@@ -17,9 +41,9 @@ get_data_from_postgres <- function(
   db_port, 
   db_user, 
   db_password, 
-  query_filter
-) {
-  browser()
+  query_filter=NULL,
+  default_tibble=tibble::tibble()) {
+  
   # Create a connection string
   conn <- DBI::dbConnect(RPostgres::Postgres(),
                     dbname = dbname,
@@ -28,14 +52,23 @@ get_data_from_postgres <- function(
                     user = db_user,
                     password = db_password)
   
-  # Construct the SQL query
-  query <- paste("SELECT * FROM", table_name, "WHERE", query_filter)
-  
-  # Execute the query and fetch results
-  data <- DBI::dbGetQuery(conn, query)
-  
+  if (DBI::dbExistsTable(conn, table_name)){
+    # Construct the SQL query
+    if (is.null(query_filter)) {
+      query <- paste("SELECT * FROM", table_name)
+    } else{
+      query <- paste("SELECT * FROM", table_name, "WHERE", query_filter)
+    }
+    
+    
+    # Execute the query and fetch results
+    table_data <- DBI::dbGetQuery(conn, query)
+    table_data <- tibble::as_tibble(table_data)
+  }  else{
+    table_data <- default_tibble
+  }
   # Close the connection
   DBI::dbDisconnect(conn)
   
-  return(data)
+  return(table_data)
 }

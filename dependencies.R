@@ -24,6 +24,9 @@ library(DT)
 # library(gridExtra)
 # library(ggpubr)
 library(zip)
+library(jsonlite)
+library(httr)
+library(RPostgres)
 
 
 library(r2dii.climate.stress.test)

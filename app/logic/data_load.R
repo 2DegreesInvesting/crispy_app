@@ -14,6 +14,13 @@ base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder =
       table_data <- default_tibble
     }
   } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
+    
+if (!is.null(run_id)){
+  query_filter <- paste0("run_id = '", run_id, "'")
+} else{
+query_filter <- NULL
+}
+    
     table_data <- get_data_from_postgres(
       table_name = table_name,
       dbname = Sys.getenv("ST_POSTGRES_DB"),
@@ -21,7 +28,8 @@ base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder =
       db_port = Sys.getenv("ST_POSTGRES_PORT"),
       db_user = Sys.getenv("ST_POSTGRES_USERNAME"),
       db_password = Sys.getenv("ST_POSTGRES_PASSWORD"),
-      query_filter=paste0("run_id = '", run_id, "'")
+      query_filter=query_filter,
+      default_tibble = default_tibble
     )
   } else {
     stop("must fill in a backend_trisk_run_folder")
@@ -74,7 +82,7 @@ load_backend_trajectories_data <- function(backend_trisk_run_folder, run_id = NU
 
 
 load_backend_trisk_run_metadata <- function(backend_trisk_run_folder, run_id = NULL) {
-  backend_trisk_run_metadata_path <- base_data_load(
+  backend_trisk_run_metadata <- base_data_load(
     table_name = "run_metadata",
     run_id = run_id,
     backend_trisk_run_folder = backend_trisk_run_folder,

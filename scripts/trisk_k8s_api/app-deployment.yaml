@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: trisk-api
 spec:
-  replicas: 2 # Start with 2 replicas; adjust as necessary
+  # replicas: 2 # Start with 2 replicas; adjust as necessary
   selector:
     matchLabels:
       app: trisk-api
@@ -12,6 +12,8 @@ spec:
       labels:
         app: trisk-api
     spec:
+      # nodeSelector:
+      #   nodepool: pool-trisk-api
       containers:
       - name: trisk-api
         image: registry.digitalocean.com/theia-1in1000-shinyapps/trisk_api:latest # Replace with your actual image path

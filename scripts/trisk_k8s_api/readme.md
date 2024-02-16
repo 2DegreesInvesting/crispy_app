@@ -32,7 +32,9 @@ curl -X 'POST' \
 
 # DEPLOY
 
-docker push 
+https://docs.digitalocean.com/products/kubernetes/how-to/set-up-autoscaling/
+
+docker push registry.digitalocean.com/theia-1in1000-shinyapps/trisk_api:latest
 
 ## kubectl commands
 
@@ -45,6 +47,10 @@ kubectl logs <pod-name>
 kubectl apply -f app-deployment.yaml
 kubectl apply -f app-service.yaml
 
+kubectl autoscale deployment trisk-api --cpu-percent=50 --min=2 --max=10
+kubectl get hpa
+
+
 <!-- Listing Services -->
 kubectl get svc
 kubectl get deployment
@@ -54,4 +60,11 @@ kubectl rollout restart deployment <deployment-name>
 
 kubectl delete deployment <deployment-name>
 
+
+# To create db-credentials.yaml
+
+
+echo -n DB_PASSWORD | base64
+
+kubectl apply -f db-credentials.yaml
 

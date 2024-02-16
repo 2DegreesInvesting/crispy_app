@@ -1,0 +1,13 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: trisk-api-hpa
+  namespace: default # Adjust if your deployment is in a different namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: trisk-api
+  minReplicas: 1 # Start with 1 replica
+  maxReplicas: 10 # Adjust based on your maximum expected scale
+  targetCPUUtilizationPercentage: 80 # Adjust based on your needs
