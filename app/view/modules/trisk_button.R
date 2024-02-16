@@ -8,10 +8,10 @@ box::use(
 
 box::use(
   app / logic / trisk_button_logic[
-    trisk_generator  ,
+    trisk_generator,
     check_if_run_exists
   ],
-  app / logic/ data_load[
+  app / logic / data_load[
     load_backend_crispy_data,
     load_backend_trajectories_data
   ]
@@ -36,7 +36,7 @@ ui <- function(id) {
         tags$p("Please wait while the model is being run with the chosen parameters. This may take up to 10 minutes.")
       )
     ),
-        tags$div(
+    tags$div(
       id = ns("model_load_db"),
       class = "ui modal",
       tags$div(class = "header", "Fetching run results"),
@@ -73,7 +73,6 @@ server <- function(
 
     # fetch or compute trisk on button click
     shiny::observeEvent(input$run_trisk, ignoreNULL = T, {
-
       if (!is.null(trisk_run_params_r())) {
         trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
 
@@ -86,26 +85,26 @@ server <- function(
           if (trisk_run_params$carbon_price_model == "no_carbon_tax") {
             trisk_run_params$market_passthrough <- 0
           }
-  # Check if the run already exists (locally OR in database)
-  run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
+          # Check if the run already exists (locally OR in database)
+          run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
 
-  if (is.null(run_id)) {
-          # open the model dialog
-      shinyjs::runjs(
-        paste0(
-          "$('#", session$ns("mymodal"), "').modal({closable: true}).modal('show');"
-        )
-      )
+          if (is.null(run_id)) {
+            # open the model dialog
+            shinyjs::runjs(
+              paste0(
+                "$('#", session$ns("mymodal"), "').modal({closable: true}).modal('show');"
+              )
+            )
 
-          # get run_id either by running locally, or by fetching from backend
-          run_id <- trisk_generator(
-            backend_trisk_run_folder = backend_trisk_run_folder,
-            trisk_input_path = trisk_input_path,
-            trisk_run_params = trisk_run_params,
-            max_trisk_granularity = max_trisk_granularity
-          )
-  }
-  }
+            # get run_id either by running locally, or by fetching from backend
+            run_id <- trisk_generator(
+              backend_trisk_run_folder = backend_trisk_run_folder,
+              trisk_input_path = trisk_input_path,
+              trisk_run_params = trisk_run_params,
+              max_trisk_granularity = max_trisk_granularity
+            )
+          }
+        }
       }
 
       # close the modal dialog
@@ -114,13 +113,13 @@ server <- function(
           "$('#", session$ns("mymodal"), "').modal('hide');"
         )
       )
-      
+
       run_id_r(run_id)
     })
 
     # load trisk outputs either from local storage, or cloud backend
     trisk_outputs <- fetch_crispy_and_trajectories_data(
-      session=session,
+      session = session,
       backend_trisk_run_folder = backend_trisk_run_folder,
       run_id_r = run_id_r,
       trisk_granularity_r = trisk_granularity_r
@@ -151,7 +150,6 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
 
   observe({
     if (!is.null(run_id_r())) {
-
       shinyjs::runjs(
         paste0(
           "$('#", session$ns("model_load_db"), "').modal({closable: true}).modal('show');"
@@ -161,11 +159,9 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
       raw_crispy_data_r(
         load_backend_crispy_data(backend_trisk_run_folder, run_id = run_id_r())
       )
-
       raw_trajectories_data_r(
         load_backend_trajectories_data(backend_trisk_run_folder, run_id = run_id_r())
       )
-
 
       # close the modal dialog
       shinyjs::runjs(
@@ -181,15 +177,16 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
 
   observe({
     if (!is.null(trisk_granularity_r()) & !is.null(raw_crispy_data_r()) & !is.null(raw_trajectories_data_r())) {
+
       crispy_data_r(
         raw_crispy_data_r() |>
           stress.test.plot.report::main_load_multi_crispy_data(granularity = trisk_granularity_r())
       )
-
       trajectories_data_r(
         raw_trajectories_data_r() |>
           stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
       )
+      browser()
     }
   })
 

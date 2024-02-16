@@ -1,5 +1,5 @@
 box::use(
-  app/logic/cloud_logic[
+  app / logic / cloud_logic[
     get_data_from_postgres
   ]
 )
@@ -9,18 +9,17 @@ base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder =
     table_data_path <- fs::path(backend_trisk_run_folder, table_name, ext = "parquet")
     if (file.exists(table_data_path)) {
       table_data <- arrow::read_parquet(table_data_path) |>
-        dplyr::filter(.data$run_id == run_id) 
+        dplyr::filter(.data$run_id == run_id)
     } else {
       table_data <- default_tibble
     }
   } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
-    
-if (!is.null(run_id)){
-  query_filter <- paste0("run_id = '", run_id, "'")
-} else{
-query_filter <- NULL
-}
-    
+    if (!is.null(run_id)) {
+      query_filter <- paste0("run_id = '", run_id, "'")
+    } else {
+      query_filter <- NULL
+    }
+
     table_data <- get_data_from_postgres(
       table_name = table_name,
       dbname = Sys.getenv("ST_POSTGRES_DB"),
@@ -28,11 +27,11 @@ query_filter <- NULL
       db_port = Sys.getenv("ST_POSTGRES_PORT"),
       db_user = Sys.getenv("ST_POSTGRES_USERNAME"),
       db_password = Sys.getenv("ST_POSTGRES_PASSWORD"),
-      query_filter=query_filter,
+      query_filter = query_filter,
       default_tibble = default_tibble
     )
   } else {
-    stop("must fill in a backend_trisk_run_folder")
+    stop("You must set the env variable CRISPY_APP_ENV to either 'dev' or 'prod'")
   }
 
   return(table_data)
@@ -106,4 +105,3 @@ load_backend_trisk_run_metadata <- function(backend_trisk_run_folder, run_id = N
 
   return(backend_trisk_run_metadata)
 }
-

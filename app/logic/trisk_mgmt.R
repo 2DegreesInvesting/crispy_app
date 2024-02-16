@@ -9,8 +9,8 @@ box::use(
 
 box::use(
   app / logic / trisk_mgmt[
-      run_trisk_with_params,
-      format_error_message
+    run_trisk_with_params,
+    format_error_message
   ],
   app / logic / data_load[
     load_backend_trajectories_data,

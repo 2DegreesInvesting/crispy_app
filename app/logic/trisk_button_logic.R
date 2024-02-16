@@ -1,15 +1,15 @@
 box::use(
-  app/logic/trisk_mgmt[
-    run_trisk_with_params  
-    ],
-  app/logic/cloud_logic[
+  app / logic / trisk_mgmt[
+    run_trisk_with_params
+  ],
+  app / logic / cloud_logic[
     trigger_trisk_api_computation,
   ],
-  app/logic/data_load[
+  app / logic / data_load[
     load_backend_trisk_run_metadata
   ],
-  app/logic/data_write[
-  append_st_results_to_backend_data
+  app / logic / data_write[
+    append_st_results_to_backend_data
   ]
 )
 
@@ -47,43 +47,35 @@ trisk_generator <- function(
     trisk_input_path,
     trisk_run_params,
     max_trisk_granularity) {
-
-
-    if (Sys.getenv("CRISPY_APP_ENV") == "dev") {        
-          st_results_wrangled_and_checked <- tryCatch(
-            {
-              run_trisk_with_params(
-                trisk_run_params,
-                trisk_input_path
-              )
-            },
-            error = function(e) {
-              print(e$message)
-              print("\n\n")
-              format_error_message(trisk_run_params)
-              NULL
-            }
-          )
-
-          if (!is.null(st_results_wrangled_and_checked)) {
-            append_st_results_to_backend_data(
-              st_results_wrangled_and_checked,
-              backend_trisk_run_folder,
-              max_trisk_granularity
-            )
-            run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
-          }
-        } 
-      else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
-        
-        run_id <- trigger_trisk_api_computation(trisk_run_params)
-      } else {
-        stop("must set environment variable CRISPY_APP_ENV to 'dev' or 'prod'")
+  if (Sys.getenv("CRISPY_APP_ENV") == "dev") {
+    st_results_wrangled_and_checked <- tryCatch(
+      {
+        run_trisk_with_params(
+          trisk_run_params,
+          trisk_input_path
+        )
+      },
+      error = function(e) {
+        print(e$message)
+        print("\n\n")
+        format_error_message(trisk_run_params)
+        NULL
       }
-  
+    )
+
+    if (!is.null(st_results_wrangled_and_checked)) {
+      append_st_results_to_backend_data(
+        st_results_wrangled_and_checked,
+        backend_trisk_run_folder,
+        max_trisk_granularity
+      )
+      run_id <- check_if_run_exists(trisk_run_params, backend_trisk_run_folder)
+    }
+  } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
+    run_id <- trigger_trisk_api_computation(trisk_run_params)
+  } else {
+    stop("must set environment variable CRISPY_APP_ENV to 'dev' or 'prod'")
+  }
+
   return(run_id)
 }
-
-
-
-

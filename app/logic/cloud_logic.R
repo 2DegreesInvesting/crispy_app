@@ -1,11 +1,8 @@
-
-
-trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint){
-      
+trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint) {
   # Define the URL
   # trisk_api_service <- "trisk-api-service"
   trisk_api_service <- Sys.getenv("TRISK_API_SERVICE")
-  url <- paste0("http://",trisk_api_service,":80/compute_trisk/")
+  url <- paste0("http://", trisk_api_service, ":80/compute_trisk/")
   # url <- "http://164.90.241.52:80/compute_trisk/"
 
   # Define the body of the request
@@ -22,53 +19,52 @@ trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint){
   # Check the response
   status_code <- httr::status_code(response)
 
-  if(status_code!=200){
+  if (status_code != 200) {
     stop("The request failed with status code ", status_code)
-  } 
-  
-  content <- httr::content(response, "text", encoding = "UTF-8")  
+  }
+
+  content <- httr::content(response, "text", encoding = "UTF-8")
   run_id <- jsonlite::fromJSON(content)$trisk_run_id
 
   return(run_id)
-
 }
 
 
 get_data_from_postgres <- function(
-  table_name, 
-  dbname, 
-  host_db, 
-  db_port, 
-  db_user, 
-  db_password, 
-  query_filter=NULL,
-  default_tibble=tibble::tibble()) {
-  
+    table_name,
+    dbname,
+    host_db,
+    db_port,
+    db_user,
+    db_password,
+    query_filter = NULL,
+    default_tibble = tibble::tibble()) {
   # Create a connection string
   conn <- DBI::dbConnect(RPostgres::Postgres(),
-                    dbname = dbname,
-                    host = host_db,
-                    port = db_port,
-                    user = db_user,
-                    password = db_password)
-  
-  if (DBI::dbExistsTable(conn, table_name)){
+    dbname = dbname,
+    host = host_db,
+    port = db_port,
+    user = db_user,
+    password = db_password
+  )
+
+  if (DBI::dbExistsTable(conn, table_name)) {
     # Construct the SQL query
     if (is.null(query_filter)) {
       query <- paste("SELECT * FROM", table_name)
-    } else{
+    } else {
       query <- paste("SELECT * FROM", table_name, "WHERE", query_filter)
     }
-    
-    
+
+
     # Execute the query and fetch results
     table_data <- DBI::dbGetQuery(conn, query)
     table_data <- tibble::as_tibble(table_data)
-  }  else{
+  } else {
     table_data <- default_tibble
   }
   # Close the connection
   DBI::dbDisconnect(conn)
-  
+
   return(table_data)
 }

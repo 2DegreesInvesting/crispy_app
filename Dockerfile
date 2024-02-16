@@ -18,10 +18,8 @@ RUN rm -rf *
 # Install R dependencies
 COPY --chown=shiny:shiny .Rprofile renv.lock ./
 COPY --chown=shiny:shiny renv/activate.R renv/
-RUN sudo -u shiny Rscript -e 'renv::restore(clean = TRUE)'
+RUN sudo -u shiny Rscript -e 'renv::restore()'
 
-ENV CRISPY_APP_ENV="prod"
-ENV TRISK_API_ENDPOINT=NULL
 
 # Copy app
 COPY --chown=shiny:shiny app.R ./
