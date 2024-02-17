@@ -4,7 +4,7 @@
 source("./trisk_compute.R")
 
 # Create a plumber router
-pr <- plumber::plumb()
+pr <- plumber::Plumber$new()
 
 validate_trisk_run_params <- function(trisk_run_params) {
   required_keys <- names(formals(r2dii.climate.stress.test::run_trisk))
@@ -17,22 +17,22 @@ validate_trisk_run_params <- function(trisk_run_params) {
 
 pr$handle("POST", "/compute_trisk", function(req, res){
   
-  trisk_run_param <- jsonlite::fromJSON(req$postBody)
-  trisk_run_params <- as.list(trisk_run_params)
-  trisk_input_path <- as.character(trisk_input_path)
+  trisk_run_params <- jsonlite::fromJSON(req$postBody)$trisk_run_params
   validate_trisk_run_params(trisk_run_params)
 
+  # hardcoded input fp while the data is still part of the docker image
+  trisk_input_path <- file.path(".", "st_inputs")
 
-  trisk_input_path <- Sys.getenv("ST_TRISK_INPUT_PATH")
-  dbname <- Sys.getenv("ST_POSTGRES_DB")
-  host_db <- Sys.getenv("ST_POSTGRES_HOST")
-  db_port <- Sys.getenv("ST_POSTGRES_PORT")
-  db_user <- Sys.getenv("ST_POSTGRES_USERNAME")
-  db_password <- Sys.getenv("ST_POSTGRES_PASSWORD")
-
-  postgres_conn <- DBI::dbConnect(RPostgres::Postgres(), dbname = dbname, host = host_db, port = db_port, user = db_user, password = db_password)
+  postgres_conn <- DBI::dbConnect(
+    RPostgres::Postgres(), 
+    dbname = Sys.getenv("ST_POSTGRES_DB"), 
+    host = Sys.getenv("ST_POSTGRES_HOST"), 
+    port = Sys.getenv("ST_POSTGRES_PORT"), 
+    user = Sys.getenv("ST_POSTGRES_USERNAME"), 
+    password = Sys.getenv("ST_POSTGRES_PASSWORD")
+    )
   
-  run_trisk_and_upload_results_to_db_conn(
+  run_id <- run_trisk_and_upload_results_to_db_conn(
     trisk_run_params=trisk_run_params,
     trisk_input_path=trisk_input_path,
     postgres_conn=postgres_conn
@@ -43,3 +43,5 @@ pr$handle("POST", "/compute_trisk", function(req, res){
 
 # Run the plumber API on port 8080
 pr$run(port=8080)
+
+
