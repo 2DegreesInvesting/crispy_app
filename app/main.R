@@ -158,8 +158,7 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    print("CRISPY_APP_ENV")
-    print(Sys.getenv("CRISPY_APP_ENV"))
+
     possible_trisk_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
 
     # the TRISK runs are generated In the sidebar module

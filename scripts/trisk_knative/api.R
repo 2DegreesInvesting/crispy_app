@@ -38,10 +38,12 @@ pr$handle("POST", "/compute_trisk", function(req, res){
     postgres_conn=postgres_conn
   )
   
-  return(run_id)
+  response <- list(trisk_run_id=run_id)
+  response <- jsonlite::toJSON(response, auto_unbox = TRUE)
+  return(response)
 })
 
 # Run the plumber API on port 8080
-pr$run(port=8080)
+pr$run(port=8080, host="0.0.0.0")
 
 

@@ -28,5 +28,5 @@ COPY --chown=shiny:shiny rhino.yml ./
 COPY --chown=shiny:shiny app app/
 
 COPY --chown=shiny:shiny docker/shiny-server.conf /etc/shiny-server/
-RUN mkdir -p /var/run/s6 && chown -R shiny:shiny /var/run/s6
-USER shiny
+# RUN mkdir -p /var/run/s6 && chown -R shiny:shiny /var/run/s6
+# USER shiny

@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: trisk-api-service
+spec:
+  template:
+    spec:
+      containers:
+      - image: registry.digitalocean.com/theia-1in1000-shinyapps/trisk_api:latest
+        ports:
+        - containerPort: 8080

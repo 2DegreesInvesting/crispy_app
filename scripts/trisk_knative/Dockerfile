@@ -4,6 +4,7 @@ FROM rocker/r-ver:latest
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-gnutls-dev \
     libpq-dev \
+     zlib1g-dev \
     libsodium-dev
 #     libssl-dev \
 #     libxml2-dev \
@@ -25,7 +26,7 @@ RUN Rscript -e 'renv::restore(clean = TRUE)'
 
 
 # Copy the R project files
-COPY ./main.R /app/main.R
+COPY ./api.R /app/api.R
 COPY ./trisk_compute.R /app/trisk_compute.R
 COPY ./st_inputs/* /app/st_inputs/
 
@@ -42,4 +43,4 @@ ENV ST_POSTGRES_PORT=NULL
 EXPOSE 8080
 
 # Use plumber to run your app
-CMD ["Rscript", "/app/main.R"]
+CMD ["Rscript", "/app/api.R"]
