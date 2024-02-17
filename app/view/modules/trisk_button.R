@@ -186,7 +186,6 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
         raw_trajectories_data_r() |>
           stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
       )
-      browser()
     }
   })
 

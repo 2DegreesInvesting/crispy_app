@@ -12,8 +12,8 @@ api_endpoint <- Sys.getenv("TRISK_API_ENDPOINT")
 # Must be ordered from "less granular" to "more granular"
 max_trisk_granularity <- list(
   "ald_sector" = 1,
-  "ald_business_unit" = 2,
-  "company_id" = 3
+  "ald_business_unit" = 2
+  # "company_id" = 3
 )
 
 
