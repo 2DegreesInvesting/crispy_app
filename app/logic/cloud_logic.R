@@ -29,7 +29,8 @@ trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint) {
   }
 
   content <- httr::content(response, "text", encoding = "UTF-8")
-  run_id <- jsonlite::fromJSON(content)$trisk_run_id
+  # jsonlite::fromJSON has to be doubled bc of this content structure
+  run_id <- jsonlite::fromJSON(jsonlite::fromJSON(content)$trisk_run_id)
 
   return(run_id)
 }
