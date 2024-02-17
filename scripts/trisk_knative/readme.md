@@ -55,3 +55,32 @@ curl -X 'POST' \
       "market_passthrough": 0
     }
   }'
+
+
+# Deploy and test deployment
+
+deploy:
+    kubectl apply -f trisk-api-service.yaml
+
+get service hostname:
+    kubectl get ksvc trisk-api-service -o=jsonpath='{.status.url}'
+
+
+test api in vpc:
+    curl -X POST http://SERVICE-HOSTNAME -H "Host: SERVICE-HOSTNAME" -H "Content-Type: application/json" -d '{"key":"value"}'
+
+get external ip:
+    kubectl get svc -n kourier-system
+
+test api from the web : 
+    curl -X POST http://EXTERNAL-IP -H "Host: SERVICE-HOSTNAME" -H "Content-Type: application/json" -d '{"key":"value"}'
+
+
+
+debug: 
+    kubectl logs -l serving.knative.dev/service=trisk-api-service -c user-container -n default
+
+
+
+
+
