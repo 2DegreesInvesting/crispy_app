@@ -15,7 +15,7 @@ validate_trisk_run_params <- function(trisk_run_params) {
   }
 }
 
-pr$handle("POST", "/run", function(req, res){
+pr$handle("POST", "/compute_trisk", function(req, res){
   
   trisk_run_param <- jsonlite::fromJSON(req$postBody)
   trisk_run_params <- as.list(trisk_run_params)

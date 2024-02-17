@@ -1,14 +1,17 @@
-FROM rocker/r-ver:4.3.0
+FROM rocker/r-ver:latest
 
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     # Install system dependencies required by some R packages and renv
-#     libcurl4-gnutls-dev \
+# Install system dependencies required by some R packages and renv
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-gnutls-dev \
+    libpq-dev \
+    libsodium-dev
 #     libssl-dev \
 #     libxml2-dev \
 #     liblzma-dev \
 #     libbz2-dev \ 
 #     libpcre2-dev \
-#     libpq-dev \  
+    
+
 
 # Set the working directory in the container
 WORKDIR /app
@@ -26,11 +29,13 @@ COPY ./main.R /app/main.R
 COPY ./trisk_compute.R /app/trisk_compute.R
 COPY ./st_inputs/* /app/st_inputs/
 
+# Define env variables
 ENV ST_POSTGRES_DB=NULL
 ENV ST_POSTGRES_USER=NULL
 ENV ST_POSTGRES_PASSWORD=NULL
 ENV ST_POSTGRES_HOST=NULL
 ENV ST_POSTGRES_PORT=NULL
+
 
 # Command to run the app
 # Expose the port your app will run on

@@ -2,7 +2,7 @@ trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint) {
   # Define the URL
   # trisk_api_service <- "trisk-api-service"
   trisk_api_service <- Sys.getenv("TRISK_API_SERVICE")
-  url <- paste0("http://", trisk_api_service, ":80/compute_trisk/")
+  url <- paste0("http://", trisk_api_service, ":80/compute_trisk")
   # url <- "http://164.90.241.52:80/compute_trisk/"
 
   # Define the body of the request
