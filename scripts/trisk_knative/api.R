@@ -38,6 +38,8 @@ pr$handle("POST", "/compute_trisk", function(req, res){
     postgres_conn=postgres_conn
   )
   
+  print("TRISK run & upload complete")
+
   response <- list(trisk_run_id=run_id)
   response <- jsonlite::toJSON(response, auto_unbox = TRUE)
   return(response)

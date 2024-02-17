@@ -72,7 +72,7 @@ run_trisk_with_params <- function(trisk_run_params, trisk_input_path) {
 # postgres_conn is a DBI connection
 # postgres_conn <- DBI::dbConnect(RPostgres::Postgres(), dbname = dbname, host = host_db, port = db_port, user = db_user, password = db_password)
 upload_to_postgres <- function(postgres_conn, st_results_wrangled_and_checked) {
-
+  cat("Uploading results")
   # Iterate over the names of the results
   for (st_output_name in names(st_results_wrangled_and_checked)) {
     # Get the new data from the results

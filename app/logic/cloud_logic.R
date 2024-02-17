@@ -9,12 +9,17 @@ trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint) {
   body <- list(
     trisk_run_params = trisk_run_params
   )
-
   # Convert the body to JSON
   body_json <- jsonlite::toJSON(body, auto_unbox = TRUE)
 
+  # Define the headers, including Host
+  headers <- c(
+    `Host` = paste0("trisk-api.default.",trisk_api_service),
+    `Content-Type` = "application/json"
+  )
+
   # Make the POST request with a 6-minute timeout
-  response <- httr::POST(url, body = body_json, httr::add_headers(`Content-Type` = "application/json"), httr::timeout(360))
+  response <- httr::POST(url, body = body_json, httr::add_headers(.headers = headers), httr::timeout(360))
 
   # Check the response
   status_code <- httr::status_code(response)

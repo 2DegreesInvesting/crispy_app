@@ -1,11 +1,30 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: trisk-api-service
+  name: trisk-api
 spec:
   template:
+    metadata:
+      name: trisk-api-service
     spec:
       containers:
-      - image: registry.digitalocean.com/theia-1in1000-shinyapps/trisk_api:latest
-        ports:
-        - containerPort: 8080
+        - image: registry.digitalocean.com/theia-1in1000-shinyapps/trisk_api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TARGET
+              value: "World"
+            - name: ST_POSTGRES_USERNAME
+              value: "doadmin"
+            - name: ST_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: postgres_password
+            - name: ST_POSTGRES_HOST
+              value: "db-postgresql-st-inputs-do-user-15367886-0.c.db.ondigitalocean.com"
+            - name: ST_POSTGRES_PORT
+              value: "25060"
+            - name: ST_POSTGRES_DB
+              value: "defaultdb"
+
