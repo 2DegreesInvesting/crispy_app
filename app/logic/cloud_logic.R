@@ -14,6 +14,7 @@ trigger_trisk_api_computation <- function(trisk_run_params, api_endpoint) {
 
   # Define the headers, including Host
   headers <- c(
+
     `Host` = paste0("trisk-api.default.", trisk_api_service),
     `Content-Type` = "application/json"
   )

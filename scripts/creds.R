@@ -1,5 +1,0 @@
-Sys.setenv(ST_POSTGRES_DB = "defaultdb")
-Sys.setenv(ST_POSTGRES_HOST = "db-postgresql-st-inputs-do-user-15367886-0.c.db.ondigitalocean.com")
-Sys.setenv(ST_POSTGRES_PORT = "25060")
-Sys.setenv(ST_POSTGRES_USERNAME = "doadmin")
-Sys.setenv(ST_POSTGRES_PASSWORD = "AVNS_s2JaVyjqyVTRru4_3C4")

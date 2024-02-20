@@ -8,10 +8,10 @@ box::use(
 )
 
 box::use(
-  app/view/modules/trisk_button,
-  app/view/portfolio/portfolio_analysis,
-  app/view/modules/plots_equity_change,
-  app/view/modules/plots_trajectories,
+  app / view / modules / trisk_button,
+  app / view / portfolio / portfolio_analysis,
+  app / view / modules / plots_equity_change,
+  app / view / modules / plots_trajectories,
 )
 
 ####### UI

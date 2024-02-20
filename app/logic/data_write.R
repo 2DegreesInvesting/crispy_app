@@ -26,6 +26,7 @@ append_st_results_to_backend_data <- function(
 
     # If the file exists, read the existing data, otherwise set the existing data to NULL
     if (file.exists(fpath)) {
+
       persistent_data <- arrow::read_parquet(fpath)
     } else {
       persistent_data <- NULL
