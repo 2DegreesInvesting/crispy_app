@@ -1,5 +1,5 @@
 box::use(
-  app / logic / cloud_logic[
+  app/logic/cloud_logic[
     get_data_from_postgres
   ]
 )
@@ -8,8 +8,12 @@ base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder =
   if (Sys.getenv("CRISPY_APP_ENV") == "dev") {
     table_data_path <- fs::path(backend_trisk_run_folder, table_name, ext = "parquet")
     if (file.exists(table_data_path)) {
-      table_data <- arrow::read_parquet(table_data_path) |>
-        dplyr::filter(.data$run_id == run_id)
+      if (!is.null(run_id)) {
+        table_data <- arrow::read_parquet(table_data_path) |>
+          dplyr::filter(.data$run_id == .env$run_id)
+      } else {
+        table_data <- arrow::read_parquet(table_data_path)
+      }
     } else {
       table_data <- default_tibble
     }

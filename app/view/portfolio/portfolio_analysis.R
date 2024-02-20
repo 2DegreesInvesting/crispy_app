@@ -11,9 +11,9 @@ box::use(
 )
 
 box::use(
-  app / view / portfolio / portfolio_edition,
-  app / logic / constant[max_trisk_granularity],
-  app / logic / renamings[rename_tibble_columns]
+  app/view/portfolio/portfolio_edition,
+  app/logic/constant[max_trisk_granularity],
+  app/logic/renamings[rename_tibble_columns]
 )
 
 

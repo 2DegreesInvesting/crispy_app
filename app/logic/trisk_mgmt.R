@@ -1,32 +1,10 @@
-# Import necessary libraries and functions
-box::use(
-  arrow[read_parquet, write_parquet],
-  dplyr[bind_rows],
-  r2dii.climate.stress.test[run_trisk],
-  app / logic / data_load[load_backend_crispy_data, load_backend_trajectories_data, load_backend_trisk_run_metadata]
-)
-
-
-box::use(
-  app / logic / trisk_mgmt[
-    run_trisk_with_params,
-    format_error_message
-  ],
-  app / logic / data_load[
-    load_backend_trajectories_data,
-    load_backend_crispy_data
-  ]
-)
-
-
-
 # Function to run the trisk model with given parameters and input path
 # Returns the wrangled and checked results
 run_trisk_with_params <- function(trisk_run_params, trisk_input_path) {
   # Run the trisk model with the provided parameters and input path
   # The results are returned and stored in st_results_wrangled_and_checked
   st_results_wrangled_and_checked <- do.call(
-    run_trisk,
+    r2dii.climate.stress.test::run_trisk,
     c(
       trisk_run_params,
       list(

@@ -9,7 +9,7 @@ box::use(
 )
 
 box::use(
-  app / logic / renamings[rename_string_vector]
+  app/logic/renamings[rename_string_vector]
 )
 
 ui <- function(id) {

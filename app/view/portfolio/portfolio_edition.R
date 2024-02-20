@@ -11,7 +11,7 @@ box::use(
 )
 
 box::use(
-  app / view / portfolio / simple_search_dropdown
+  app/view/portfolio/simple_search_dropdown
 )
 
 

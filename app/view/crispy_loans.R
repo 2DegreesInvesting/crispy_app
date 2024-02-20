@@ -7,8 +7,8 @@ box::use(
 )
 
 box::use(
-  app / view / modules / trisk_button,
-  app / view / portfolio / portfolio_analysis
+  app/view/modules/trisk_button,
+  app/view/portfolio/portfolio_analysis
 )
 
 

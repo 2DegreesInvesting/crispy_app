@@ -2,10 +2,9 @@
 
 # ENV CONSTANTS ====================================
 
-trisk_input_path <- file.path("app", "data", "st_inputs")
-backend_trisk_run_folder <- file.path("app", "data", "backend_db")
+trisk_input_path <- Sys.getenv("TRISK_INPUT_PATH")
+backend_trisk_run_folder <- Sys.getenv("TRISK_OUTPUT_PATH")
 api_endpoint <- Sys.getenv("TRISK_API_ENDPOINT")
-
 
 # PROJECT CONSTANTS ====================================
 

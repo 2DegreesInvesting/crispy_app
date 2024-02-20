@@ -9,10 +9,10 @@ box::use(
 )
 
 box::use(
-  app / view / params / params_scenarios,
-  app / view / params / params_dimensions,
-  app / view / params / params_trisk,
-  app / logic / renamings[rename_string_vector]
+  app/view/params/params_scenarios,
+  app/view/params/params_dimensions,
+  app/view/params/params_trisk,
+  app/logic/renamings[rename_string_vector]
 )
 
 
@@ -76,8 +76,6 @@ server <- function(id, backend_trisk_run_folder,
         market_passthrough = trisk_config_r()$market_passthrough
       )
     })
-    # prevent the UI modal from updating too often (ie. blinking)
-    # trisk_run_params_r <- shiny::throttle(trisk_run_params_r, millis = 200)
 
     perimeter <- list(
       "trisk_granularity_r" = trisk_granularity_r,

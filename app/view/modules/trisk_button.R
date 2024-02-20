@@ -7,11 +7,11 @@ box::use(
 )
 
 box::use(
-  app / logic / trisk_button_logic[
+  app/logic/trisk_button_logic[
     trisk_generator,
     check_if_run_exists
   ],
-  app / logic / data_load[
+  app/logic/data_load[
     load_backend_crispy_data,
     load_backend_trajectories_data
   ]
@@ -92,7 +92,7 @@ server <- function(
             # open the model dialog
             shinyjs::runjs(
               paste0(
-                "$('#", session$ns("mymodal"), "').modal({closable: true}).modal('show');"
+                "$('#", session$ns("mymodal"), "').modal({closable: false}).modal('show');"
               )
             )
 
@@ -177,7 +177,6 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
 
   observe({
     if (!is.null(trisk_granularity_r()) & !is.null(raw_crispy_data_r()) & !is.null(raw_trajectories_data_r())) {
-
       crispy_data_r(
         raw_crispy_data_r() |>
           stress.test.plot.report::main_load_multi_crispy_data(granularity = trisk_granularity_r())

@@ -11,7 +11,8 @@ box::use(
 
 test_that("main server works without error", {
   Sys.setenv(TRISK_INPUT_PATH = file.path("ST_INPUTS_DEV"))
-  Sys.setenv(BACKEND_TRISK_RUN_FOLDER = tempdir())
+  Sys.setenv(TRISK_OUTPUT_PATH = tempdir())
+  Sys.setenv(CRISPY_APP_ENV = "dev")
 
   expect_error(testServer(server, {
 

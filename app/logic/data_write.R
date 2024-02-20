@@ -26,16 +26,15 @@ append_st_results_to_backend_data <- function(
 
     # If the file exists, read the existing data, otherwise set the existing data to NULL
     if (file.exists(fpath)) {
-      persistent_data <- read_parquet(fpath)
+      persistent_data <- arrow::read_parquet(fpath)
     } else {
       persistent_data <- NULL
     }
 
     # Append the new data to the existing data
-    persistent_data <- bind_rows(persistent_data, new_data)
+    persistent_data <- dplyr::bind_rows(persistent_data, new_data)
 
     # Write the updated data back to the file
-    write_parquet(persistent_data, fpath)
+    arrow::write_parquet(persistent_data, fpath)
   }
-  return(run_id)
 }

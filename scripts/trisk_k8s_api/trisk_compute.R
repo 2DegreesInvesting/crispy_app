@@ -1,7 +1,6 @@
 run_trisk_and_upload_results <- function(
     trisk_run_params,
     trisk_input_path) {
-
   dbname <- Sys.getenv("ST_POSTGRES_DB")
   host_db <- Sys.getenv("ST_POSTGRES_HOST")
   db_port <- Sys.getenv("ST_POSTGRES_PORT")
@@ -98,4 +97,3 @@ upload_to_postgres <- function(st_results_wrangled_and_checked, dbname, host_db,
   }
   DBI::dbDisconnect(conn)
 }
-
