@@ -2685,3 +2685,4 @@ scripts/trisk_knative/st_inputs/prewrangled_capacity_factors.csv
 scripts/trisk_knative/st_inputs/prewrangled_financial_data_stress_test.csv
 scripts/trisk_knative/st_inputs/price_data_long.csv
 scripts/trisk_knative/st_inputs/Scenarios_AnalysisInput.csv
+scripts/creds.R
