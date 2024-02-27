@@ -70,7 +70,7 @@ ui <- function(id) {
             }
           "))
         ),
-        div(id = "loading-overlay", "Initializing...")
+        # div(id = "loading-overlay", "Initializing...")
       ),
       dashboardPage(
         title = "Homepage",
@@ -191,60 +191,66 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
+  authorized_access_r <- shiny::reactiveVal(FALSE)
   if (Sys.getenv("CRISPY_APP_ENV") == "prod"){
-      conn <- DBI::dbConnect(RPostgres::Postgres(),
-        dbname = Sys.getenv("ST_POSTGRES_DB"),
-        host = Sys.getenv("ST_POSTGRES_HOST"),
-        port = Sys.getenv("ST_POSTGRES_PORT"),
-        user = Sys.getenv("ST_POSTGRES_USERNAME"),
-        password = Sys.getenv("ST_POSTGRES_PASSWORD")
-      )
-
+        conn <- DBI::dbConnect(RPostgres::Postgres(),
+          dbname = Sys.getenv("ST_POSTGRES_DB"),
+          host = Sys.getenv("ST_POSTGRES_HOST"),
+          port = Sys.getenv("ST_POSTGRES_PORT"),
+          user = Sys.getenv("ST_POSTGRES_USERNAME"),
+          password = Sys.getenv("ST_POSTGRES_PASSWORD")
+        )
+        
       observeEvent(input$loginBtn, {
-        authorized_access <- check_credentials(input=input, conn=conn)
-          if (authorized_access) {
-            shinyjs::hide("login")
-            shinyjs::show("app_content")
-          } else {
-            shinyjs::alert("Incorrect username or password!")
+          authorized_access <- check_credentials(input=input, conn=conn)
+            if (authorized_access) {
+              shinyjs::hide("login")
+            } else {
+              shinyjs::alert("Incorrect username or password!")
+            }
+            authorized_access_r(authorized_access)
           }
-        }
     )} else{
       shinyjs::hide("login")
+      observe({authorized_access_r(TRUE)})
+      
     }
 
-    possible_trisk_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
+    shiny::observeEvent(c(authorized_access_r()), ignoreInit=TRUE, {
+      possible_trisk_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
 
-    # the TRISK runs are generated In the sidebar module
-    perimeter <- sidebar_parameters$server(
-      "sidebar_parameters",
-      max_trisk_granularity = max_trisk_granularity, # constant
-      possible_trisk_combinations = possible_trisk_combinations, # computed constant
-      backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      trisk_input_path = trisk_input_path, # constant
-      available_vars = available_vars, # constant
-      hide_vars = hide_vars, # constant
-      use_ald_sector = use_ald_sector # constant
-    )
+      # the TRISK runs are generated In the sidebar module
+      perimeter <- sidebar_parameters$server(
+        "sidebar_parameters",
+        max_trisk_granularity = max_trisk_granularity, # constant
+        possible_trisk_combinations = possible_trisk_combinations, # computed constant
+        backend_trisk_run_folder = backend_trisk_run_folder, # constant
+        trisk_input_path = trisk_input_path, # constant
+        available_vars = available_vars, # constant
+        hide_vars = hide_vars, # constant
+        use_ald_sector = use_ald_sector # constant
+      )
 
-    homepage$server("homepage")
+      homepage$server("homepage")
 
-    crispy_equities$server(
-      "crispy_equities",
-      backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      max_trisk_granularity = max_trisk_granularity, # constant
-      perimeter = perimeter
-    )
+      crispy_equities$server(
+        "crispy_equities",
+        backend_trisk_run_folder = backend_trisk_run_folder, # constant
+        max_trisk_granularity = max_trisk_granularity, # constant
+        perimeter = perimeter
+      )
 
-    crispy_loans$server(
-      "crispy_loans",
-      backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      possible_trisk_combinations = possible_trisk_combinations, # computed constant
-      max_trisk_granularity = max_trisk_granularity, # constant
-      perimeter = perimeter
-    )
+      crispy_loans$server(
+        "crispy_loans",
+        backend_trisk_run_folder = backend_trisk_run_folder, # constant
+        possible_trisk_combinations = possible_trisk_combinations, # computed constant
+        max_trisk_granularity = max_trisk_granularity, # constant
+        perimeter = perimeter
+      )
+    })
+    # shinyjs::runjs('$("#loading-overlay").hide();')
+
   })
-  shinyjs::runjs('$("#loading-overlay").hide();')
 }
 
 
