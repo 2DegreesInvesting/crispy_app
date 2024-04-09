@@ -18,6 +18,28 @@ ui <- function(id, max_trisk_granularity) {
   # First segment in the left half // Granularity
 
   shiny::tagList(
+        shiny::tags$head(
+      shiny::tags$style(HTML("
+        /* Existing styles here */
+        .ui.button:active, .ui.button.clicked { 
+          background-color: #000000; /* Clicked color */
+          color: #ffffff; /* Clicked text color */
+        }
+      ")),
+      shiny::tags$script(HTML(paste0("
+        $(document).ready(function() {
+          // Apply clicked styles on mousedown and revert on mouseup or mouseleave
+          $('.ui.button').on('mousedown', function() {
+            $(this).addClass('clicked');
+          }).on('mouseup mouseleave', function() {
+            $(this).removeClass('clicked');
+          });
+          
+          // Apply the clicked style by default to a specific button
+          $('#" , ns("granul_1") , "').addClass('clicked');
+        });
+      ")))
+    ),
     tags$div(
       class = "description",
       tags$div(
@@ -31,7 +53,7 @@ ui <- function(id, max_trisk_granularity) {
         shiny.semantic::button(
           ns("granul_1"),
           rename_string_vector(names(which(max_trisk_granularity == 1)), words_class = "analysis_columns"),
-          class = "ui secondary button fluid"
+          class = "ui button fluid"
         ),
         shiny.semantic::button(
           ns("granul_2"),
@@ -54,19 +76,18 @@ server <- function(id, max_trisk_granularity) {
       get_trisk_granularity(max_trisk_granularity, 1)
     )
 
-
     observeEvent(input$granul_1, {
-      update_class(session$ns("granul_1"), "ui secondary button fluid")
-      update_class(session$ns("granul_2"), "ui button fluid")
-      # update_class(session$ns("granul_3"), "ui primary button fluid")
+      update_button_style(session$ns("granul_1"), "#000000", "#FFFFFF")
+      update_button_style(session$ns("granul_2"), "#d4d4d5", "#333")
+      # update_button_style(session$ns("granul_3"), "#d4d4d5", "#FFFFFF")
       trisk_granularity_r(
         get_trisk_granularity(max_trisk_granularity, 1)
       )
     })
 
     observeEvent(input$granul_2, {
-      update_class(session$ns("granul_1"), "ui button fluid")
-      update_class(session$ns("granul_2"), "ui secondary button fluid")
+      update_button_style(session$ns("granul_1"), "#d4d4d5", "#333")
+      update_button_style(session$ns("granul_2"), "#000000", "#FFFFFF")
       # update_class(session$ns("granul_3"), "ui primary button fluid")
       trisk_granularity_r(
         get_trisk_granularity(max_trisk_granularity, 2)
@@ -94,7 +115,8 @@ get_trisk_granularity <- function(max_trisk_granularity, granularity_level) {
   return(trisk_granularity)
 }
 
-# Function to update button classes, now correctly utilized
-update_class <- function(input_id, class) {
-  shinyjs::runjs(sprintf("$('#%s').attr('class', '%s');", input_id, class))
+# Function to directly update the CSS of buttons
+update_button_style <- function(input_id, background_color = "#000000", text_color = "#FFFFFF") {
+  js_code <- sprintf("$('#%s').css({'background-color': '%s', 'color': '%s'});", input_id, background_color, text_color)
+  shinyjs::runjs(js_code)
 }

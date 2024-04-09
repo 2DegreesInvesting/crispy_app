@@ -11,9 +11,9 @@ box::use(
 box::use(
   # modules
   app/view/sidebar_parameters,
-  app/view/crispy_documentation,
-  app/view/crispy_equities,
-  app/view/crispy_loans,
+  app/view/tab_documentation,
+  app/view/tab_equities,
+  app/view/tab_loans,
   # logic
   app/logic/constant[
     TRISK_API_SERVICE,
@@ -113,8 +113,8 @@ ui <- function(id) {
           div(
             class = "ui container",
             # homepage tab
-            crispy_documentation$ui(
-              ns("crispy_documentation")
+            tab_documentation$ui(
+              ns("tab_documentation")
             )
           )
         ),
@@ -123,8 +123,8 @@ ui <- function(id) {
           div(
             class = "ui container",
             # equities tab
-            crispy_equities$ui(
-              ns("crispy_equities"),
+            tab_equities$ui(
+              ns("tab_equities"),
               max_trisk_granularity = max_trisk_granularity, # constant
               available_vars = available_vars # constant
             )
@@ -135,8 +135,8 @@ ui <- function(id) {
           div(
             class = "ui container",
             # equities tab
-            crispy_loans$ui(
-              ns("crispy_loans"),
+            tab_loans$ui(
+              ns("tab_loans"),
               max_trisk_granularity = max_trisk_granularity, # constant
               available_vars = available_vars # constant
             )
@@ -180,7 +180,7 @@ server <- function(id) {
       stop("must set environment variable CRISPY_APP_ENV to 'local' or 'cloud'")
     }
     # the TRISK runs are generated In the sidebar module
-    perimeter <- sidebar_parameters$server(
+    sidebar_parameters_out <- sidebar_parameters$server(
       "sidebar_parameters",
       max_trisk_granularity = max_trisk_granularity, # constant
       possible_trisk_combinations = possible_trisk_combinations, # computed constant
@@ -190,21 +190,26 @@ server <- function(id) {
       hide_vars = hide_vars # constant
     )
 
-    crispy_documentation$server("crispy_documentation")
+perimeter <- sidebar_parameters_out$perimeter
+portfolio_uploaded_r <- sidebar_parameters_out$portfolio_uploaded_r
 
-    crispy_equities$server(
-      "crispy_equities",
+    tab_documentation$server("tab_documentation")
+
+    tab_equities$server(
+      "tab_equities",
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
       max_trisk_granularity = max_trisk_granularity, # constant
-      perimeter = perimeter
+      perimeter = perimeter,
+      portfolio_uploaded_r=portfolio_uploaded_r
     )
 
-    crispy_loans$server(
-      "crispy_loans",
+    tab_loans$server(
+      "tab_loans",
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
       possible_trisk_combinations = possible_trisk_combinations, # computed constant
       max_trisk_granularity = max_trisk_granularity, # constant
-      perimeter = perimeter
+      perimeter = perimeter,
+      portfolio_uploaded_r=portfolio_uploaded_r
     )
     shinyjs::runjs('$("#loading-overlay").hide();')
   })

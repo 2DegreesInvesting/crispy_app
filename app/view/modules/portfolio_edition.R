@@ -135,6 +135,11 @@ server <- function(
   })
 }
 
+
+
+########## METHODS
+
+
 rows_addition <- function(input, portfolio_data_r, selected_ald_business_unit_r, selected_ald_sector_r, selected_maturity_year_r) {
   # add a new row by creating it in the portfolio
   observeEvent(input$add_row_btn, {

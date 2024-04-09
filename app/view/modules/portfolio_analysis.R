@@ -15,8 +15,7 @@ box::use(
 box::use(
   app/logic/constant[max_trisk_granularity, equity_portfolio_expiration_date, filter_crispy_outliers],
   app/logic/renamings[rename_tibble_columns],
-  app/view/portfolio_upload,
-  app/view/portfolio_edition
+  app/view/modules/portfolio_edition
 )
 
 
@@ -29,13 +28,6 @@ ui <- function(id, portfolio_class = "") {
   box(
     title = portfolio_class, width = 16, collapsible = FALSE,
     DTOutput(outputId = ns("portfolio_table")),
-    div(
-      class = "row",
-      div(
-        class = "sixteen wide column",
-        portfolio_upload$ui(ns("portfolio_upload"))
-      )
-    ),
     if (portfolio_class == "Loans Portfolio") {
       # show the Row Edition only on the Loans tab
       portfolio_edition$ui(ns("portfolio_edition"))
@@ -50,6 +42,7 @@ ui <- function(id, portfolio_class = "") {
 server <- function(
     id,
     portfolio_class,
+    portfolio_uploaded_r,
     crispy_data_r,
     trisk_granularity_r,
     max_trisk_granularity,
@@ -59,7 +52,10 @@ server <- function(
   moduleServer(id, function(input, output, session) {
     # PORTFOLIO DATA =========================
 
-    portfolio_data_r <- initialize_portfolio(trisk_granularity_r = trisk_granularity_r)
+    portfolio_data_r <- initialize_portfolio(
+      trisk_granularity_r = trisk_granularity_r,
+      portfolio_uploaded_r = portfolio_uploaded_r
+      )
 
     # ATTACH ROWS EDITION MODULE =========================
 
@@ -131,11 +127,11 @@ server <- function(
 ##################### Modules
 
 
-initialize_portfolio <- function(trisk_granularity_r) {
+initialize_portfolio <- function(trisk_granularity_r, portfolio_uploaded_r) {
   # Initial portfolio data structure
   portfolio_data_r <- reactiveVal()
 
-  shiny::observeEvent(trisk_granularity_r(), {
+  shiny::observeEvent(c(trisk_granularity_r(), portfolio_uploaded_r()), {
     trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
 
 

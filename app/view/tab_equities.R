@@ -8,9 +8,9 @@ box::use(
 )
 
 box::use(
-  app/view/portfolio_analysis,
-  app/view/plots_equities,
-  app/view/plots_trajectories,
+  app/view/modules/portfolio_analysis,
+  app/view/modules/plots_equities,
+  app/view/modules/plots_trajectories,
 )
 
 ####### UI
@@ -35,7 +35,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
 
 ####### Server
 
-server <- function(id, perimeter, backend_trisk_run_folder, max_trisk_granularity) {
+server <- function(id, perimeter, backend_trisk_run_folder, max_trisk_granularity, portfolio_uploaded_r) {
   moduleServer(id, function(input, output, session) {
     trisk_granularity_r <- perimeter$trisk_granularity_r
     trisk_run_params_r <- perimeter$trisk_run_params_r
@@ -60,6 +60,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, max_trisk_granularit
     out <- portfolio_analysis$server(
       "portfolio_analysis",
       portfolio_class = "Equities portfolio",
+      portfolio_uploaded_r=portfolio_uploaded_r,
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,
       max_trisk_granularity = max_trisk_granularity,
