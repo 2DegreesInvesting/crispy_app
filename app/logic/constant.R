@@ -2,7 +2,7 @@
 
 
 # TRISK API SERVICE ONLY USED IN "cloud" MODE
-trisk_api_service <- Sys.getenv("TRISK_API_SERVICE")
+TRISK_API_SERVICE <- Sys.getenv("TRISK_API_SERVICE")
 
 DBNAME <- Sys.getenv("POSTGRES_DB")
 HOST_DB <- Sys.getenv("POSTGRES_HOST")

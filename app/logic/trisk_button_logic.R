@@ -1,5 +1,5 @@
 box::use(
-  app/logic/constant[trisk_api_service],
+  app/logic/constant[TRISK_API_SERVICE],
   app/logic/trisk_local[
     run_trisk_with_params,
     format_error_message
@@ -75,7 +75,7 @@ trisk_generator <- function(
       run_id <- NULL
     }
   } else if (Sys.getenv("CRISPY_APP_ENV") == "cloud") {
-    run_id <- trigger_trisk_api_computation(trisk_run_params, trisk_api_service = trisk_api_service)
+    run_id <- trigger_trisk_api_computation(trisk_run_params, trisk_api_service = TRISK_API_SERVICE)
   } else {
     stop("must set environment variable CRISPY_APP_ENV to 'local' or 'cloud'")
   }
