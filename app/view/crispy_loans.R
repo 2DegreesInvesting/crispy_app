@@ -7,7 +7,7 @@ box::use(
 )
 
 box::use(
-  app/view/portfolio/portfolio_analysis,
+  app/view/portfolio/portfolio_base,
   app/view/modules/plots_loans
 )
 
@@ -24,7 +24,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
       class = "ui segment", style = "min-height: 100vh;",
       shiny::tags$div(
         class = "ui stackable grid",
-        portfolio_analysis$ui(ns("portfolio_analysis"), portfolio_class = "Loans Portfolio"),
+        portfolio_base$ui(ns("portfolio_base"), portfolio_class = "Loans Portfolio"),
         plots_loans$ui(ns("plots_loans"))
       )
     )
@@ -54,8 +54,8 @@ server <- function(id, perimeter, backend_trisk_run_folder, possible_trisk_combi
     editable_columns_names_loans <- c("exposure_value_usd", "loss_given_default")
     colored_columns_names_loans <- c()
 
-    out <- portfolio_analysis$server(
-      "portfolio_analysis",
+    out <- portfolio_base$server(
+      "portfolio_base",
       portfolio_class = "Loans Portfolio",
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,
