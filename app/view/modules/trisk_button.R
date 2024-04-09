@@ -44,24 +44,14 @@ ui <- function(id) {
         tags$p("This dialog should close automatically when the data is loaded. Click outside of it to close manually.")
       )
     ),
-    tags$head(
-      tags$style(shiny::HTML("
-      .ui.fluid.container {
-        padding-top: 20px; /* Adds padding at the top of the container */
-        padding-right: 20px; /* Adds padding at the top of the container */
-        padding-left: 20px; /* Adds padding at the bottom of the container */
-      }
-    "))
-    ),
-    tags$div(
-      class = "ui fluid container",
-      # Fomantic UI styled action button with added custom class for styling
-      tags$button(
-        id = ns("run_trisk"),
-        class = "ui fluid button ", # Added custom class for styling
-        "Run Trisk (click again when switching tabs to refresh data)"
-      )
+ 
+    
+    tags$button(
+      id = ns("run_trisk"),
+      class = "ui fluid button ", # Added custom class for styling
+      "Run Trisk (click again when switching tabs to refresh data)"
     )
+  
   )
 }
 

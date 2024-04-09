@@ -36,7 +36,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           color: #333; 
           margin-bottom: 15px; 
         }
-        .ui.button, .ui.input { /* Removed the extra comma here */
+        .ui.button {
           background-color: #d4d4d5; 
           color: white; 
           border: none; 
@@ -44,9 +44,6 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           margin: 8px 0; 
           display: block; 
           width: 100%; /* Ensures full width */
-        }
-        .ui.button:hover { /* Fixed the syntax here by removing extra comma and braces */
-          background-color: #cacbcd;
         }
         .ui.divider { 
           margin: 20px 0; 
