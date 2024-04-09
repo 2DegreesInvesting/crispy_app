@@ -1,12 +1,10 @@
 box::use(
   shiny[
     moduleServer, NS, observe, div, tags, reactiveVal, reactiveValues, eventReactive, p, tagList, observeEvent, img,
-    HTML, conditionalPanel, reactive
+    HTML, reactive
   ],
-  shiny.semantic[slider_input, dropdown_input, segment, update_dropdown_input, update_slider],
-  shinyjs[useShinyjs],
-  semantic.dashboard[dashboardSidebar]
-)
+  shiny.semantic[update_slider]
+  )
 
 box::use(
   app/logic/renamings[rename_string_vector]
@@ -16,45 +14,67 @@ box::use(
 ui <- function(id, available_vars) {
   ns <- NS(id)
   shiny::tagList(
+    tags$head(
+      tags$style(HTML("
+        /* Target the slider track more specifically */
+        .ss-slider .track {
+          background-color: #FFFFFF !important; /* Whiter track, ensure override with !important */
+        }
+
+        /* Target the slider thumb (handle) more specifically */
+        .ss-slider .thumb {
+          background-color: #000000 !important; /* Black handle, ensure override with !important */
+          height: 10px !important; /* Smaller height */
+          width: 10px !important; /* Smaller width */
+          top: 50% !important; /* Center vertically */
+          transform: translateY(-50%) !important; /* Adjust for exact centering */
+        }
+
+        /* Optional: Style the part of the track before the handle */
+        .ss-slider .track-fill {
+          background-color: #CCCCCC !important; /* Lighter fill color */
+        }
+      "))
+    ),
     p("Shock Year"),
-    slider_input(
+    shiny.semantic::slider_input(
       ns("shock_year"),
       custom_ticks = available_vars$available_shock_year,
       value = available_vars$available_shock_year[3]
     ),
     p("Risk-Free Rate"),
-    slider_input(
+    shiny.semantic::slider_input(
       ns("risk_free_rate"),
       custom_ticks = available_vars$available_risk_free_rate,
       value = available_vars$available_risk_free_rate[3]
     ),
     p("Discount Rate"),
-    slider_input(
+    shiny.semantic::slider_input(
       ns("discount_rate"),
       custom_ticks = available_vars$available_discount_rate,
       value = available_vars$available_discount_rate[4]
     ),
     p("Growth Rate"),
-    slider_input(
+    shiny.semantic::slider_input(
       ns("growth_rate"),
       custom_ticks = available_vars$available_growth_rate,
       value = available_vars$available_growth_rate[2]
     ),
     p("Dividend Rate"),
-    slider_input(
+    shiny.semantic::slider_input(
       ns("div_netprofit_prop_coef"),
       custom_ticks = available_vars$available_dividend_rate,
       value = available_vars$available_dividend_rate[3]
     ),
     p("Carbon Price Model"),
-    dropdown_input(ns("carbon_price_model"),
+    shiny.semantic::dropdown_input(ns("carbon_price_model"),
       choices = available_vars$available_carbon_price_model,
       value = "no_carbon_tax"
     ),
-    conditionalPanel(
+    shiny::conditionalPanel(
       condition = "input.carbon_price_model != 'no_carbon_tax'",
       p("Market Passthrough"),
-      slider_input(
+      shiny.semantic::slider_input(
         ns("market_passthrough"),
         custom_ticks = available_vars$available_market_passthrough,
         value = NULL
