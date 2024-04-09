@@ -38,7 +38,7 @@ ui <- function(id, portfolio_class = "") {
     ),
     if (portfolio_class == "Loans Portfolio") {
       # show the Row Edition only on the Loans tab
-      portfolio_edition$ui(ns("portfolio_upload"))
+      portfolio_edition$ui(ns("portfolio_edition"))
     }
   )
 }

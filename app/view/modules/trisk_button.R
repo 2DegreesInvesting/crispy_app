@@ -185,6 +185,8 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
     }
   })
 
+  # preprocess the raw data to the appropriate granularity
+
   crispy_data_r <- reactiveVal()
   trajectories_data_r <- reactiveVal()
 
