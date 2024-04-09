@@ -27,8 +27,8 @@ equity_portfolio_expiration_date <- paste0(as.character(as.numeric(format(Sys.Da
 # Must be ordered from "less granular" to "more granular"
 max_trisk_granularity <- list(
   "ald_sector" = 1,
-  "ald_business_unit" = 2
-  # "company_id" = 3
+  "ald_business_unit" = 2,
+  "company_id" = 3
 )
 
 
