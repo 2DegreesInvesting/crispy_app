@@ -5,5 +5,5 @@ linters: linters_with_defaults(
   object_name_linter(styles=c("snake_case", "symbols", "SNAKE_CASE", "dotted.case"))
   )
 exclusions: list(
-  "app/view/homepage.R"
+  "app/view/crispy_documentation.R"
   )

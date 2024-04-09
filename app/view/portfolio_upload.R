@@ -2,20 +2,22 @@
 box::use(
   shiny[moduleServer, NS, tags]
 )
+
+
 ui <- function(id) {
   ns <- shiny::NS(id)
 
-  shiny::tags$div(
+  tags$div(
     class = "ui container", style = "padding-top: 50px;",
-    shiny::tags$div(
+    tags$div(
       class = "ui segment",
-      shiny::tags$input(type = "file", id = ns("fileUpload"), style = "display: none;", onchange = "shinyjs.fileChangeEvent"),
-      shiny::tags$label(
+      tags$input(type = "file", id = ns("fileUpload"), style = "display: none;", onchange = "shinyjs.fileChangeEvent"),
+      tags$label(
         `for` = ns("fileUpload"), class = "ui button",
-        shiny::tags$i(class = "ui upload icon"),
+        tags$i(class = "ui upload icon"),
         "Upload File"
       ),
-      shiny::tags$span(id = ns("fileName"), style = "padding-left: 10px;")
+      tags$span(id = ns("fileName"), style = "padding-left: 10px;")
     )
   )
 }

@@ -14,42 +14,37 @@ box::use(
 
 ui <- function(id) {
   ns <- NS(id)
-  segment(
+
+  shiny::tagList(
     div(
-      class = "content",
-      shinyjs::useShinyjs(),
-      div(class = "header", "Scenario Choice", style = "font-size: 150%;"),
-      tags$hr(),
+      class = "description",
       div(
-        class = "description",
+        class = "content",
+        p("Baseline Scenario"),
         div(
-          class = "content",
-          p("Baseline Scenario"),
-          div(
-            class = "description",
-            shiny.semantic::dropdown_input(ns("baseline_scenario"),
-              choices = NULL
-            )
+          class = "description",
+          shiny.semantic::dropdown_input(ns("baseline_scenario"),
+            choices = NULL
           )
-        ),
+        )
+      ),
+      div(
+        class = "content",
+        p("Target Scenario"),
         div(
-          class = "content",
-          p("Target Scenario"),
-          div(
-            class = "description",
-            shiny.semantic::dropdown_input(ns("shock_scenario"),
-              choices = NULL
-            )
+          class = "description",
+          shiny.semantic::dropdown_input(ns("shock_scenario"),
+            choices = NULL
           )
-        ),
+        )
+      ),
+      div(
+        class = "content",
+        p("Scenario Geography"),
         div(
-          class = "content",
-          p("Scenario Geography"),
-          div(
-            class = "description",
-            shiny.semantic::dropdown_input(ns("scenario_geography"),
-              choices = NULL
-            )
+          class = "description",
+          shiny.semantic::dropdown_input(ns("scenario_geography"),
+            choices = NULL
           )
         )
       )

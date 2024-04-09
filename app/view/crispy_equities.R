@@ -8,9 +8,9 @@ box::use(
 )
 
 box::use(
-  app/view/portfolio/portfolio_base,
-  app/view/modules/plots_equities,
-  app/view/modules/plots_trajectories,
+  app/view/portfolio_analysis,
+  app/view/plots_equities,
+  app/view/plots_trajectories,
 )
 
 ####### UI
@@ -25,7 +25,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
       class = "ui segment", style = "min-height: 100vh;",
       shiny::tags$div(
         class = "ui stackable grid",
-        portfolio_base$ui(ns("portfolio_base"), portfolio_class = "Equities portfolio"),
+        portfolio_analysis$ui(ns("portfolio_analysis"), portfolio_class = "Equities portfolio"),
         plots_equities$ui(ns("plots_equities")),
         plots_trajectories$ui(ns("plots_trajectories"))
       )
@@ -57,8 +57,8 @@ server <- function(id, perimeter, backend_trisk_run_folder, max_trisk_granularit
 
     # Manages the porfolio creator module
     # Create analysis data by merging crispy to portfolio, and aggrgating to the appropriate granularity
-    out <- portfolio_base$server(
-      "portfolio_base",
+    out <- portfolio_analysis$server(
+      "portfolio_analysis",
       portfolio_class = "Equities portfolio",
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,

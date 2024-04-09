@@ -11,7 +11,7 @@ box::use(
 box::use(
   # modules
   app/view/sidebar_parameters,
-  app/view/homepage,
+  app/view/crispy_documentation,
   app/view/crispy_equities,
   app/view/crispy_loans,
   # logic
@@ -58,7 +58,7 @@ ui <- function(id) {
       div(id = "loading-overlay", "Initializing...")
     ),
     dashboardPage(
-      title = "Homepage",
+      title = "Documentation",
       # dashboardHeader
       dashboardHeader(title = "CRISPY"),
       # dashboardSidebar
@@ -102,7 +102,7 @@ ui <- function(id) {
         # Fomantic UI tabs with custom CSS to display as full width
         tags$div(
           class = "ui top attached tabular menu full-width-tabs",
-          tags$a(class = "item active", `data-tab` = "first", "Home"),
+          tags$a(class = "item active", `data-tab` = "first", "Documentation"),
           tags$a(class = "item", `data-tab` = "second", "Equities"),
           tags$a(class = "item", `data-tab` = "third", "Loans")
         ),
@@ -113,8 +113,8 @@ ui <- function(id) {
           div(
             class = "ui container",
             # homepage tab
-            homepage$ui(
-              ns("homepage")
+            crispy_documentation$ui(
+              ns("crispy_documentation")
             )
           )
         ),
@@ -190,7 +190,7 @@ server <- function(id) {
       hide_vars = hide_vars # constant
     )
 
-    homepage$server("homepage")
+    crispy_documentation$server("crispy_documentation")
 
     crispy_equities$server(
       "crispy_equities",

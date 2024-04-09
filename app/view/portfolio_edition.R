@@ -119,9 +119,9 @@ server <- function(
 
     portfolio_data_r <- rows_addition(
       input = input,
-      portfolio_data_r = portfolio_data_r, 
+      portfolio_data_r = portfolio_data_r,
       selected_ald_business_unit_r = selected_ald_business_unit_r,
-      selected_ald_sector_r = selected_ald_sector_r, 
+      selected_ald_sector_r = selected_ald_sector_r,
       selected_maturity_year_r = selected_maturity_year_r
     )
 

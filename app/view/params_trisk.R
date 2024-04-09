@@ -15,56 +15,51 @@ box::use(
 
 ui <- function(id, available_vars) {
   ns <- NS(id)
-  segment(
-    div(
-      class = "content",
-      div(class = "header", "TRISK parameters", style = "font-size: 150%;"),
-      tags$hr(), # esthetic separation
-      p("Shock Year"),
+  shiny::tagList(
+    p("Shock Year"),
+    slider_input(
+      ns("shock_year"),
+      custom_ticks = available_vars$available_shock_year,
+      value = available_vars$available_shock_year[3]
+    ),
+    p("Risk-Free Rate"),
+    slider_input(
+      ns("risk_free_rate"),
+      custom_ticks = available_vars$available_risk_free_rate,
+      value = available_vars$available_risk_free_rate[3]
+    ),
+    p("Discount Rate"),
+    slider_input(
+      ns("discount_rate"),
+      custom_ticks = available_vars$available_discount_rate,
+      value = available_vars$available_discount_rate[4]
+    ),
+    p("Growth Rate"),
+    slider_input(
+      ns("growth_rate"),
+      custom_ticks = available_vars$available_growth_rate,
+      value = available_vars$available_growth_rate[2]
+    ),
+    p("Dividend Rate"),
+    slider_input(
+      ns("div_netprofit_prop_coef"),
+      custom_ticks = available_vars$available_dividend_rate,
+      value = available_vars$available_dividend_rate[3]
+    ),
+    p("Carbon Price Model"),
+    dropdown_input(ns("carbon_price_model"),
+      choices = available_vars$available_carbon_price_model,
+      value = "no_carbon_tax"
+    ),
+    conditionalPanel(
+      condition = "input.carbon_price_model != 'no_carbon_tax'",
+      p("Market Passthrough"),
       slider_input(
-        ns("shock_year"),
-        custom_ticks = available_vars$available_shock_year,
-        value = available_vars$available_shock_year[3]
+        ns("market_passthrough"),
+        custom_ticks = available_vars$available_market_passthrough,
+        value = NULL
       ),
-      p("Risk-Free Rate"),
-      slider_input(
-        ns("risk_free_rate"),
-        custom_ticks = available_vars$available_risk_free_rate,
-        value = available_vars$available_risk_free_rate[3]
-      ),
-      p("Discount Rate"),
-      slider_input(
-        ns("discount_rate"),
-        custom_ticks = available_vars$available_discount_rate,
-        value = available_vars$available_discount_rate[4]
-      ),
-      p("Growth Rate"),
-      slider_input(
-        ns("growth_rate"),
-        custom_ticks = available_vars$available_growth_rate,
-        value = available_vars$available_growth_rate[2]
-      ),
-      p("Dividend Rate"),
-      slider_input(
-        ns("div_netprofit_prop_coef"),
-        custom_ticks = available_vars$available_dividend_rate,
-        value = available_vars$available_dividend_rate[3]
-      ),
-      p("Carbon Price Model"),
-      dropdown_input(ns("carbon_price_model"),
-        choices = available_vars$available_carbon_price_model,
-        value = "no_carbon_tax"
-      ),
-      conditionalPanel(
-        condition = "input.carbon_price_model != 'no_carbon_tax'",
-        p("Market Passthrough"),
-        slider_input(
-          ns("market_passthrough"),
-          custom_ticks = available_vars$available_market_passthrough,
-          value = NULL
-        ),
-        ns = ns
-      )
+      ns = ns
     )
   )
 }

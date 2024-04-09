@@ -16,9 +16,8 @@ box::use(
 ui <- function(id, max_trisk_granularity) {
   ns <- NS(id)
   # First segment in the left half // Granularity
-  shiny.semantic::segment(
-    tags$div(class = "header", "Dashboard", style = "font-size: 150%;"),
-    tags$hr(),
+
+  shiny::tagList(
     tags$div(
       class = "description",
       tags$div(

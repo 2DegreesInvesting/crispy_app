@@ -9,10 +9,10 @@ box::use(
 )
 
 box::use(
-  app/view/params/params_scenarios,
-  app/view/params/params_dimensions,
-  app/view/params/params_trisk,
-  app/view/modules/trisk_button,
+  app/view/params_scenarios,
+  app/view/params_dimensions,
+  app/view/params_trisk,
+  app/view/trisk_button,
   app/logic/renamings[rename_string_vector]
 )
 
@@ -22,15 +22,32 @@ box::use(
 ui <- function(id, max_trisk_granularity, available_vars) {
   ns <- NS(id)
 
-  list(
-    # Run TRISK button
-    trisk_button$ui(ns("trisk_button")),
-    # Dimensions
-    params_dimensions$ui(ns("params_dimensions"), max_trisk_granularity),
-    #  Scenario Choice
-    params_scenarios$ui(ns("params_scenarios")),
+  shiny::tagList(
+    div(
+      class = "content",
+      tags$div(class = "header", "Data", style = "font-size: 150%;"),
+      tags$hr(),
+      # Run TRISK button
+      trisk_button$ui(ns("trisk_button")),
+      # Dimensions
+      params_dimensions$ui(ns("params_dimensions"), max_trisk_granularity)
+    ),
+    div(
+      class = "content",
+      shinyjs::useShinyjs(),
+      div(class = "header", "Scenario Choice", style = "font-size: 150%;"),
+      tags$hr(),
+      #  Scenario Choice
+      params_scenarios$ui(ns("params_scenarios"))
+    ),
     # TRISK params
-    params_trisk$ui(ns("params_trisk"), available_vars)
+
+    div(
+      class = "content",
+      div(class = "header", "TRISK parameters", style = "font-size: 150%;"),
+      tags$hr(), # esthetic separation
+      params_trisk$ui(ns("params_trisk"), available_vars)
+    )
   )
 }
 

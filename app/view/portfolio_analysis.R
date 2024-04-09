@@ -15,8 +15,8 @@ box::use(
 box::use(
   app/logic/constant[max_trisk_granularity, equity_portfolio_expiration_date, filter_crispy_outliers],
   app/logic/renamings[rename_tibble_columns],
-  app/view/portfolio/portfolio_upload,
-  app/view/portfolio/portfolio_edition
+  app/view/portfolio_upload,
+  app/view/portfolio_edition
 )
 
 
@@ -67,7 +67,7 @@ server <- function(
     if (!is.null(possible_trisk_combinations)) {
       if (portfolio_class == "Loans Portfolio") {
         portfolio_edition$server("portfolio_edition",
-        portfolio_data_r=portfolio_data_r,
+          portfolio_data_r = portfolio_data_r,
           crispy_data_r = crispy_data_r,
           trisk_granularity_r = trisk_granularity_r,
           max_trisk_granularity = max_trisk_granularity,
@@ -135,7 +135,7 @@ initialize_portfolio <- function(trisk_granularity_r) {
   # Initial portfolio data structure
   portfolio_data_r <- reactiveVal()
 
-  shiny::observeEvent(trisk_granularity_r(),{
+  shiny::observeEvent(trisk_granularity_r(), {
     trisk_granularity_names <- paste0(trisk_granularity_r(), collapse = "-") # Convert to character vector
 
 
@@ -156,7 +156,6 @@ initialize_portfolio <- function(trisk_granularity_r) {
     # creates the port
     portfolio_data <- dplyr::bind_cols(dynamic_cols, static_cols)
     portfolio_data_r(portfolio_data)
-
   })
 
   return(portfolio_data_r)
@@ -299,7 +298,7 @@ update_portfolio_with_user_input <- function(
     trisk_granularity_r,
     display_columns,
     editable_columns_names,
-        max_trisk_granularity) {
+    max_trisk_granularity) {
   # Update data structure on cell edit
   observeEvent(input$portfolio_table_cell_edit, {
     n_granul_cols <- length(trisk_granularity_r())
@@ -312,6 +311,5 @@ update_portfolio_with_user_input <- function(
       portfolio_data[info$row, displayed_display_columns[info$col]] <- info$value
       portfolio_data_r(portfolio_data)
     }
-
   })
 }
