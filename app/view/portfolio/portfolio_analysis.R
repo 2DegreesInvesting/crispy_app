@@ -15,7 +15,8 @@ box::use(
 box::use(
   app/logic/constant[max_trisk_granularity, equity_portfolio_expiration_date, filter_crispy_outliers],
   app/logic/renamings[rename_tibble_columns],
-  app/view/portfolio/simple_search_dropdown
+  app/view/portfolio/simple_search_dropdown,
+  app/view/portfolio/portfolio_upload
 )
 
 
@@ -75,6 +76,13 @@ ui <- function(id, portfolio_class = "") {
               icon = icon("delete"),
               class = "ui button fluid"
             )
+          )
+        ),
+        div(
+          class = "row",
+          div(
+            class = "sixteen wide column",
+            portfolio_upload$ui(ns("portfolio_upload"))
           )
         )
       )
@@ -232,7 +240,7 @@ server <- function(
       max_trisk_granularity = max_trisk_granularity
     )
 
-
+    portfolio_upload$server("portfolio_upload")
 
     return(list(
       "analysis_data_r" = analysis_data_r,

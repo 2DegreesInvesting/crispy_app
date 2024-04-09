@@ -12,8 +12,8 @@ The following env variables must be set, for example in an .Renviron file at the
 ```sh
 # ./.Renviron
 
-# 'prod' or 'dev'
-CRISPY_APP_ENV="dev" 
+# 'cloud' or 'local'
+CRISPY_APP_ENV="local" 
 
 # IP to the kubernetes endpoint running trisk api
 TRISK_API_SERVICE="0.0.0.0" 

@@ -48,7 +48,7 @@ trisk_generator <- function(
     trisk_input_path,
     trisk_run_params,
     max_trisk_granularity) {
-  if (Sys.getenv("CRISPY_APP_ENV") == "dev") {
+  if (Sys.getenv("CRISPY_APP_ENV") == "local") {
     st_results_wrangled_and_checked <- tryCatch(
       {
         run_trisk_with_params(
@@ -74,10 +74,10 @@ trisk_generator <- function(
     } else {
       run_id <- NULL
     }
-  } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
+  } else if (Sys.getenv("CRISPY_APP_ENV") == "cloud") {
     run_id <- trigger_trisk_api_computation(trisk_run_params, trisk_api_service = trisk_api_service)
   } else {
-    stop("must set environment variable CRISPY_APP_ENV to 'dev' or 'prod'")
+    stop("must set environment variable CRISPY_APP_ENV to 'local' or 'cloud'")
   }
 
   return(run_id)

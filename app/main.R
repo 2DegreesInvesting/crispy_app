@@ -172,12 +172,12 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    if (Sys.getenv("CRISPY_APP_ENV") == "dev") {
+    if (Sys.getenv("CRISPY_APP_ENV") == "local") {
       possible_trisk_combinations <- r2dii.climate.stress.test::get_scenario_geography_x_ald_sector(trisk_input_path)
-    } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
+    } else if (Sys.getenv("CRISPY_APP_ENV") == "cloud") {
       possible_trisk_combinations <- get_possible_trisk_combinations_from_api(trisk_api_service = trisk_api_service)
     } else {
-      stop("must set environment variable CRISPY_APP_ENV to 'dev' or 'prod'")
+      stop("must set environment variable CRISPY_APP_ENV to 'local' or 'cloud'")
     }
     # the TRISK runs are generated In the sidebar module
     perimeter <- sidebar_parameters$server(

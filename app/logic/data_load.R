@@ -12,7 +12,7 @@ box::use(
 )
 
 base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder = NULL, default_tibble = NULL) {
-  if (Sys.getenv("CRISPY_APP_ENV") == "dev") {
+  if (Sys.getenv("CRISPY_APP_ENV") == "local") {
     table_data_path <- fs::path(backend_trisk_run_folder, table_name, ext = "parquet")
     if (file.exists(table_data_path)) {
       if (!is.null(run_id)) {
@@ -24,7 +24,7 @@ base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder =
     } else {
       table_data <- default_tibble
     }
-  } else if (Sys.getenv("CRISPY_APP_ENV") == "prod") {
+  } else if (Sys.getenv("CRISPY_APP_ENV") == "cloud") {
     if (!is.null(run_id)) {
       query_filter <- paste0("run_id = '", run_id, "'")
     } else {
@@ -42,7 +42,7 @@ base_data_load <- function(table_name, run_id = NULL, backend_trisk_run_folder =
       default_tibble = default_tibble
     )
   } else {
-    stop("You must set the env variable CRISPY_APP_ENV to either 'dev' or 'prod'")
+    stop("You must set the env variable CRISPY_APP_ENV to either 'local' or 'cloud'")
   }
 
   return(table_data)

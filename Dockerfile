@@ -2,7 +2,7 @@ FROM rocker/shiny:4.3.0
 
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV CRISPY_APP_ENV="prod" 
+ENV CRISPY_APP_ENV="cloud" 
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \

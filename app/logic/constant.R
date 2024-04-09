@@ -1,7 +1,7 @@
 # CLOUD SERVICES CONSTANT
 
 
-# TRISK API SERVICE ONLY USED IN "prod" MODE
+# TRISK API SERVICE ONLY USED IN "cloud" MODE
 trisk_api_service <- Sys.getenv("TRISK_API_SERVICE")
 
 DBNAME <- Sys.getenv("POSTGRES_DB")
