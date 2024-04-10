@@ -17,6 +17,7 @@ box::use(
   # logic
   app/logic/constant[
     TRISK_API_SERVICE,
+    CRISPY_MODE,
     trisk_input_path,
     backend_trisk_run_folder,
     max_trisk_granularity,
@@ -103,8 +104,13 @@ ui <- function(id) {
         tags$div(
           class = "ui top attached tabular menu full-width-tabs",
           tags$a(class = "item active", `data-tab` = "first", "Documentation"),
-          tags$a(class = "item", `data-tab` = "second", "Equities"),
-          tags$a(class = "item", `data-tab` = "third", "Loans")
+
+          if ((CRISPY_MODE=="equities") | CRISPY_MODE == "")
+            {tags$a(class = "item", `data-tab` = "second", "Equities")},
+            
+          if ((CRISPY_MODE=="loans") | CRISPY_MODE == "")
+            {tags$a(class = "item", `data-tab` = "third", "Loans")}
+          
         ),
         # dynamic tabs content, the `data-tab` attribute must match the `data-tab` attribute
         # of the corresponding tab in the tabular menu
@@ -118,30 +124,34 @@ ui <- function(id) {
             )
           )
         ),
-        tags$div(
-          class = "ui bottom attached tab segment", `data-tab` = "second",
-          div(
-            class = "ui container",
-            # equities tab
-            tab_equities$ui(
-              ns("tab_equities"),
-              max_trisk_granularity = max_trisk_granularity, # constant
-              available_vars = available_vars # constant
+        if ((CRISPY_MODE=="equities") | CRISPY_MODE == ""){
+          tags$div(
+            class = "ui bottom attached tab segment", `data-tab` = "second",
+            div(
+              class = "ui container",
+              # equities tab
+              tab_equities$ui(
+                ns("tab_equities"),
+                max_trisk_granularity = max_trisk_granularity, # constant
+                available_vars = available_vars # constant
+              )
             )
           )
-        ),
-        tags$div(
-          class = "ui bottom attached tab segment", `data-tab` = "third",
-          div(
-            class = "ui container",
-            # equities tab
-            tab_loans$ui(
-              ns("tab_loans"),
-              max_trisk_granularity = max_trisk_granularity, # constant
-              available_vars = available_vars # constant
+        },
+        if ((CRISPY_MODE=="equities") | CRISPY_MODE == ""){
+          tags$div(
+            class = "ui bottom attached tab segment", `data-tab` = "third",
+            div(
+              class = "ui container",
+              # equities tab
+              tab_loans$ui(
+                ns("tab_loans"),
+                max_trisk_granularity = max_trisk_granularity, # constant
+                available_vars = available_vars # constant
+              )
             )
           )
-        ),
+        },
         # this javascript snippet initializes the tabs menu and makes the tabs clickable
         tags$script(
           "$(document).ready(function() {
@@ -195,14 +205,16 @@ portfolio_uploaded_r <- sidebar_parameters_out$portfolio_uploaded_r
 
     tab_documentation$server("tab_documentation")
 
-    tab_equities$server(
-      "tab_equities",
-      backend_trisk_run_folder = backend_trisk_run_folder, # constant
-      max_trisk_granularity = max_trisk_granularity, # constant
-      perimeter = perimeter,
-      portfolio_uploaded_r=portfolio_uploaded_r
-    )
-
+    if ((CRISPY_MODE=="equities") | CRISPY_MODE == ""){
+      tab_equities$server(
+        "tab_equities",
+        backend_trisk_run_folder = backend_trisk_run_folder, # constant
+        max_trisk_granularity = max_trisk_granularity, # constant
+        perimeter = perimeter,
+        portfolio_uploaded_r=portfolio_uploaded_r
+      )
+    }
+if ((CRISPY_MODE=="loans") | CRISPY_MODE == ""){
     tab_loans$server(
       "tab_loans",
       backend_trisk_run_folder = backend_trisk_run_folder, # constant
@@ -211,6 +223,7 @@ portfolio_uploaded_r <- sidebar_parameters_out$portfolio_uploaded_r
       perimeter = perimeter,
       portfolio_uploaded_r=portfolio_uploaded_r
     )
+}
     shinyjs::runjs('$("#loading-overlay").hide();')
   })
 }

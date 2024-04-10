@@ -1,5 +1,5 @@
 proxy:
-  title: Shiny Proxy
+  title: Crispy Apps
   landing-page: /
   port: 8080
   authentication: simple
@@ -24,29 +24,47 @@ proxy:
     # container-protocol: http # Default is suitable for most, switch to https if your app requires secure communication
     # port: 3838 # Default Shiny port, adjust if your app uses a different port
   # heartbeat-rate: 10000
-  heartbeat-timeout: 900000
+  heartbeat-timeout: 450000
   # container-wait-time: 30000
   specs:
-    - id: crispy_app
+    - id: equities_app
       port: 5000 
-      display-name: Crispy App
-      description: "Climate stress test for Equities, Bonds&Loans"
+      display-name: Equities Stress Test
+      description: "Climate stress test for Equities"
       container-cmd: ["R", "-e", "shiny::runApp(host = \"0.0.0.0\", port = 5000)"]
       container-image: registry.digitalocean.com/theia-1in1000-shinyapps/crispy_app:latest
       access-groups: ["admins", "users"]
       container-env:
         TRISK_API_SERVICE: http://trisk-api.default.svc.cluster.local
+        CRISPY_MODE: "equities"
+      # kubernetes-pod-patches adds the k8s secret db-credentials in the current namespace to the container's env vars
       kubernetes-pod-patches: |
         - op: add
           path: /spec/containers/0/envFrom
           value:
             - secretRef:
-                name: db-credentials
+                name: db-credentials 
       # container-memory-request: 500Mi
       # container-memory-limit: 1Gi
       # container-cpu-request: 500m
       # container-cpu-limit: 1
-
+    - id: loans_app
+      port: 6000 
+      display-name: Bonds&Loans Stress Test
+      description: "Climate stress test for Bonds&Loans"
+      container-cmd: ["R", "-e", "shiny::runApp(host = \"0.0.0.0\", port = 6000)"]
+      container-image: registry.digitalocean.com/theia-1in1000-shinyapps/crispy_app:latest
+      access-groups: ["admins", "users"]
+      container-env:
+        TRISK_API_SERVICE: http://trisk-api.default.svc.cluster.local
+        CRISPY_MODE: "loans"
+      # kubernetes-pod-patches adds the k8s secret db-credentials in the current namespace to the container's env vars
+      kubernetes-pod-patches: |
+        - op: add
+          path: /spec/containers/0/envFrom
+          value:
+            - secretRef:
+                name: db-credentials 
 logging:
   file:
     name: shinyproxy.log

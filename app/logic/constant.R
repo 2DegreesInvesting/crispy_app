@@ -3,6 +3,7 @@
 
 # TRISK API SERVICE ONLY USED IN "cloud" MODE
 TRISK_API_SERVICE <- Sys.getenv("TRISK_API_SERVICE")
+CRISPY_MODE <- Sys.getenv("CRISPY_MODE")
 
 DBNAME <- Sys.getenv("POSTGRES_DB")
 HOST_DB <- Sys.getenv("POSTGRES_HOST")
@@ -18,11 +19,11 @@ backend_trisk_run_folder <- file.path("app", "data", "backend_db")
 
 # Filter outliers in crispy when generating the analysis data
 # see stress.test.plot.report:::load_input_plots_data_from_tibble documentation for more details
-filter_crispy_outliers <- TRUE
+FILTER_CRISPY_OUTLIERS <- TRUE
 
 # 1st january of the next year is the default expiration date for the equity portfolio
 # in order to just pick 1 row out of the crispy data
-equity_portfolio_expiration_date <- paste0(as.character(as.numeric(format(Sys.Date(), "%Y")) + 1), "-01-01")
+DEFAULT_ASSET_EXPIRATION_DATE <- paste0(as.character(as.numeric(format(Sys.Date(), "%Y")) + 1), "-01-01")
 
 # Must be ordered from "less granular" to "more granular"
 max_trisk_granularity <- list(

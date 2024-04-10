@@ -49,7 +49,7 @@ ui <- function(id) {
 server <- function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    portfolio_uploaded_r <- shiny::reactiveVal()
+    portfolio_uploaded_r <- shiny::reactiveVal(tibble::tibble())
 
     shiny::observeEvent(input$fileUpload, {
       browser()

@@ -80,7 +80,9 @@ server <- function(id, max_trisk_granularity) {
       update_button_style(session$ns("granul_1"), FALSE)
       update_button_style(session$ns("granul_2"), FALSE)
       update_button_style(session$ns("granul_3"), TRUE)
-      trisk_granularity_r(names(which(max_trisk_granularity == 3)))
+      trisk_granularity_r(
+        get_trisk_granularity(max_trisk_granularity, 2)
+      )
     })
 
 

@@ -12,7 +12,7 @@ box::use(
 
 
 box::use(
-  app/logic/constant[max_trisk_granularity, equity_portfolio_expiration_date, filter_crispy_outliers],
+  app/logic/constant[max_trisk_granularity, DEFAULT_ASSET_EXPIRATION_DATE, FILTER_CRISPY_OUTLIERS],
   app/logic/renamings[rename_tibble_columns]
 )
 

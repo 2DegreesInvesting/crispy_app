@@ -71,7 +71,7 @@ server <- function(id, perimeter, backend_trisk_run_folder, max_trisk_granularit
     )
 
     analysis_data_r <- out$analysis_data_r
-    crispy_data_agg_r <- out$crispy_data_agg_r
+    crispy_data_agg_r <- out$crispy_data_agg_r # only used in tab_loans
 
     # CONSUME TRISK OUTPUTS =========================
 
