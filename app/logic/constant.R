@@ -23,13 +23,13 @@ FILTER_CRISPY_OUTLIERS <- TRUE
 
 # 1st january of the next year is the default expiration date for the equity portfolio
 # in order to just pick 1 row out of the crispy data
-DEFAULT_ASSET_EXPIRATION_DATE <- paste0(as.character(as.numeric(format(Sys.Date(), "%Y")) + 1), "-01-01")
+DEFAULT_ASSET_EXPIRATION_DATE <- paste0(round(seq(from = 2024, to = 2034, length.out = 5)), "-01-01")
 
 # Must be ordered from "less granular" to "more granular"
 max_trisk_granularity <- list(
   "ald_sector" = 1,
-  "ald_business_unit" = 2,
-  "company_id" = 3
+  "ald_business_unit" = 2
+  # ,"company_id" = 3
 )
 
 
@@ -117,8 +117,8 @@ hide_vars <- list(
     # "OecdAndEu",
     # "UnitedStates",
     "SoutheastAsia",
-    # "China",
-    # "India",
+    "China",
+    "India",
     # "MiddleEast",
     "Non-OECD"
   )

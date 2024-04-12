@@ -7,6 +7,7 @@ box::use(
 )
 
 box::use(
+  app/logic/constant[FILTER_CRISPY_OUTLIERS],
   app/logic/trisk_button_logic[
     trisk_generator,
     check_if_run_exists
@@ -184,7 +185,10 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
     if (!is.null(trisk_granularity_r()) & !is.null(raw_crispy_data_r()) & !is.null(raw_trajectories_data_r())) {
       crispy_data_r(
         raw_crispy_data_r() |>
-          stress.test.plot.report::main_load_multi_crispy_data(granularity = trisk_granularity_r())
+          stress.test.plot.report::main_load_multi_crispy_data(
+            granularity = trisk_granularity_r(),
+            filter_outliers=FALSE
+            )
       )
       trajectories_data_r(
         raw_trajectories_data_r() |>

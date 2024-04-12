@@ -23,30 +23,32 @@ ui <- function(id) {
 
 
 
-server <- function(id, analysis_data_r, crispy_data_agg_r, max_trisk_granularity) {
+server <- function(id, analysis_data_r, crispy_data_r, max_trisk_granularity) {
   moduleServer(id, function(input, output, session) {
     base_height_per_facet <- 150 # height in pixels # TODO GO IN CONF
 
     # PD PLOT
 
-    observeEvent(c(crispy_data_agg_r(), analysis_data_r()), {
-      if (nrow(crispy_data_agg_r()) > 0) {
-        granul_levels <- dplyr::intersect(colnames(crispy_data_agg_r()), names(max_trisk_granularity))
-        granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
+    observeEvent(c(crispy_data_r(), analysis_data_r()), {
+      if ((nrow(crispy_data_r()) > 0) & (nrow(analysis_data_r()) > 0)) {
+          granul_levels <- dplyr::intersect(colnames(analysis_data_r()), names(max_trisk_granularity))
+          granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
 
-        num_facets <- length(unique(crispy_data_agg_r()[[granul_top_level]]))
+          num_facets <- length(unique(analysis_data_r()[[granul_top_level]]))
 
-        pd_term_plot <- stress.test.plot.report::pipeline_crispy_pd_term_plot(
-          crispy_data_agg = crispy_data_agg_r(),
-          facet_var = granul_top_level
-        )
-        # id value dynamically generated in the server, just above
-        output$pd_term_plot_output <- shiny::renderPlot(
-          {
-            pd_term_plot
-          },
-          height = num_facets * base_height_per_facet
-        )
+          pd_term_plot <- stress.test.plot.report::pipeline_crispy_pd_term_plot(
+            crispy_data_agg = analysis_data_r(),
+            facet_var = granul_top_level
+          )
+          # id value dynamically generated in the server, just above
+          output$pd_term_plot_output <- shiny::renderPlot(
+            {
+              pd_term_plot
+            },
+            height = num_facets * base_height_per_facet
+          )
+      } else {
+        output$pd_term_plot_output <- shiny::renderPlot(ggplot2::ggplot()+ggplot2::theme_void(), width=1, height=1)
       }
     })
 
@@ -59,9 +61,9 @@ server <- function(id, analysis_data_r, crispy_data_agg_r, max_trisk_granularity
         granul_top_level <- names(max_trisk_granularity[granul_levels])[which.max(unlist(max_trisk_granularity[granul_levels]))]
 
         analysis_data_all_granul_levels <- analysis_data_r() |>
-          dplyr::right_join(crispy_data_agg_r() |> dplyr::distinct_at(granul_top_level))
+          dplyr::right_join(crispy_data_r() |> dplyr::distinct_at(granul_top_level))
 
-        num_facets <- length(unique(crispy_data_agg_r()[[granul_top_level]]))
+        num_facets <- length(unique(analysis_data_all_granul_levels[[granul_top_level]]))
 
         expected_loss_plot <- stress.test.plot.report::pipeline_crispy_expected_loss_plot(
           analysis_data = analysis_data_all_granul_levels,
@@ -74,6 +76,8 @@ server <- function(id, analysis_data_r, crispy_data_agg_r, max_trisk_granularity
           },
           height = num_facets * base_height_per_facet
         )
+      } else {
+        output$expected_loss_plot_output <- shiny::renderPlot(ggplot2::ggplot()+ggplot2::theme_void(), width=1, height=1)
       }
     })
   })

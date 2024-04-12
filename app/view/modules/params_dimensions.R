@@ -37,12 +37,13 @@ ui <- function(id, max_trisk_granularity) {
           ns("granul_2"),
           rename_string_vector(names(which(max_trisk_granularity == 2)), words_class = "analysis_columns"),
           class = "ui button fluid"
-        ),
-        shiny.semantic::button(
-          ns("granul_3"),
-          rename_string_vector(names(which(max_trisk_granularity == 3)), words_class = "analysis_columns"),
-          class = "ui button fluid"
         )
+        # ,
+        # shiny.semantic::button(
+        #   ns("granul_3"),
+        #   rename_string_vector(names(which(max_trisk_granularity == 3)), words_class = "analysis_columns"),
+        #   class = "ui button fluid"
+        # )
         
       )
     )
@@ -61,7 +62,7 @@ server <- function(id, max_trisk_granularity) {
     observeEvent(input$granul_1, {
       update_button_style(session$ns("granul_1"), TRUE)
       update_button_style(session$ns("granul_2"), FALSE)
-      update_button_style(session$ns("granul_3"), FALSE)
+      # update_button_style(session$ns("granul_3"), FALSE)
       trisk_granularity_r(
         get_trisk_granularity(max_trisk_granularity, 1)
       )
@@ -70,20 +71,20 @@ server <- function(id, max_trisk_granularity) {
     observeEvent(input$granul_2, {
       update_button_style(session$ns("granul_1"), FALSE)
       update_button_style(session$ns("granul_2"), TRUE)
-      update_button_style(session$ns("granul_3"), FALSE)
+      # update_button_style(session$ns("granul_3"), FALSE)
       trisk_granularity_r(
         get_trisk_granularity(max_trisk_granularity, 2)
       )
     })
 
-    observeEvent(input$granul_3, {
-      update_button_style(session$ns("granul_1"), FALSE)
-      update_button_style(session$ns("granul_2"), FALSE)
-      update_button_style(session$ns("granul_3"), TRUE)
-      trisk_granularity_r(
-        get_trisk_granularity(max_trisk_granularity, 2)
-      )
-    })
+    # observeEvent(input$granul_3, {
+    #   update_button_style(session$ns("granul_1"), FALSE)
+    #   update_button_style(session$ns("granul_2"), FALSE)
+    #   update_button_style(session$ns("granul_3"), TRUE)
+    #   trisk_granularity_r(
+    #     get_trisk_granularity(max_trisk_granularity, 3)
+    #   )
+    # })
 
 
     return(trisk_granularity_r)

@@ -46,7 +46,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
           width: 100%; /* Ensures full width */
         }
         .ui.buttons {
-          width: 33%; /* Ensures full width */
+          width: 50%; /* Ensures full width */
         }
         .ui.divider { 
           margin: 20px 0; 

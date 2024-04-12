@@ -25,7 +25,7 @@ ui <- function(id, max_trisk_granularity, available_vars) {
       class = "ui segment", style = "min-height: 100vh;",
       shiny::tags$div(
         class = "ui stackable grid",
-        portfolio_analysis$ui(ns("portfolio_analysis"), portfolio_class = "Equities portfolio"),
+        portfolio_analysis$ui(ns("portfolio_analysis"), portfolio_class = "equity"),
         plots_equities$ui(ns("plots_equities")),
         plots_trajectories$ui(ns("plots_trajectories"))
       )
@@ -57,21 +57,17 @@ server <- function(id, perimeter, backend_trisk_run_folder, max_trisk_granularit
 
     # Manages the porfolio creator module
     # Create analysis data by merging crispy to portfolio, and aggrgating to the appropriate granularity
-    out <- portfolio_analysis$server(
+    analysis_data_r <- portfolio_analysis$server(
       "portfolio_analysis",
-      portfolio_class = "Equities portfolio",
+      portfolio_class = "equity",
       portfolio_uploaded_r=portfolio_uploaded_r,
       crispy_data_r = crispy_data_r,
       trisk_granularity_r = trisk_granularity_r,
       max_trisk_granularity = max_trisk_granularity,
-      portfolio_asset_type = "equity",
       display_columns = display_columns_equities,
       editable_columns_names = editable_columns_names_equities,
       colored_columns_names = colored_columns_names_equities
     )
-
-    analysis_data_r <- out$analysis_data_r
-    crispy_data_agg_r <- out$crispy_data_agg_r # only used in tab_loans
 
     # CONSUME TRISK OUTPUTS =========================
 
