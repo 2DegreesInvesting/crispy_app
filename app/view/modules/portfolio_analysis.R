@@ -193,7 +193,6 @@ generate_analysis_data <- function(portfolio_data_r, crispy_data_r, trisk_granul
         if ( all(granularity %in% trisk_granularity_r())){ #only does anything if things stable
             # Creates and aggregate Analysis data without portfolio with stress.test.plot.report fun
             if (nrow(portfolio_data_r() > 0)) {
-              browser()
               analysis_data <- stress.test.plot.report:::load_input_plots_data_from_tibble(
                 portfolio_data = portfolio_data_r(),
                 multi_crispy_data = crispy_data_r(),
@@ -289,3 +288,4 @@ update_portfolio_with_user_input <- function(
     }
   })
 }
+

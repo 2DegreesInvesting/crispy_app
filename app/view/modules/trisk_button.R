@@ -7,7 +7,6 @@ box::use(
 )
 
 box::use(
-  app/logic/constant[FILTER_CRISPY_OUTLIERS],
   app/logic/trisk_button_logic[
     trisk_generator,
     check_if_run_exists
@@ -144,13 +143,12 @@ server <- function(
 
 
 fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder,
-                                               run_id_r,
-                                               trisk_granularity_r) {
+                                               run_id_r, trisk_granularity_r) {
   # FETCH CRISPY AND TRAJECTORIES DATA =========================
 
   # Connect to the data sources, filter run perimter, and process to the appropriate granularity
-  raw_crispy_data_r <- reactiveVal()
-  raw_trajectories_data_r <- reactiveVal()
+  crispy_data_r <- reactiveVal()
+  trajectories_data_r <- reactiveVal()
 
   observe({
     if (!is.null(run_id_r())) {
@@ -160,11 +158,13 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
         )
       )
 
-      raw_crispy_data_r(
+      crispy_data_r(
         load_backend_crispy_data(backend_trisk_run_folder, run_id = run_id_r())
       )
-      raw_trajectories_data_r(
-        load_backend_trajectories_data(backend_trisk_run_folder, run_id = run_id_r())
+      trajectories_data_r(
+        load_backend_trajectories_data(backend_trisk_run_folder, run_id = run_id_r()) |>
+          stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
+
       )
 
       # close the modal dialog
@@ -172,27 +172,6 @@ fetch_crispy_and_trajectories_data <- function(session, backend_trisk_run_folder
         paste0(
           "$('#", session$ns("model_load_db"), "').modal('hide');"
         )
-      )
-    }
-  })
-
-  # preprocess the raw data to the appropriate granularity
-
-  crispy_data_r <- reactiveVal()
-  trajectories_data_r <- reactiveVal()
-
-  observe({
-    if (!is.null(trisk_granularity_r()) & !is.null(raw_crispy_data_r()) & !is.null(raw_trajectories_data_r())) {
-      crispy_data_r(
-        raw_crispy_data_r() |>
-          stress.test.plot.report::main_load_multi_crispy_data(
-            granularity = trisk_granularity_r(),
-            filter_outliers=FALSE
-            )
-      )
-      trajectories_data_r(
-        raw_trajectories_data_r() |>
-          stress.test.plot.report::main_data_load_trajectories_data(granularity = trisk_granularity_r())
       )
     }
   })

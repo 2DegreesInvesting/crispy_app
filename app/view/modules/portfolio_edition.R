@@ -12,7 +12,7 @@ box::use(
 
 
 box::use(
-  app/logic/constant[max_trisk_granularity, FILTER_CRISPY_OUTLIERS],
+  app/logic/constant[max_trisk_granularity],
   app/logic/renamings[rename_tibble_columns]
 )
 
@@ -28,24 +28,28 @@ ui <- function(id) {
     div(
       class = "row",
       div(
-        class = "sixteen wide column",
+        class = "five wide column",
         shiny.semantic::dropdown_input(
           ns("ald_sector_dropdown"),
           default_text = "Sector",
           choices = NULL # Populate with your choices
-        ),
+        )),
+        div(
+        class = "five wide column",
         shiny.semantic::dropdown_input(
           ns("ald_business_unit_dropdown"),
           default_text = "Business Unit",
           choices = NULL # Populate with your choices
-        ),
+        )),
+        div(
+        class = "five wide column",
         shiny.semantic::dropdown_input(
           ns("maturity_year"),
           default_text = "Year of maturity",
           choices = 2024:2034, # TODO GO IN CONF
           value = 2034
-        )
-      )
+        ))
+      
     ),
     div(
       class = "row",
@@ -171,6 +175,7 @@ rows_deletion <- function(
     portfolio_data_r,
     selected_rows) {
   observeEvent(input$delete_row_btn, {
+    browser()
     selected_rows <- input$portfolio_table_rows_selected
 
     if (length(selected_rows)) {

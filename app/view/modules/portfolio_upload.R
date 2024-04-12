@@ -52,39 +52,38 @@ server <- function(id) {
     portfolio_uploaded_r <- shiny::reactiveVal(tibble::tibble())
 
     shiny::observeEvent(input$fileUpload, {
-      browser()
-      uploadedFilePath <- input$fileUpload$datapath
+    #   uploadedFilePath <- input$fileUpload$datapath
 
-      if (is.null(uploadedFilePath)) {
-        output$fileName <- shiny::renderUI({
-          shiny::HTML("Please upload a file.")
-        })
-        return()
-      }
+    #   if (is.null(uploadedFilePath)) {
+    #     output$fileName <- shiny::renderUI({
+    #       shiny::HTML("Please upload a file.")
+    #     })
+    #     return()
+    #   }
 
-      tryCatch(
-        {
-          csvData <- utils::read.csv(uploadedFilePath, stringsAsFactors = FALSE)
-          possibleColumns <- c("Column1", "Column2", "Column3", "Column4")
-          missingColumns <- setdiff(possibleColumns, colnames(csvData))
+    #   tryCatch(
+    #     {
+    #       csvData <- utils::read.csv(uploadedFilePath, stringsAsFactors = FALSE)
+    #       possibleColumns <- c("Column1", "Column2", "Column3", "Column4")
+    #       missingColumns <- setdiff(possibleColumns, colnames(csvData))
 
-          if (length(missingColumns) > 0) {
-            missingColumnsString <- paste(missingColumns, collapse = ", ")
-            output$fileName <- shiny::renderUI({
-              shiny::HTML(paste("The CSV is missing the following required columns:", missingColumnsString))
-            })
-          } else {
-            output$fileName <- shiny::renderUI({
-              shiny::HTML("The CSV file is valid and contains all the required columns.")
-            })
-          }
-        },
-        error = function(e) {
-          output$fileName <- shiny::renderUI({
-            shiny::HTML("Error reading the file. Please ensure it is a valid CSV.")
-          })
-        }
-      )
+    #       if (length(missingColumns) > 0) {
+    #         missingColumnsString <- paste(missingColumns, collapse = ", ")
+    #         output$fileName <- shiny::renderUI({
+    #           shiny::HTML(paste("The CSV is missing the following required columns:", missingColumnsString))
+    #         })
+    #       } else {
+    #         output$fileName <- shiny::renderUI({
+    #           shiny::HTML("The CSV file is valid and contains all the required columns.")
+    #         })
+    #       }
+    #     },
+    #     error = function(e) {
+    #       output$fileName <- shiny::renderUI({
+    #         shiny::HTML("Error reading the file. Please ensure it is a valid CSV.")
+    #       })
+    #     }
+    #   )
     })
     return(portfolio_uploaded_r)
   })
